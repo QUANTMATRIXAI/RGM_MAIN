@@ -3,5 +3,5 @@ pandas
 numpy
 statsmodels
 scikit-learn
-plotly
+plotly==5.14.1
 pykalman
