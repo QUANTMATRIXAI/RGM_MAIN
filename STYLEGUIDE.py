@@ -2896,36 +2896,42 @@ def section2_module1_page():
 
         final_df.fillna(0, inplace=True)
 
-        # Merge extra columns
         raw_df_copy = raw_df.copy()
         raw_df_copy[d_date] = pd.to_datetime(raw_df_copy[d_date], errors='coerce')
         raw_df_copy['Date'] = raw_df_copy[d_date].dt.date
 
-        extra_cols = ['Trend','Weekend','D1']
-        existing_extras = [c for c in extra_cols if c in raw_df_copy.columns]
-
-        merge_keys = [d_channel,'Date']
+        # Merge keys for re-joining raw data
+        merge_keys = [d_channel, 'Date']
         if pivot_keys:
             merge_keys += pivot_keys
 
-        extra_df = raw_df_copy[merge_keys+existing_extras].drop_duplicates(subset=merge_keys)
+        # Identify columns that final_df doesn’t yet have
+        final_cols_set = set(final_df.columns)
+        raw_cols_set = set(raw_df_copy.columns)
+        # Subset of raw cols that are NOT already in final_df
+        additional_cols = list(raw_cols_set - final_cols_set - set(merge_keys))
+
+        # Create a reduced DataFrame of merge-keys + any extra columns
+        extra_df = raw_df_copy[merge_keys + additional_cols].drop_duplicates(subset=merge_keys)
+
+        # Merge these columns into final_df
         final_df['Date'] = pd.to_datetime(final_df['Date'], errors='coerce').dt.date
-
-        dup_extras = [c for c in existing_extras if c in final_df.columns]
-        if dup_extras:
-            final_df.drop(columns=dup_extras, inplace=True)
-
         final_df = final_df.merge(extra_df, on=merge_keys, how='left')
+
         final_df.fillna(0, inplace=True)
 
-        # Merge brand_totals => 'Contribution'
+        # === Merge brand_totals => 'Contribution' - same as before ===
+        keys_for_brand = [d_channel] + pivot_keys
         final_df = final_df.merge(
             brand_totals[keys_for_brand + ['MarketShare_overall']],
             on=keys_for_brand, how='left'
         )
-        final_df.rename(columns={'MarketShare_overall':'Contribution'}, inplace=True)
+        final_df.rename(columns={'MarketShare_overall': 'Contribution'}, inplace=True)
         final_df['Contribution'] = final_df['Contribution'].fillna(0)
 
+        # ----------------------------------------------------------
+        # RETURN THE FINAL DATA
+        # ----------------------------------------------------------
         return final_df
 
     def run_model_pipeline(final_df, grouping_keys, X_columns, target_col, k_folds, chosen_std_cols):
