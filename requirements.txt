@@ -23,3 +23,5 @@ xgboost
 
 # Grid based data components for Streamlit
 streamlit-aggrid
+
+openpyxl
