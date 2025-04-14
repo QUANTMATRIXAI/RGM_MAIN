@@ -141,7 +141,8 @@ def go_home():
 section_names = {
     "1": "Base/Promo Detection",
     "2": "Price/Promo Elasticity",
-    "3": "RGM Pillars"
+    "3": "RGM Pillars",
+    "4": "Engineer"  # <-- newly added
 }
 
 # ----------------
@@ -151,7 +152,7 @@ def home_page():
     st.title("Welcome to RGM App")
     st.write("Below are three sections of the app. Click on their respective buttons to navigate.")
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
 
     # Card for Section 1
     with col1:
@@ -195,7 +196,19 @@ def home_page():
         if st.button("Go to RGM Pillars"):
             go_to("section3")
 
-
+    # --- New Section 4: Engineer ---
+    with col4:
+        st.markdown(
+            f"""
+            <div class='custom-card'>
+              <h3 style="margin-top:0;">{section_names['4']}</h3>
+              <p>Manage engineering tasks, processes, or workflows.</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        if st.button("Go to Engineer"):
+            go_to("section4")
     
     
     # --------------------------------------------------------
@@ -321,6 +334,9 @@ def section_page(section_number):
             with col_b:
                 if st.button("Home"):
                     go_home()
+                    
+
+                
 
                 
     elif section_number == "2":
@@ -430,30 +446,600 @@ def section_page(section_number):
                     go_to("section3_module3")
                     
                     
-                    
-            # ============= MODULE 1 =============
-            with col1:
-                st.markdown(
-                    """
-                    <div class='custom-card'>
-                    <h4 style="margin-top:0;">📦 Pack / format price curves</h4>
-                    <p>Compute and analyze price/promo elasticity using various models.</p>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-                if st.button("Go to Pack / format price curves"):
-                    go_to("section3_module4")  # route name
 
-            # Divider + Navigation
-            st.markdown("---")
-            col_a, col_b = st.columns(2)
-            with col_a:
-                if st.button("Back"):
-                    go_back()
-            with col_b:
-                if st.button("Home"):
-                    go_home()
+
+
+
+    # 2) New Section 4 Layout
+    elif section_number == "4":
+        st.write("Below are the modules available for our Engineering workflows.")
+
+        # Four columns for the four modules
+        col1, col2, col3, col4 = st.columns(4)
+
+        # Module: Feature Overview
+        with col1:
+            st.markdown(
+                """
+                <div class='custom-card'>
+                  <h4 style="margin-top:0;">Feature Overview</h4>
+                  <p>Inspect and manage high-level feature sets.</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            if st.button("Go to Feature Overview"):
+                go_to("section4_feature_overview")
+
+        # Module: Transform
+        with col3:
+            st.markdown(
+                """
+                <div class='custom-card'>
+                  <h4 style="margin-top:0;">Transform</h4>
+                  <p>Clean, transform, or reshape data through automated pipelines.</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            if st.button("Go to Transform"):
+                go_to("section4_transform")
+
+        # Module: Create
+        with col2:
+            st.markdown(
+                """
+                <div class='custom-card'>
+                  <h4 style="margin-top:0;">Create</h4>
+                  <p>Generate new models, features, or engineering workflows.</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            if st.button("Go to Create"):
+                go_to("section4_create")
+
+        # Module: Select
+        with col4:
+            st.markdown(
+                """
+                <div class='custom-card'>
+                  <h4 style="margin-top:0;">Select</h4>
+                  <p>Choose from different engineering strategies and approaches.</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            if st.button("Go to Select"):
+                go_to("section4_select")
+
+        # Navigation controls
+        st.markdown("---")
+        nav_col1, nav_col2 = st.columns(2)
+        with nav_col1:
+            if st.button("Back"):
+                go_back()
+        with nav_col2:
+            if st.button("Home"):
+                go_home()
+
+
+
+#########################################def Engineer
+###############inter page navigation
+
+
+
+################################################
+
+def Feature_Overview_page():
+
+
+    import streamlit as st
+    import pandas as pd
+    import numpy as np
+    import plotly.express as px
+
+    # -----------------------------------------------------------------------
+    # 1) CUSTOM CSS (Your Style Guide)
+    # -----------------------------------------------------------------------
+    st.markdown("""
+    <style>
+    .stApp {
+        background-color: #F5F5F5;
+    }
+    .custom-header {
+        font-family: 'Inter', sans-serif;
+        font-size: 36px;
+        font-weight: 600;
+        color: #333333;
+        margin-bottom: 0.2rem;
+    }
+    .subheader {
+        font-family: 'Inter', sans-serif;
+        font-size: 18px;
+        color: #666666;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+    .accent-hr {
+        border: 0;
+        height: 2px;
+        background: linear-gradient(to right, #FFBD59, #FFC87A);
+        margin: 0.5rem 0 1.5rem 0;
+    }
+    .card {
+        background-color: #FFFFFF; 
+        padding: 1.2rem 1.2rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+    }
+    .card h2 {
+        font-family: 'Inter', sans-serif;
+        font-size: 24px;
+        margin: 0.2rem 0 1rem 0;
+        color: #333333;
+    }
+    div[data-testid="stHorizontalBlock"] button {
+        background-color: #FFBD59 !important; 
+        color: #333333 !important;
+        font-weight: 600 !important;
+        border-radius: 4px !important;
+        border: none !important;
+        margin-bottom: 0.5rem;
+    }
+    div[data-testid="stHorizontalBlock"] button:hover {
+        background-color: #FFC87A !important;
+    }
+    .dataframe-table {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        color: #333333;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Accent colors for your charts
+    STYLE_COLORS = [
+        "#FFBD59",  # gold
+        "#FFC87A",  # lighter gold
+        "#41C185",  # green
+        "#458EE2",  # blue
+        "#FF7F7F",  # red
+    ]
+
+    # -----------------------------------------------------------------------
+    # 2) MAIN HEADER & NAVIGATION
+    # -----------------------------------------------------------------------
+    st.markdown('<h1 class="custom-header">Feature Overview</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="subheader">Radio-based aggregator filtering plus advanced analysis features – all in a user-friendly layout.</p>', unsafe_allow_html=True)
+    st.markdown('<hr class="accent-hr">', unsafe_allow_html=True)
+
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Back"):
+            go_back()
+    with col2:
+        if st.button("Home"):
+            go_home()
+
+    # -----------------------------------------------------------------------
+    # 3) RETRIEVE DATA
+    # -----------------------------------------------------------------------
+    df = st.session_state.get("D0", None)
+    if df is None or df.empty:
+        st.warning("No data found in st.session_state['D0']. Please load your dataset.")
+        st.stop()
+
+    # -----------------------------------------------------------------------
+    # CARD 0: MULTI-COLUMN FILTER (RADIO-BASED)
+    # -----------------------------------------------------------------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 0) Filter by Multiple Aggregator (Categorical) Columns")
+
+    cat_cols_all = df.select_dtypes(include=["object","category"]).columns.tolist()
+    if not cat_cols_all:
+        st.info("No categorical columns found. No aggregator filter applied.")
+    else:
+        agg_cols_picked = st.multiselect(
+            "Pick aggregator columns to filter (radio-based):",
+            cat_cols_all,
+            default=[]
+        )
+        for colname in agg_cols_picked:
+            distinct_vals = sorted(df[colname].dropna().unique().tolist())
+            all_option = "All"
+            options_for_radio = [all_option] + distinct_vals
+            selected_val = st.radio(
+                f"{colname}:",
+                options_for_radio,
+                index=0,  # default to "All"
+                key=f"AggRadio_{colname}",
+                horizontal=True
+            )
+            if selected_val != all_option:
+                df = df[df[colname]==selected_val]
+                if df.empty:
+                    st.warning(f"No data left after filtering on {colname} = {selected_val}.")
+                    st.markdown('</div>', unsafe_allow_html=True)
+                    st.stop()
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # CARD 1: QUICK STATS
+    # -----------------------------------------------------------------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 1) Quick Stats")
+
+    n_rows, n_cols = df.shape
+    mem_mb = df.memory_usage(deep=True).sum()/1e6
+    total_cells = n_rows*n_cols
+    missing_count = df.isna().sum().sum()
+    perc_missing = (missing_count/total_cells*100) if total_cells else 0
+
+    colA, colB, colC = st.columns(3)
+    with colA:
+        st.markdown("**Shape**")
+        st.write(f"{n_rows} rows × {n_cols} columns")
+
+    with colB:
+        st.markdown("**Memory Usage**")
+        st.write(f"{mem_mb:.2f} MB")
+
+    with colC:
+        st.markdown("**Overall Missing**")
+        st.write(f"{missing_count} ({perc_missing:.2f}%)")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # CARD 2: COLUMN DETAILS
+    # -----------------------------------------------------------------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 2) Column Details")
+
+    column_info = []
+    for c in df.columns:
+        ctype = str(df[c].dtype)
+        miss = df[c].isna().sum()
+        uniq = df[c].nunique(dropna=True)
+        sample_vals = df[c].dropna().unique()[:3]
+        sample_str = ", ".join(map(str, sample_vals)) if len(sample_vals)>0 else "N/A"
+        column_info.append({
+            "Column": c,
+            "Type": ctype,
+            "Missing": miss,
+            "Unique": uniq,
+            "Examples": sample_str
+        })
+    detail_df = pd.DataFrame(column_info)
+    st.dataframe(detail_df, use_container_width=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Identify numeric/categorical columns in the aggregator-filtered dataset
+    numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+    cat_cols = df.select_dtypes(include=["object","category"]).columns.tolist()
+
+    # -----------------------------------------------------------------------
+    # CARD 3: NUMERIC & CATEGORICAL INSIGHTS
+    # -----------------------------------------------------------------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 3) Numeric & Categorical Insights")
+
+    cNum, cCat = st.columns(2)
+
+    # 3.1 Numeric side
+    with cNum:
+        st.markdown("### Numeric Columns")
+        if numeric_cols:
+            desc_stats = df[numeric_cols].describe().T
+            st.write("**Descriptive Stats**")
+            st.dataframe(desc_stats, use_container_width=True)
+
+            outlier_toggle = st.checkbox("Check for Potential Outliers (1.5×IQR)?", key="OutlierCheck")
+            if outlier_toggle:
+                outlier_info = []
+                for coln in numeric_cols:
+                    q1 = df[coln].quantile(0.25)
+                    q3 = df[coln].quantile(0.75)
+                    iqr = q3 - q1
+                    lb = q1 - 1.5*iqr
+                    ub = q3 + 1.5*iqr
+                    out_count = ((df[coln]<lb)|(df[coln]>ub)).sum()
+                    outlier_info.append({
+                        "Column": coln,
+                        "Outliers": out_count,
+                        "LowerBound": f"{lb:.2f}",
+                        "UpperBound": f"{ub:.2f}"
+                    })
+                st.dataframe(pd.DataFrame(outlier_info), use_container_width=True)
+        else:
+            st.info("No numeric columns in the filtered subset.")
+
+    # 3.2 Categorical side
+    with cCat:
+        st.markdown("### Categorical Columns")
+        if cat_cols:
+            st.write("**Frequency Table**")
+            pick_cat = st.selectbox("Pick a categorical column:", cat_cols, key="CatColPick")
+            top_k = st.slider("Show top K categories:", 1, 20, 5, key="CatTopK")
+            freq_s = df[pick_cat].value_counts(dropna=False).head(top_k)
+            freq_df = freq_s.rename_axis(pick_cat).reset_index(name="Count")
+            freq_df["Percent"] = freq_df["Count"]/freq_df["Count"].sum()*100
+            st.dataframe(freq_df, use_container_width=True)
+        else:
+            st.info("No categorical columns in the filtered subset.")
+
+    # Now we do a full-width advanced cat-cat section, **below** the columns
+    st.markdown("---")  # a separator
+    st.markdown("### Advanced Categorical-Categorical Analysis (Full Width)")
+
+    if len(cat_cols) >= 2:
+        adv_catcat_toggle = st.checkbox("Enable cross-tab analysis?", key="CatCatToggle")
+        if adv_catcat_toggle:
+            # user picks two distinct cat columns
+            st.write("Pick two different categorical columns for cross-tab analysis:")
+            cat1 = st.selectbox("Column A:", cat_cols, key="CatCatCol1")
+            cat2 = st.selectbox("Column B:", cat_cols, key="CatCatCol2")
+
+            if cat1 and cat2 and cat1!=cat2:
+                crosstab_data = pd.crosstab(df[cat1], df[cat2])
+                st.write("**Cross-Tab (Counts)**")
+                st.dataframe(crosstab_data, use_container_width=True)
+
+                # optional heatmap
+                show_heatmap = st.checkbox("Show Cross-Tab Heatmap?", key="CatCatHeatmap")
+                if show_heatmap:
+                    fig_heat = px.imshow(
+                        crosstab_data,
+                        text_auto=True,
+                        aspect="auto",
+                        title=f"{cat1} vs. {cat2} Cross-Tab"
+                    )
+                    st.plotly_chart(fig_heat, use_container_width=True)
+            else:
+                st.info("Please pick two distinct columns for cross-tab.")
+    else:
+        st.info("Fewer than 2 categorical columns remain after filtering, so cross-tab is not available.")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # CARD 4: DISTRIBUTIONS
+    # -----------------------------------------------------------------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 4) Distributions")
+
+    distL, distR = st.columns(2)
+
+    # numeric histogram
+    with distL:
+        st.markdown("**Histogram (Numeric)**")
+        if numeric_cols:
+            pick_num = st.selectbox("Select numeric column:", ["(None)"]+numeric_cols, key="NumDistPick")
+            if pick_num!="(None)":
+                log_check = st.checkbox("Log-scale Y-axis?", key="HistLogY")
+                fig_hist = px.histogram(
+                    df, x=pick_num, nbins=30,
+                    title=f"Distribution of {pick_num}",
+                    color_discrete_sequence=[STYLE_COLORS[0]]
+                )
+                if log_check:
+                    fig_hist.update_yaxes(type="log")
+                st.plotly_chart(fig_hist, use_container_width=True)
+
+    # categorical bar
+    with distR:
+        st.markdown("**Bar Chart (Categorical)**")
+        if cat_cols:
+            pick_cat2 = st.selectbox("Select categorical column:", ["(None)"]+cat_cols, key="CatDistPick2")
+            if pick_cat2!="(None)":
+                freq_s = df[pick_cat2].value_counts(dropna=False)
+                freq_df = freq_s.rename_axis(pick_cat2).reset_index(name="Count")
+                freq_df["Percent"] = freq_df["Count"] / freq_df["Count"].sum()*100
+
+                bar_mode = st.selectbox("Bar Mode:", ["Absolute Count","Percent"], key="CatBarMode")
+                y_axis = "Count" if bar_mode=="Absolute Count" else "Percent"
+                fig_bar = px.bar(
+                    freq_df, x=pick_cat2, y=y_axis,
+                    title=f"Bar Chart of {pick_cat2}",
+                    color_discrete_sequence=[STYLE_COLORS[1]]
+                )
+                if bar_mode=="Percent":
+                    fig_bar.update_yaxes(title="Percent")
+                st.plotly_chart(fig_bar, use_container_width=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # CARD 5: CORRELATION (FULL WIDTH)
+    # -----------------------------------------------------------------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 5) Correlation Matrix")
+
+    numeric_cols_filtered = [nc for nc in numeric_cols if df[nc].nunique() > 1]
+    if len(numeric_cols_filtered) > 1:
+        corr_method = st.selectbox("Correlation method:", ["pearson","spearman","kendall"], key="CorrMethodPick")
+        corr_thresh = st.slider("Correlation threshold (mask smaller correlations):", 0.0,1.0,0.0,0.01, key="CorrThresh")
+        corr_mat = df[numeric_cols_filtered].corr(method=corr_method)
+        if corr_thresh>0:
+            mask = corr_mat.abs()<corr_thresh
+            corr_mat = corr_mat.mask(mask, np.nan)
+
+        fig_corr = px.imshow(
+            corr_mat, text_auto=True, aspect="auto",
+            title=f"{corr_method.capitalize()} Correlation (≥ |{corr_thresh}| shown)",
+            color_continuous_scale="RdBu"
+        )
+        st.plotly_chart(fig_corr, use_container_width=True)
+    else:
+        st.info("Not enough numeric columns (with variety) for correlation in the filtered data.")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # CARD 6: SAMPLE ROWS
+    # -----------------------------------------------------------------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 6) Sample Rows")
+
+    n_samp = st.slider("Number of sample rows:",1,50,5)
+    st.dataframe(df.head(n_samp), use_container_width=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+
+def Transform_page():
+    
+    
+    st.markdown("---")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Back"):
+            go_back()
+    with col2:
+        if st.button("Home"):
+            go_home()
+            
+
+
+
+def Create_page():
+    
+
+    
+    
+    
+    st.markdown("---")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Back"):
+            go_back()
+    with col2:
+        if st.button("Home"):
+            go_home()
+            
+
+
+
+def Select_page():
+    
+    
+    st.markdown("---")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Back"):
+            go_back()
+    with col2:
+        if st.button("Home"):
+            go_home()
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1179,52 +1765,54 @@ def market_construct_page():
             go_home()
             
 
+
+
+
+# def Engineer_page():
+    
 def base_price_estimator_page():
+
+    
+    import pandas as pd
+    import numpy as np
+    import plotly.graph_objects as go
+
     st.subheader("📊 Automated Base Price Estimator")
     
-    # Retrieve the uploaded dataframe from session state (set in the file management section)
-    dataframe = st.session_state.get("D0", None)
     
+        # Retrieve the uploaded dataframe from session state (set in the file management section)
+    dataframe = st.session_state.get("D0", None) 
+    
+    # Make sure the global 'dataframe' is not None (it comes from your file upload module)
     if dataframe is not None:
         # Ensure "BasePrice" column exists
         if "BasePrice" not in dataframe.columns:
             dataframe["BasePrice"] = np.nan
 
-        # Upward transition check
+        # Upward transition check (unchanged)
         def validate_upward_transition(prices, candidate_price, base_price, threshold_5, threshold_3, promo_weeks):
             above_thresh = np.sum(prices >= base_price * (1 + threshold_5 / 100))
-            within_range = np.sum(
-                (prices >= candidate_price * 0.97) &
-                (prices <= candidate_price * 1.03)
-            )
+            within_range = np.sum((prices >= candidate_price * 0.97) & (prices <= candidate_price * 1.03))
             return (above_thresh >= promo_weeks // 2) and (within_range >= promo_weeks // 2)
 
-        # Downward transition check (strict)
+        # Downward transition check: require that, in the next 12 weeks,
+        # at least 9 weeks have prices within ±2% of the candidate price.
         def validate_downward_transition_strict(prices, candidate_price, promo_weeks=12, required=9, tolerance=0.02):
             if len(prices) < promo_weeks:
                 return False
-            count = np.sum(
-                (prices >= candidate_price * (1 - tolerance)) &
-                (prices <= candidate_price * (1 + tolerance))
-            )
+            count = np.sum((prices >= candidate_price * (1 - tolerance)) &
+                        (prices <= candidate_price * (1 + tolerance)))
             return count >= required
 
         # --- User selections ---
-        channel_selected = st.selectbox(
-            "Select a Channel",
-            options=dataframe["Channel"].dropna().unique()
-        )
+        channel_selected = st.selectbox("Select a Channel", options=dataframe["Channel"].dropna().unique())
         channel_data = dataframe[dataframe["Channel"] == channel_selected]
 
         if channel_data.empty:
             st.warning(f"No data available for the selected Channel: {channel_selected}")
         else:
             brands_in_channel = channel_data["Brand"].dropna().unique()
-            brand_selected = st.radio(
-                "Select a Brand",
-                options=brands_in_channel,
-                horizontal=True
-            )
+            brand_selected = st.radio("Select a Brand", options=brands_in_channel, horizontal=True)
             brand_data = channel_data[channel_data["Brand"] == brand_selected]
 
             aggregator_options = ["Variant", "PackType", "PackSize"]
@@ -1232,419 +1820,250 @@ def base_price_estimator_page():
             if aggregator_col not in brand_data.columns:
                 st.warning(f"Column '{aggregator_col}' not found in the data.")
                 st.stop()
-
             aggregator_values = brand_data[aggregator_col].dropna().unique()
             if len(aggregator_values) == 0:
                 st.warning(f"No non-empty values for '{aggregator_col}' in Brand: {brand_selected}")
                 st.stop()
-
-            aggregator_selected = st.radio(
-                f"Select {aggregator_col}",
-                options=aggregator_values,
-                horizontal=True
-            )
+            aggregator_selected = st.radio(f"Select {aggregator_col}", options=aggregator_values, horizontal=True)
             aggregator_data = brand_data[brand_data[aggregator_col] == aggregator_selected]
             if aggregator_data.empty:
                 st.warning(f"No data available for {aggregator_col} = {aggregator_selected}")
                 st.stop()
+                            
+            # Save aggregator selection in session state
+            st.session_state['aggregator_selected'] = aggregator_selected
 
+            # Loop over each PPG in aggregator_data
             ppgs_in_aggregator = aggregator_data["PPG"].dropna().unique()
-
-            for ppg in ppgs_in_aggregator:
+            for idx, ppg in enumerate(ppgs_in_aggregator):
                 filtered_data = aggregator_data[aggregator_data["PPG"] == ppg]
                 if filtered_data.empty:
                     continue
 
-                # Default parameters
-                rolling_period = 12
-                upward_threshold = 5.0
-                downward_threshold = 5.0
-                weeks_for_promo_check = 12
-                promo_percentile = 75.0
-
-                with st.expander(
-                    f"Advanced Settings for {brand_selected}, "
-                    f"{aggregator_col}: {aggregator_selected}, PPG: {ppg}",
-                    expanded=False
-                ):
+                # Advanced settings expander with force recalculation option.
+                key_suffix = f"_{brand_selected}_{aggregator_selected}_{ppg}_{idx}"
+                with st.expander(f"Advanced Settings for {brand_selected}, {aggregator_col}: {aggregator_selected}, PPG: {ppg}", expanded=False):
+                    force_modification = st.checkbox(
+                        "Force recalculation even if BasePrice exists", 
+                        value=False, 
+                        key=f"force_mod{key_suffix}"
+                    )
                     col1, col2, col3, col4, col5 = st.columns(5)
-                    with col1:
-                        rolling_period = st.number_input(
-                            "Rolling Period (weeks):",
-                            min_value=4, max_value=52,
-                            value=int(rolling_period),
-                            step=1,
-                            key=f"rolling_period_{brand_selected}_{aggregator_selected}_{ppg}"
-                        )
-                    with col2:
-                        upward_threshold = st.number_input(
-                            "Upward Transition Threshold (%):",
-                            min_value=1.0, max_value=20.0,
-                            value=float(upward_threshold),
-                            step=0.5,
-                            key=f"upward_threshold_{brand_selected}_{aggregator_selected}_{ppg}"
-                        )
-                    with col3:
-                        downward_threshold = st.number_input(
-                            "Downward Transition Threshold (%):",
-                            min_value=1.0, max_value=20.0,
-                            value=float(downward_threshold),
-                            step=0.5,
-                            key=f"downward_threshold_{brand_selected}_{aggregator_selected}_{ppg}"
-                        )
-                    with col4:
-                        weeks_for_promo_check = st.number_input(
-                            "Weeks for Validation:",
-                            min_value=2, max_value=18,
-                            value=weeks_for_promo_check,
-                            step=1,
-                            key=f"promo_weeks_{brand_selected}_{aggregator_selected}_{ppg}"
-                        )
-                    with col5:
-                        promo_percentile = st.number_input(
-                            "Percentile for Base Price:",
-                            min_value=50.0, max_value=100.0,
-                            value=promo_percentile,
-                            step=5.0,
-                            key=f"promo_percentile_{brand_selected}_{aggregator_selected}_{ppg}"
-                        )
+                    rolling_period = col1.number_input(
+                        "Rolling Period (weeks):", min_value=4, max_value=52, value=12, step=1,
+                        key=f"rolling_period{key_suffix}"
+                    )
+                    upward_threshold = col2.number_input(
+                        "Upward Transition Threshold (%):", min_value=1.0, max_value=20.0, value=5.0, step=0.5,
+                        key=f"upward_threshold{key_suffix}"
+                    )
+                    downward_threshold = col3.number_input(
+                        "Downward Transition Threshold (%):", min_value=1.0, max_value=20.0, value=5.0, step=0.5,
+                        key=f"downward_threshold{key_suffix}"
+                    )
+                    weeks_for_promo_check = col4.number_input(
+                        "Weeks for Validation:", min_value=2, max_value=18, value=12, step=1,
+                        key=f"promo_weeks{key_suffix}"
+                    )
+                    promo_percentile = col5.number_input(
+                        "Percentile for Base Price:", min_value=50.0, max_value=100.0, value=75.0, step=5.0,
+                        key=f"promo_percentile{key_suffix}"
+                    )
 
-                # --- Weekly Aggregation ---
-                weekly_data = filtered_data.groupby(["Year", "Month", "Week"], as_index=False).agg(
-                    {"SalesValue": "sum", "Volume": "sum"}
-                )
+                # If BasePrice is already computed for all rows and not forcing recalculation, skip heavy calculation.
+                if filtered_data["BasePrice"].notnull().all() and not force_modification:
+                    st.info(f"BasePrice already exists for {brand_selected} - {aggregator_selected} - {ppg}. Skipping calculations...")
+                    weekly_data = filtered_data.groupby(["Year", "Month", "Week"]).agg({
+                        "SalesValue": "sum",
+                        "Volume": "sum",
+                        "BasePrice": "mean"
+                    }).reset_index()
+                    weekly_data["Price"] = weekly_data["SalesValue"] / weekly_data["Volume"]
+                    weekly_data = weekly_data.sort_values(by=["Year", "Week"]).reset_index(drop=True)
+                    weekly_data["WeekYear"] = weekly_data["Year"].astype(str) + "-W" + weekly_data["Week"].astype(str)
+                    
+                    fig = go.Figure()
+                    fig.add_trace(go.Scatter(
+                        x=weekly_data["WeekYear"],
+                        y=weekly_data["Price"],
+                        mode="lines+markers",
+                        name="Weekly Price",
+                        line=dict(color="blue")
+                    ))
+                    fig.add_trace(go.Scatter(
+                        x=weekly_data["WeekYear"],
+                        y=weekly_data["BasePrice"],
+                        mode="lines",
+                        name="Base Price",
+                        line=dict(color="red", dash="dash")
+                    ))
+                    st.plotly_chart(fig, use_container_width=True)
+                    continue  # Skip heavy calculation for this PPG
+
+                # Otherwise, perform the heavy calculation:
+                weekly_data = filtered_data.groupby(["Year", "Month", "Week"]).agg({
+                    "SalesValue": "sum",
+                    "Volume": "sum"
+                }).reset_index()
                 weekly_data["Price"] = weekly_data["SalesValue"] / weekly_data["Volume"]
                 weekly_data = weekly_data.sort_values(by=["Year", "Week"]).reset_index(drop=True)
-                weekly_data["WeekYear"] = (
-                    weekly_data["Year"].astype(str)
-                    + "-W"
-                    + weekly_data["Week"].astype(str)
-                )
+                weekly_data["WeekYear"] = weekly_data["Year"].astype(str) + "-W" + weekly_data["Week"].astype(str)
+                if len(weekly_data) < rolling_period:
+                    st.warning(f"Not enough data for PPG: {ppg}, {aggregator_col}: {aggregator_selected}, Brand: {brand_selected}")
+                    continue
 
-                # Check if there's already a valid BasePrice
-                baseprice_present = (
-                    "BasePrice" in filtered_data.columns
-                    and filtered_data["BasePrice"].notna().any()
-                )
+                # --- Optimized Base Price Calculation ---
+                price_array = weekly_data["Price"].values
+                n = len(price_array)
+                base_prices = np.empty(n)
+                transition_points = []
+                current_base_price = np.percentile(price_array[:rolling_period], promo_percentile)
+                last_transition_week = -rolling_period
 
-                if baseprice_present:
-                    # If BasePrice exists, skip logic & show a "Save Existing Data" button
-                    st.write(
-                        f"⚠️ Existing BasePrice detected for {brand_selected} - {aggregator_selected} - {ppg}. Skipping auto-calculation."
-                    )
-                    # Merge existing BasePrice so we can plot
-                    bp_temp = (
-                        filtered_data
-                        .dropna(subset=["BasePrice"])
-                        .groupby(["Year", "Month", "Week"], as_index=False)["BasePrice"]
-                        .first()
-                    )
-                    weekly_data = pd.merge(
-                        weekly_data,
-                        bp_temp,
-                        on=["Year", "Month", "Week"],
-                        how="left"
-                    )
-                    weekly_data["IsTransition"] = False
-
-                    # Plot existing data
-                    fig = go.Figure()
-                    fig.add_trace(
-                        go.Scatter(
-                            x=weekly_data["WeekYear"],
-                            y=weekly_data["Price"],
-                            mode="lines+markers",
-                            name="Weekly Price",
-                            line=dict(color="blue")
-                        )
-                    )
-                    fig.add_trace(
-                        go.Scatter(
-                            x=weekly_data["WeekYear"],
-                            y=weekly_data["BasePrice"],
-                            mode="lines",
-                            name="Base Price",
-                            line=dict(color="red", dash="dash")
-                        )
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
-
-                    # Button to copy existing data to "dataframe2"
-                    if st.button(f"Save Existing Data for {brand_selected} - {aggregator_selected} - {ppg} to dataframe2"):
-                        if "dataframe2" not in st.session_state:
-                            st.session_state["dataframe2"] = filtered_data.copy()
-                        else:
-                            st.session_state["dataframe2"] = pd.concat(
-                                [st.session_state["dataframe2"], filtered_data],
-                                ignore_index=True
-                            )
-                        st.success(
-                            f"Existing data copied to dataframe2 for {brand_selected} - {aggregator_selected} - {ppg}"
-                        )
-
-                else:
-                    # If no BasePrice exists, run the calculation
-                    if len(weekly_data) < rolling_period:
-                        st.warning(
-                            f"Not enough data for PPG: {ppg}, {aggregator_col}: {aggregator_selected}, Brand: {brand_selected}"
-                        )
-                        continue
-
-                    price_array = weekly_data["Price"].values
-                    n = len(price_array)
-                    base_prices = np.empty(n)
-                    transition_points = []
-                    current_base_price = np.percentile(price_array[:rolling_period], promo_percentile)
-                    last_transition_week = -rolling_period
-
-                    for i in range(n):
-                        current_price = price_array[i]
-                        future_prices = price_array[i : i + weeks_for_promo_check]
-
-                        if len(future_prices) < weeks_for_promo_check:
-                            base_prices[i] = current_base_price
-                            continue
-
-                        # Upward check
-                        upward = False
-                        if (
-                            current_price >= current_base_price * (1 + upward_threshold / 100)
-                            and (i - last_transition_week >= rolling_period)
-                        ):
-                            if validate_upward_transition(
-                                future_prices,
-                                current_price,
-                                current_base_price,
-                                upward_threshold,
-                                3,
-                                weeks_for_promo_check
-                            ):
-                                current_base_price = max(
-                                    np.percentile(future_prices, promo_percentile),
-                                    current_price
-                                )
-                                transition_points.append(i)
-                                last_transition_week = i
-                                upward = True
-
-                        # Downward check (strict)
-                        if (
-                            not upward
-                            and current_price <= current_base_price * (1 - downward_threshold / 100)
-                            and (i - last_transition_week >= rolling_period)
-                        ):
-                            if validate_downward_transition_strict(
-                                future_prices,
-                                current_price,
-                                promo_weeks=weeks_for_promo_check,
-                                required=9,
-                                tolerance=0.02
-                            ):
-                                current_base_price = min(
-                                    np.percentile(future_prices, promo_percentile),
-                                    current_price
-                                )
-                                transition_points.append(i)
-                                last_transition_week = i
-
+                for i in range(n):
+                    current_price = price_array[i]
+                    future_prices = price_array[i: i + weeks_for_promo_check]
+                    if len(future_prices) < weeks_for_promo_check:
                         base_prices[i] = current_base_price
+                        continue
+                    upward = False
+                    if current_price >= current_base_price * (1 + upward_threshold / 100) and (i - last_transition_week >= rolling_period):
+                        if validate_upward_transition(future_prices, current_price, current_base_price, upward_threshold, 3, weeks_for_promo_check):
+                            current_base_price = max(np.percentile(future_prices, promo_percentile), current_price)
+                            transition_points.append(i)
+                            last_transition_week = i
+                            upward = True
+                    if (not upward and current_price <= current_base_price * (1 - downward_threshold / 100) and (i - last_transition_week >= rolling_period)):
+                        if validate_downward_transition_strict(future_prices, current_price, promo_weeks=weeks_for_promo_check, required=9, tolerance=0.02):
+                            current_base_price = min(np.percentile(future_prices, promo_percentile), current_price)
+                            transition_points.append(i)
+                            last_transition_week = i
+                    base_prices[i] = current_base_price
 
-                    weekly_data["BasePrice"] = base_prices
-                    weekly_data["IsTransition"] = np.isin(np.arange(n), transition_points)
+                weekly_data["BasePrice"] = base_prices
+                weekly_data["IsTransition"] = np.isin(np.arange(n), transition_points)
 
-                    # Plot computed BasePrice
-                    fig = go.Figure()
-                    fig.add_trace(
-                        go.Scatter(
-                            x=weekly_data["WeekYear"],
-                            y=weekly_data["Price"],
-                            mode="lines+markers",
-                            name="Weekly Price",
-                            line=dict(color="blue")
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(
+                    x=weekly_data["WeekYear"],
+                    y=weekly_data["Price"],
+                    mode="lines+markers",
+                    name="Weekly Price",
+                    line=dict(color="blue")
+                ))
+                fig.add_trace(go.Scatter(
+                    x=weekly_data["WeekYear"],
+                    y=weekly_data["BasePrice"],
+                    mode="lines",
+                    name="Base Price",
+                    line=dict(color="red", dash="dash")
+                ))
+                for t in transition_points:
+                    fig.add_trace(go.Scatter(
+                        x=[weekly_data["WeekYear"].iloc[t]],
+                        y=[weekly_data["BasePrice"].iloc[t]],
+                        mode="markers",
+                        name="Transition Point",
+                        marker=dict(color="orange", size=12, symbol="diamond")
+                    ))
+                st.plotly_chart(fig, use_container_width=True)
+
+                if st.button(f"Save {brand_selected} - {aggregator_selected} - {ppg}"):
+                    for i, row in weekly_data.iterrows():
+                        mask = (
+                            (dataframe["Year"] == row["Year"]) &
+                            (dataframe["Month"] == row["Month"]) &
+                            (dataframe["Week"] == row["Week"]) &
+                            (dataframe["Brand"] == brand_selected) &
+                            (dataframe[aggregator_col] == aggregator_selected) &
+                            (dataframe["PPG"] == ppg)
                         )
-                    )
-                    fig.add_trace(
-                        go.Scatter(
-                            x=weekly_data["WeekYear"],
-                            y=weekly_data["BasePrice"],
-                            mode="lines",
-                            name="Base Price",
-                            line=dict(color="red", dash="dash")
-                        )
-                    )
-                    for t in np.where(weekly_data["IsTransition"])[0]:
-                        fig.add_trace(
-                            go.Scatter(
-                                x=[weekly_data["WeekYear"].iloc[t]],
-                                y=[weekly_data["BasePrice"].iloc[t]],
-                                mode="markers",
-                                name="Transition Point",
-                                marker=dict(color="orange", size=12, symbol="diamond")
-                            )
-                        )
-                    st.plotly_chart(fig, use_container_width=True)
+                        dataframe.loc[mask, "BasePrice"] = row["BasePrice"]
+                    st.success(f"Base Price saved for {brand_selected} - {aggregator_selected} - {ppg}")
 
-                    # Single button to save computed BasePrice to the main dataframe
-                    if st.button(f"Save Computed Base Price for {brand_selected} - {aggregator_selected} - {ppg}"):
-                        for i, row in weekly_data.iterrows():
-                            mask = (
-                                (dataframe["Year"] == row["Year"]) &
-                                (dataframe["Month"] == row["Month"]) &
-                                (dataframe["Week"] == row["Week"]) &
-                                (dataframe["Brand"] == brand_selected) &
-                                (dataframe[aggregator_col] == aggregator_selected) &
-                                (dataframe["PPG"] == ppg)
-                            )
-                            dataframe.loc[mask, "BasePrice"] = row["BasePrice"]
-                        st.success(
-                            f"Computed Base Price saved for {brand_selected} - {aggregator_selected} - {ppg}"
-                        )
-
-        # --- "Save All Base Prices" ---
-        if st.button("Save All Base Prices"):
-            updated_dataframe = dataframe.copy()
-            aggregator_options = ["Variant", "PackType", "PackSize"]
-
-            for channel in updated_dataframe["Channel"].dropna().unique():
-                ch_df = updated_dataframe[updated_dataframe["Channel"] == channel]
-                for br in ch_df["Brand"].dropna().unique():
-                    br_df = ch_df[ch_df["Brand"] == br]
-                    for agg_col in aggregator_options:
-                        if agg_col not in br_df.columns:
-                            continue
-                        for agg_val in br_df[agg_col].dropna().unique():
-                            agg_df = br_df[br_df[agg_col] == agg_val]
-                            for ppg in agg_df["PPG"].dropna().unique():
-                                filtered_data = agg_df[agg_df["PPG"] == ppg]
-                                if filtered_data.empty:
-                                    continue
-
-                                weekly_data = filtered_data.groupby(
-                                    ["Channel", "Brand", agg_col, "PPG", "Year", "Month", "Week"],
-                                    as_index=False
-                                ).agg({"SalesValue": "sum", "Volume": "sum"})
-                                weekly_data["Price"] = weekly_data["SalesValue"] / weekly_data["Volume"]
-                                weekly_data["SortKey"] = (
-                                    weekly_data["Year"].astype(str)
-                                    + weekly_data["Month"].astype(str).str.zfill(2)
-                                    + weekly_data["Week"].astype(str).str.zfill(2)
-                                )
-                                weekly_data = weekly_data.sort_values("SortKey").reset_index(drop=True)
-                                weekly_data["WeekYear"] = (
-                                    weekly_data["Year"].astype(str)
-                                    + "-W"
-                                    + weekly_data["Week"].astype(str).str.zfill(2)
-                                )
-
-                                if len(weekly_data) < 12:
-                                    continue
-
-                                existing_bp_present = (
-                                    "BasePrice" in filtered_data.columns
-                                    and filtered_data["BasePrice"].notna().any()
-                                )
-                                if existing_bp_present:
-                                    weekly_data["BasePrice"] = np.nan
-                                    base_temp = (
-                                        filtered_data
-                                        .dropna(subset=["BasePrice"])
-                                        .groupby(["Year", "Month", "Week"], as_index=False)["BasePrice"]
-                                        .first()
-                                    )
-                                    weekly_data = pd.merge(
-                                        weekly_data,
-                                        base_temp,
-                                        on=["Year", "Month", "Week"],
-                                        how="left"
-                                    )
-                                    weekly_data["IsTransition"] = False
-                                else:
+            # Save All Base Prices button:
+            if st.button("Save All Base Prices"):
+                updated_dataframe = dataframe.copy()
+                aggregator_options = ["Variant", "PackType", "PackSize"]
+                for channel in updated_dataframe["Channel"].dropna().unique():
+                    ch_df = updated_dataframe[updated_dataframe["Channel"] == channel]
+                    for br in ch_df["Brand"].dropna().unique():
+                        br_df = ch_df[ch_df["Brand"] == br]
+                        for agg_col in aggregator_options:
+                            if agg_col not in br_df.columns:
+                                continue
+                            for agg_val in br_df[agg_col].dropna().unique():
+                                agg_df = br_df[br_df[agg_col] == agg_val]
+                                for ppg in agg_df["PPG"].dropna().unique():
+                                    filtered_data = agg_df[agg_df["PPG"] == ppg]
+                                    if filtered_data.empty:
+                                        continue
+                                    weekly_data = filtered_data.groupby(["Channel", "Brand", agg_col, "PPG", "Year", "Month", "Week"], as_index=False).agg({
+                                        "SalesValue": "sum",
+                                        "Volume": "sum"
+                                    })
+                                    weekly_data["Price"] = weekly_data["SalesValue"] / weekly_data["Volume"]
+                                    weekly_data["SortKey"] = (weekly_data["Year"].astype(str) +
+                                                            weekly_data["Month"].astype(str).str.zfill(2) +
+                                                            weekly_data["Week"].astype(str).str.zfill(2))
+                                    weekly_data = weekly_data.sort_values("SortKey").reset_index(drop=True)
+                                    weekly_data["WeekYear"] = (weekly_data["Year"].astype(str) +
+                                                            "-W" +
+                                                            weekly_data["Week"].astype(str).str.zfill(2))
+                                    if len(weekly_data) < 12:
+                                        continue
                                     price_array = weekly_data["Price"].values
                                     n = len(price_array)
                                     base_prices = np.empty(n)
                                     transition_points = []
                                     current_base_price = np.percentile(price_array[:12], 75.0)
                                     last_transition_week = -12
-
                                     for i in range(n):
                                         current_price = price_array[i]
-                                        future_prices = price_array[i : i + 12]
+                                        future_prices = price_array[i: i + 12]
                                         if len(future_prices) < 12:
                                             base_prices[i] = current_base_price
                                             continue
-
                                         upward = False
-                                        if (
-                                            current_price >= current_base_price * 1.05
-                                            and (i - last_transition_week >= 12)
-                                        ):
-                                            if validate_upward_transition(
-                                                future_prices,
-                                                current_price,
-                                                current_base_price,
-                                                5,
-                                                3,
-                                                12
-                                            ):
+                                        if current_price >= current_base_price * 1.05 and (i - last_transition_week >= 12):
+                                            if validate_upward_transition(future_prices, current_price, current_base_price, 5, 3, 12):
                                                 new_bp = max(np.percentile(future_prices, 75.0), current_price)
                                                 current_base_price = new_bp
                                                 transition_points.append(i)
                                                 last_transition_week = i
                                                 upward = True
-
-                                        if (
-                                            not upward
-                                            and current_price <= current_base_price * 0.95
-                                            and (i - last_transition_week >= 12)
-                                        ):
-                                            if validate_downward_transition_strict(
-                                                future_prices,
-                                                current_price,
-                                                promo_weeks=12,
-                                                required=9,
-                                                tolerance=0.02
-                                            ):
+                                        if not upward and current_price <= current_base_price * 0.95 and (i - last_transition_week >= 12):
+                                            if validate_downward_transition_strict(future_prices, current_price, promo_weeks=12, required=9, tolerance=0.02):
                                                 new_bp = min(np.percentile(future_prices, 75.0), current_price)
                                                 current_base_price = new_bp
                                                 transition_points.append(i)
                                                 last_transition_week = i
-
                                         base_prices[i] = current_base_price
-
                                     weekly_data["BasePrice"] = base_prices
                                     weekly_data["IsTransition"] = np.isin(np.arange(n), transition_points)
-
-                                for i, row in weekly_data.iterrows():
-                                    mask = (
-                                        (updated_dataframe["Channel"] == row["Channel"]) &
-                                        (updated_dataframe["Brand"] == row["Brand"]) &
-                                        (updated_dataframe[agg_col] == row[agg_col]) &
-                                        (updated_dataframe["PPG"] == row["PPG"]) &
-                                        (updated_dataframe["Year"] == row["Year"]) &
-                                        (updated_dataframe["Month"] == row["Month"]) &
-                                        (updated_dataframe["Week"] == row["Week"])
-                                    )
-                                    updated_dataframe.loc[mask, "Price"] = row["Price"]
-                                    cond_na = mask & updated_dataframe["BasePrice"].isna()
-                                    updated_dataframe.loc[cond_na, "BasePrice"] = row["BasePrice"]
-
-            st.session_state["dataframe1"] = updated_dataframe
-            dataframe = updated_dataframe
-            st.success("✅ Missing Base Prices computed & updated!")
-
-            st.download_button(
-                label="📥 Download Updated Dataset",
-                data=dataframe.to_csv(index=False),
-                file_name="updated_dataset_with_base_price.csv",
-                mime="text/csv",
-                key="download_updated_data"
-            )
-
-            st.session_state["dataframe1"] = updated_dataframe
-            dataframe = updated_dataframe
-
+                                    for i, row in weekly_data.iterrows():
+                                        mask = (
+                                            (updated_dataframe["Channel"] == row["Channel"]) &
+                                            (updated_dataframe["Brand"] == row["Brand"]) &
+                                            (updated_dataframe[agg_col] == row[agg_col]) &
+                                            (updated_dataframe["PPG"] == row["PPG"]) &
+                                            (updated_dataframe["Year"] == row["Year"]) &
+                                            (updated_dataframe["Month"] == row["Month"]) &
+                                            (updated_dataframe["Week"] == row["Week"])
+                                        )
+                                        updated_dataframe.loc[mask, "Price"] = row["Price"]
+                                        cond_na = mask & updated_dataframe["BasePrice"].isna()
+                                        updated_dataframe.loc[cond_na, "BasePrice"] = row["BasePrice"]
+                st.session_state["dataframe1"] = updated_dataframe
+                dataframe = updated_dataframe
+                st.success("✅ Missing Base Prices computed & updated!")
+                st.download_button(label="📥 Download Updated Dataset",
+                                data=dataframe.to_csv(index=False),
+                                file_name="updated_dataset_with_base_price.csv",
+                                mime="text/csv",
+                                key="download_updated_data")
     else:
-        st.warning("No data available. Please upload a file using the File Management section.")
+        st.warning("No data available.")
 
     # Navigation buttons
     st.markdown("---")
@@ -2895,7 +3314,7 @@ def section2_module1_page():
             )
 
         final_df.fillna(0, inplace=True)
-
+     
         raw_df_copy = raw_df.copy()
         raw_df_copy[d_date] = pd.to_datetime(raw_df_copy[d_date], errors='coerce')
         raw_df_copy['Date'] = raw_df_copy[d_date].dt.date
@@ -2933,6 +3352,38 @@ def section2_module1_page():
         # RETURN THE FINAL DATA
         # ----------------------------------------------------------
         return final_df
+
+        # # Merge extra columns
+        # raw_df_copy = raw_df.copy()
+        # raw_df_copy[d_date] = pd.to_datetime(raw_df_copy[d_date], errors='coerce')
+        # raw_df_copy['Date'] = raw_df_copy[d_date].dt.date
+
+        # extra_cols = ['Trend','Weekend','D1']
+        # existing_extras = [c for c in extra_cols if c in raw_df_copy.columns]
+
+        # merge_keys = [d_channel,'Date']
+        # if pivot_keys:
+        #     merge_keys += pivot_keys
+
+        # extra_df = raw_df_copy[merge_keys+existing_extras].drop_duplicates(subset=merge_keys)
+        # final_df['Date'] = pd.to_datetime(final_df['Date'], errors='coerce').dt.date
+
+        # dup_extras = [c for c in existing_extras if c in final_df.columns]
+        # if dup_extras:
+        #     final_df.drop(columns=dup_extras, inplace=True)
+
+        # final_df = final_df.merge(extra_df, on=merge_keys, how='left')
+        # final_df.fillna(0, inplace=True)
+
+        # # Merge brand_totals => 'Contribution'
+        # final_df = final_df.merge(
+        #     brand_totals[keys_for_brand + ['MarketShare_overall']],
+        #     on=keys_for_brand, how='left'
+        # )
+        # final_df.rename(columns={'MarketShare_overall':'Contribution'}, inplace=True)
+        # final_df['Contribution'] = final_df['Contribution'].fillna(0)
+
+        # return final_df
 
     def run_model_pipeline(final_df, grouping_keys, X_columns, target_col, k_folds, chosen_std_cols):
         model_results = {m: [] for m in models.keys()}
@@ -8240,7 +8691,14 @@ elif "_" in page:
         section3_module4_page()
         
 
-
+    elif page == "section4_feature_overview":
+        Feature_Overview_page()
+    elif page == "section4_transform":
+        Transform_page()
+    elif page == "section4_create":
+        Create_page()
+    elif page == "section4_select":
+        Select_page()
 
     
     else:
