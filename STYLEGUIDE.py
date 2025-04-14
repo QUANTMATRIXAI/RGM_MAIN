@@ -141,7 +141,7 @@ def go_home():
 section_names = {
     "1": "Base/Promo Detection",
     "2": "Price/Promo Elasticity",
-    "3": "Section 3"
+    "3": "RGM Pillars"
 }
 
 # ----------------
@@ -192,7 +192,7 @@ def home_page():
             """,
             unsafe_allow_html=True
         )
-        if st.button("Go to Section 3"):
+        if st.button("Go to RGM Pillars"):
             go_to("section3")
 
 
@@ -204,7 +204,7 @@ def home_page():
     st.markdown("---")  # horizontal rule
     st.markdown("## Additional Advanced Solutions from Quant Matrix AI")
 
-    # 4th Card: EDA (QuantMatrix Solutions)
+# 4th Card: EDA (QuantMatrix Solutions)
     st.markdown(
         """
         <div class='custom-card'>
@@ -220,15 +220,12 @@ def home_page():
         
         
         
-    # --------------------------------------------
-    # NEW: “Modeling Suite” card below the EDA card
-    # --------------------------------------------
+# 4th Card: EDA (QuantMatrix Solutions)
     st.markdown(
         """
         <div class='custom-card'>
-        <h3 style="margin-top:0;">QuantMatrix Modeling Suite</h3>
-        <p>Access advanced model-building workflows: 
-            regression, classification, hyper-parameter tuning and more.</p>
+          <h3 style="margin-top:0;">QuantMatrix Modeling Suite</h3>
+          <p>Perform advanced Exploratory Data Analysis, Clustering, Feature Importance, and more.</p>
         </div>
         """,
         unsafe_allow_html=True
@@ -302,6 +299,30 @@ def section_page(section_number):
                 go_to("section1_calendar")
                 
                 
+        with col1:
+            st.markdown(
+                """
+                <div class='custom-card'>
+                  <h4 style="margin-top:0;">Market Construct</h4>
+                  <p>Compare different promo calendars, overlaps, and timing impact.</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            if st.button("Go to Market Construct",key= "market"):
+                go_to("section1_market_construct")
+                
+                        # Divider + Navigation
+            st.markdown("---")
+            col_a, col_b = st.columns(2)
+            with col_a:
+                if st.button("Back"):
+                    go_back()
+            with col_b:
+                if st.button("Home"):
+                    go_home()
+
+                
     elif section_number == "2":
             st.write("Below are the **three modules** for Price/Promo Elasticity.")
             
@@ -361,29 +382,803 @@ def section_page(section_number):
 
                 
                 
+    elif section_number == "3":
+            st.write("Below are the advanced modules for RGM analsyis.")
+            
+            col1, col2, col3 = st.columns(3)
+
+            # ============= MODULE 1 =============
+            with col1:
+                st.markdown(
+                    """
+                    <div class='custom-card'>
+                    <h4 style="margin-top:0;">🔖 Price Pack Architecture</h4>
+                    <p>Compute and analyze price/promo elasticity using various models.</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                if st.button("Go to Price Pack Architecture"):
+                    go_to("section3_module1")  # route name
+
+            # ============= MODULE 2 =============
+            with col2:
+                st.markdown(
+                    """
+                    <div class='custom-card'>
+                    <h4 style="margin-top:0;">📶 Brand Ladder Analysis</h4>
+                    <p>Assess model outputs, validate results, and refine assumptions.</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                if st.button("Go to Brand Ladder Analysis"):
+                    go_to("section3_module2")
+
+            # ============= MODULE 3 =============
+            with col3:
+                st.markdown(
+                    """
+                    <div class='custom-card'>
+                    <h4 style="margin-top:0;">🧮 Distribution Opportunity Analysis</h4>
+                    <p>Explore ‘what-if’ scenarios and potential outcomes.</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                if st.button("Go to Distribution Opportunity Analysis"):
+                    go_to("section3_module3")
+                    
+                    
+                    
+            # ============= MODULE 1 =============
+            with col1:
+                st.markdown(
+                    """
+                    <div class='custom-card'>
+                    <h4 style="margin-top:0;">📦 Pack / format price curves</h4>
+                    <p>Compute and analyze price/promo elasticity using various models.</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+                if st.button("Go to Pack / format price curves"):
+                    go_to("section3_module4")  # route name
+
+            # Divider + Navigation
+            st.markdown("---")
+            col_a, col_b = st.columns(2)
+            with col_a:
+                if st.button("Back"):
+                    go_back()
+            with col_b:
+                if st.button("Home"):
+                    go_home()
+
+
+
+
+
+
+# def market_construct_page():
+#     import streamlit as st
+#     import pandas as pd
+#     import numpy as np
+#     import plotly.express as px
+
+#     # -----------------------------------------------------------------------
+#     # 1) Retrieve Data
+#     # -----------------------------------------------------------------------
+#     df = st.session_state.get("D0", None)
+#     if df is None or df.empty:
+#         st.warning("No data uploaded yet. Please upload a file in the sidebar.")
+#         st.stop()
+
+#     # -----------------------------------------------------------------------
+#     # 2) Prepare Filter Options
+#     # -----------------------------------------------------------------------
+#     def sorted_or_all(col):
+#         if col in df.columns:
+#             return ["All"] + sorted(df[col].unique())
+#         else:
+#             return ["All"]
+
+#     market_options   = sorted_or_all("Market")
+#     channel_options  = sorted_or_all("Channel")
+#     metric_options   = ["MS Value", "Volume", "Price", "MS Volume"]
+#     time_options     = ["Weekly", "Monthly", "Yearly"]
+#     brand_options    = sorted_or_all("Brand")
+#     variant_options  = sorted_or_all("Variant")
+#     packtype_options = sorted_or_all("PackType")
+#     ppg_options      = sorted_or_all("PPG")
+
+#     # If any dimension has >5 items, enable radio wrap
+#     max_length = max(len(brand_options), len(variant_options), 
+#                      len(packtype_options), len(ppg_options))
+#     if max_length > 5:
+#         st.markdown("""
+#         <style>
+#         div[data-baseweb="radio"] > div {
+#             display: flex !important;
+#             flex-wrap: wrap !important;
+#         }
+#         div[data-baseweb="radio"] label {
+#             margin-right: 1rem; 
+#             margin-bottom: 0.5rem;
+#         }
+#         </style>
+#         """, unsafe_allow_html=True)
+
+#     # -----------------------------------------------------------------------
+#     # 3) CUSTOM CSS
+#     # -----------------------------------------------------------------------
+#     st.markdown("""
+#     <style>
+#     .stApp {
+#         background-color: #F5F5F5;
+#     }
+#     .custom-header {
+#         font-family: 'Inter', sans-serif;
+#         font-size: 36px; 
+#         font-weight: 600;
+#         color: #333333;
+#         margin-bottom: 0.2rem;
+#     }
+#     .accent-hr {
+#         border: 0;
+#         height: 2px;
+#         background: linear-gradient(to right, #FFBD59, #FFC87A);
+#         margin: 0.5rem 0 1.5rem 0;
+#     }
+#     div[data-testid="stHorizontalBlock"] button {
+#         background-color: #FFBD59 !important; 
+#         color: #333333 !important;
+#         font-weight: 600 !important;
+#         border-radius: 4px !important;
+#         border: none !important;
+#         margin-bottom: 0.5rem;
+#     }
+#     div[data-testid="stHorizontalBlock"] button:hover {
+#         background-color: #FFC87A !important;
+#     }
+#     </style>
+#     """, unsafe_allow_html=True)
+
+#     # -----------------------------------------------------------------------
+#     # 4) Page Header
+#     # -----------------------------------------------------------------------
+#     st.markdown('<h1 class="custom-header">Market Construct</h1>', unsafe_allow_html=True)
+
+#     # -----------------------------------------------------------------------
+#     # 5) Two-column layout for top filters
+#     # -----------------------------------------------------------------------
+#     left_col, right_col = st.columns([2, 3])
+
+#     with right_col:
+#         # Market & Channel
+#         top_r1_c1, top_r1_c2 = st.columns(2)
+#         with top_r1_c1:
+#             st.markdown("##### Market")
+#             chosen_market = st.selectbox("", market_options)
+#         with top_r1_c2:
+#             st.markdown("##### Channel")
+#             chosen_channel = st.selectbox("", channel_options)
+
+#         # Metric & Time
+#         st.markdown("##### Metric & Time")
+#         bottom_r_c1, bottom_r_c2 = st.columns(2)
+#         with bottom_r_c1:
+#             chosen_metric = st.radio("Metric:", metric_options, horizontal=True)
+#         with bottom_r_c2:
+#             chosen_time = st.radio("Time:", time_options, horizontal=True)
+
+#     with left_col:
+#         st.markdown("##### Product Filters")
+#         # 4 columns in a single row
+#         c_brand, c_variant, c_pt, c_ppg = st.columns(4)
+#         with c_brand:
+#             chosen_brand = st.radio("Brand:", brand_options, index=0, horizontal=True)
+#         with c_variant:
+#             chosen_variant = st.radio("Variant:", variant_options, index=0, horizontal=True)
+#         with c_pt:
+#             chosen_packtype = st.radio("PackType:", packtype_options, index=0, horizontal=True)
+#         with c_ppg:
+#             chosen_ppg = st.radio("PPG:", ppg_options, index=0, horizontal=True)
+
+#     st.markdown('<hr class="accent-hr">', unsafe_allow_html=True)
+
+#     # -----------------------------------------------------------------------
+#     # 6) Filter Data
+#     # -----------------------------------------------------------------------
+#     # Category-level subset => only Market & Channel
+#     cat_df = df.copy()
+#     if "Market" in cat_df.columns and chosen_market != "All":
+#         cat_df = cat_df[cat_df["Market"] == chosen_market]
+#     if "Channel" in cat_df.columns and chosen_channel != "All":
+#         cat_df = cat_df[cat_df["Channel"] == chosen_channel]
+
+#     # brand-level subset => also brand, variant, packtype, ppg
+#     brand_subset = cat_df.copy()
+#     if "Brand" in brand_subset.columns and chosen_brand != "All":
+#         brand_subset = brand_subset[brand_subset["Brand"] == chosen_brand]
+#     if "Variant" in brand_subset.columns and chosen_variant != "All":
+#         brand_subset = brand_subset[brand_subset["Variant"] == chosen_variant]
+#     if "PackType" in brand_subset.columns and chosen_packtype != "All":
+#         brand_subset = brand_subset[brand_subset["PackType"] == chosen_packtype]
+#     if "PPG" in brand_subset.columns and chosen_ppg != "All":
+#         brand_subset = brand_subset[brand_subset["PPG"] == chosen_ppg]
+
+#     # If cat_df is empty => no Category data
+#     # If brand_subset empty => no brand-level data
+
+#     # -----------------------------------------------------------------------
+#     # 7) Time Grouping
+#     # -----------------------------------------------------------------------
+#     cat_df["Date"] = pd.to_datetime(cat_df.get("Date",""), errors="coerce")
+#     cat_df.dropna(subset=["Date"], inplace=True)
+#     brand_subset["Date"] = pd.to_datetime(brand_subset.get("Date",""), errors="coerce")
+#     brand_subset.dropna(subset=["Date"], inplace=True)
+
+#     def set_time_key(df_, freq):
+#         df_ = df_.copy()
+#         if df_.empty:
+#             df_["TimeKey"] = []
+#             return df_
+#         if freq == "Weekly":
+#             df_["TimeKey"] = df_["Date"].dt.to_period("W").apply(lambda r: r.start_time)
+#         elif freq == "Monthly":
+#             df_["TimeKey"] = df_["Date"].dt.to_period("M").apply(lambda r: r.start_time)
+#         elif freq == "Yearly":
+#             df_["TimeKey"] = df_["Date"].dt.year
+#         else:
+#             df_["TimeKey"] = df_["Date"]
+#         return df_
+
+#     cat_df = set_time_key(cat_df, chosen_time)
+#     brand_subset = set_time_key(brand_subset, chosen_time)
+
+#     for col in ["SalesValue","Volume"]:
+#         if col not in cat_df.columns:
+#             cat_df[col] = 0.0
+#         if col not in brand_subset.columns:
+#             brand_subset[col] = 0.0
+
+#     # -----------------------------------------------------------------------
+#     # 8) Category aggregator => correct denominator
+#     # -----------------------------------------------------------------------
+#     cat_agg = cat_df.groupby("TimeKey", as_index=False).agg(
+#         CatSalesValue=("SalesValue","sum"),
+#         CatVolume=("Volume","sum")
+#     )
+
+#     # We'll define a function that merges brand-level aggregator with cat_agg
+#     # but also EXCLUDES aggregator dimension values that are e.g. "Cat1", "AllVariant", etc.
+
+#     # Let's define sets of dimension values to exclude:
+#     # You can adapt as needed
+#     EXCLUDED_BRANDS    = {"Cat1", "AllVariant", "AllBrand", "AllPPG", "AnyOtherAggregator"}
+#     EXCLUDED_VARIANTS  = {"AllVariantGroup", "CatVariant"}
+#     EXCLUDED_PACKTYPES = {"AllPack", "CatPack"}
+#     EXCLUDED_PPG       = {"AllPPG", "CatPPG"}
+
+#     def aggregator_for_dimension(df_, dim_col):
+#         """
+#         Groups brand_subset by [TimeKey, dim_col],
+#         merges with cat_agg for correct denominator,
+#         excludes aggregator dimension labels (like 'AllVariant'),
+#         and then computes 'Value' based on chosen_metric.
+#         """
+#         if df_.empty:
+#             return df_.assign(Value=[], CatSalesValue=[], CatVolume=[])
+
+#         # group
+#         grouped = df_.groupby(["TimeKey", dim_col], as_index=False).agg(
+#             SalesValue=("SalesValue","sum"),
+#             Volume=("Volume","sum")
+#         )
+#         # exclude aggregator dimension values
+#         # e.g. if dimension==Brand => skip brand in EXCLUDED_BRANDS
+#         if dim_col == "Brand":
+#             grouped = grouped[~grouped["Brand"].isin(EXCLUDED_BRANDS)]
+#         elif dim_col == "Variant":
+#             grouped = grouped[~grouped["Variant"].isin(EXCLUDED_VARIANTS)]
+#         elif dim_col == "PackType":
+#             grouped = grouped[~grouped["PackType"].isin(EXCLUDED_PACKTYPES)]
+#         elif dim_col == "PPG":
+#             grouped = grouped[~grouped["PPG"].isin(EXCLUDED_PPG)]
+
+#         # merge cat_agg => get CatSalesValue, CatVolume
+#         merged = pd.merge(grouped, cat_agg, on="TimeKey", how="left")
+
+#         if chosen_metric == "MS Value":
+#             merged["Value"] = np.where(
+#                 merged["CatSalesValue"]!=0,
+#                 merged["SalesValue"]/merged["CatSalesValue"],
+#                 0
+#             )
+#         elif chosen_metric == "Volume":
+#             merged["Value"] = merged["Volume"]
+#         elif chosen_metric == "Price":
+#             merged["Value"] = np.where(
+#                 merged["Volume"]!=0,
+#                 merged["SalesValue"]/merged["Volume"],
+#                 0
+#             )
+#         elif chosen_metric == "MS Volume":
+#             merged["Value"] = np.where(
+#                 merged["CatVolume"]!=0,
+#                 merged["Volume"]/merged["CatVolume"],
+#                 0
+#             )
+#         else:
+#             merged["Value"] = 0
+#         return merged
+
+#     # Category aggregator
+#     # We'll store for Category the dimension col "Dimension"= "Category"
+#     category_agg = cat_agg.copy()
+#     # compute "Value" for category itself
+#     if chosen_metric == "MS Value":
+#         # total / total => 1 if >0
+#         category_agg["Value"] = np.where(
+#             category_agg["CatSalesValue"]!=0, 1, 0
+#         )
+#     elif chosen_metric == "Volume":
+#         category_agg["Value"] = category_agg["CatVolume"]
+#     elif chosen_metric == "Price":
+#         category_agg["Value"] = np.where(
+#             category_agg["CatVolume"]!=0,
+#             category_agg["CatSalesValue"]/category_agg["CatVolume"],
+#             0
+#         )
+#     elif chosen_metric == "MS Volume":
+#         category_agg["Value"] = np.where(
+#             category_agg["CatVolume"]!=0, 1, 0
+#         )
+#     else:
+#         category_agg["Value"] = 0
+#     category_agg["Dimension"] = "Category"
+
+#     # brand aggregator
+#     brand_agg = aggregator_for_dimension(brand_subset, "Brand")
+#     # packtype aggregator
+#     packtype_agg = aggregator_for_dimension(brand_subset, "PackType")
+#     # ppg aggregator
+#     ppg_agg = aggregator_for_dimension(brand_subset, "PPG")
+#     # variant aggregator
+#     variant_agg = aggregator_for_dimension(brand_subset, "Variant")
+
+#     st.markdown(f"### {chosen_metric} ({chosen_time})")
+
+#     # We'll store them in a list
+#     all_charts = []
+#     if not category_agg.empty:
+#         all_charts.append(("Category", category_agg, "Dimension"))
+#     if not brand_agg.empty:
+#         all_charts.append(("Brand", brand_agg, "Brand"))
+#     if not packtype_agg.empty:
+#         all_charts.append(("PackType", packtype_agg, "PackType"))
+#     if not ppg_agg.empty:
+#         all_charts.append(("PPG", ppg_agg, "PPG"))
+#     if not variant_agg.empty:
+#         all_charts.append(("Variant", variant_agg, "Variant"))
+
+#     def build_chart(df_, dim_col):
+#         df_ = df_.copy().sort_values("TimeKey")
+#         if chosen_time == "Weekly":
+#             fig = px.line(df_, x="TimeKey", y="Value", color=dim_col,
+#                           markers=True, template="plotly_white")
+#         else:
+#             fig = px.bar(df_, x="TimeKey", y="Value", color=dim_col,
+#                          barmode="group", template="plotly_white")
+#         fig.update_layout(margin=dict(l=10, r=10, t=40, b=40))
+#         return fig
+
+#     # layout logic for multiple charts
+#     def layout_chunks(n):
+#         if n <= 4:
+#             return [n]
+#         elif n == 5:
+#             return [3,2]
+#         elif n == 6:
+#             return [3,3]
+#         elif n == 7:
+#             return [4,3]
+#         elif n == 8:
+#             return [4,4]
+#         else:
+#             leftover = n - 8
+#             return [4,4,leftover]
+
+#     n_charts = len(all_charts)
+#     if n_charts == 0:
+#         st.info("No dimension charts to display.")
+#         return
+
+#     chunk_sizes = layout_chunks(n_charts)
+#     idx = 0
+#     for size in chunk_sizes:
+#         row_data = all_charts[idx: idx+size]
+#         idx += size
+#         cols = st.columns(size)
+#         for i, (title, aggregator_df, dimension_col) in enumerate(row_data):
+#             with cols[i]:
+#                 st.write(f"#### {title} ({chosen_metric})")
+#                 fig = build_chart(aggregator_df, dimension_col)
+#                 st.plotly_chart(fig, use_container_width=True)
+#                 st.text_area(f"Comments ({title})", "")
+
+#     st.markdown('<hr class="accent-hr">', unsafe_allow_html=True)
+def market_construct_page():
+    import streamlit as st
+    import pandas as pd
+    import numpy as np
+    import plotly.express as px
+
+    # -----------------------------------------------------------------------
+    # 1) Retrieve Data
+    # -----------------------------------------------------------------------
+    df = st.session_state.get("D0", None)
+    if df is None or df.empty:
+        st.warning("No data uploaded yet. Please upload a file in the sidebar.")
+        st.stop()
+
+    # -----------------------------------------------------------------------
+    # 1a) Remove any rows where Brand == "cat 1"
+    #     (Happens before any filters/options so "cat 1" is never visible)
+    # -----------------------------------------------------------------------
+    if "Brand" in df.columns:
+        df = df[df["Brand"] != "cat1"]
+
+    # -----------------------------------------------------------------------
+    # 2) Prepare Options
+    # -----------------------------------------------------------------------
+    def sorted_or_all(col):
+        if col in df.columns:
+            return ["All"] + sorted(df[col].unique())
+        else:
+            return ["All"]
+
+    market_options   = sorted_or_all("Market")
+    channel_options  = sorted_or_all("Channel")
+    metric_options   = ["MS Value", "Volume", "Price", "MS Volume"]
+    time_options     = ["Weekly", "Monthly", "Yearly"]
+    brand_options    = sorted_or_all("Brand")
+    variant_options  = sorted_or_all("Variant")
+    packtype_options = sorted_or_all("PackType")
+    ppg_options      = sorted_or_all("PPG")
+
+    # If large dimension, wrap radios
+    max_length = max(len(brand_options), len(variant_options), len(packtype_options), len(ppg_options))
+    if max_length > 5:
+        st.markdown("""
+        <style>
+        div[data-baseweb="radio"] > div {
+            display: flex !important;
+            flex-wrap: wrap !important;
+        }
+        div[data-baseweb="radio"] label {
+            margin-right: 1rem; 
+            margin-bottom: 0.5rem;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # 3) CUSTOM CSS
+    # -----------------------------------------------------------------------
+    st.markdown("""
+    <style>
+    .stApp {
+        background-color: #F5F5F5;
+    }
+    .custom-header {
+        font-family: 'Inter', sans-serif;
+        font-size: 36px; 
+        font-weight: 600;
+        color: #333333;
+        margin-bottom: 0.2rem;
+    }
+    .accent-hr {
+        border: 0;
+        height: 2px;
+        background: linear-gradient(to right, #FFBD59, #FFC87A);
+        margin: 0.5rem 0 1.5rem 0;
+    }
+    div[data-testid="stHorizontalBlock"] button {
+        background-color: #FFBD59 !important;
+        color: #333333 !important;
+        font-weight: 600 !important;
+        border-radius: 4px !important;
+        border: none !important;
+        margin-bottom: 0.5rem;
+    }
+    div[data-testid="stHorizontalBlock"] button:hover {
+        background-color: #FFC87A !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # 4) Page Header
+    # -----------------------------------------------------------------------
+    st.markdown('<h1 class="custom-header">Market Construct</h1>', unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # 5) Two-column layout for top filters
+    # -----------------------------------------------------------------------
+    left_col, right_col = st.columns([2,3])
+
+    with right_col:
+        # Market & Channel
+        top_c1, top_c2 = st.columns(2)
+        with top_c1:
+            st.markdown("##### Market")
+            chosen_market = st.selectbox("", market_options)
+        with top_c2:
+            st.markdown("##### Channel")
+            chosen_channel = st.selectbox("", channel_options)
+
+        st.markdown("##### Metric & Time")
+        bot_c1, bot_c2 = st.columns(2)
+        with bot_c1:
+            chosen_metric = st.radio("Metric:", metric_options, horizontal=True)
+        with bot_c2:
+            chosen_time = st.radio("Time:", time_options, horizontal=True)
+
+    with left_col:
+        st.markdown("##### Product Filters")
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            chosen_brand = st.radio("Brand:", brand_options, index=0, horizontal=True)
+        with c2:
+            chosen_variant = st.radio("Variant:", variant_options, index=0, horizontal=True)
+        with c3:
+            chosen_packtype = st.radio("PackType:", packtype_options, index=0, horizontal=True)
+        with c4:
+            chosen_ppg = st.radio("PPG:", ppg_options, index=0, horizontal=True)
+
+    st.markdown('<hr class="accent-hr">', unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # 6) Category Filter => Market & Channel
+    # -----------------------------------------------------------------------
+    cat_df = df.copy()
+    if "Market" in cat_df.columns and chosen_market != "All":
+        cat_df = cat_df[cat_df["Market"] == chosen_market]
+    if "Channel" in cat_df.columns and chosen_channel != "All":
+        cat_df = cat_df[cat_df["Channel"] == chosen_channel]
+
+    # brand-level subset => brand, variant, packtype, ppg
+    brand_subset = cat_df.copy()
+    if "Brand" in brand_subset.columns and chosen_brand != "All":
+        brand_subset = brand_subset[brand_subset["Brand"] == chosen_brand]
+    if "Variant" in brand_subset.columns and chosen_variant != "All":
+        brand_subset = brand_subset[brand_subset["Variant"] == chosen_variant]
+    if "PackType" in brand_subset.columns and chosen_packtype != "All":
+        brand_subset = brand_subset[brand_subset["PackType"] == chosen_packtype]
+    if "PPG" in brand_subset.columns and chosen_ppg != "All":
+        brand_subset = brand_subset[brand_subset["PPG"] == chosen_ppg]
+
+    # -----------------------------------------------------------------------
+    # 7) Time Key
+    # -----------------------------------------------------------------------
+    cat_df["Date"] = pd.to_datetime(cat_df.get("Date",""), errors="coerce")
+    cat_df.dropna(subset=["Date"], inplace=True)
+
+    brand_subset["Date"] = pd.to_datetime(brand_subset.get("Date",""), errors="coerce")
+    brand_subset.dropna(subset=["Date"], inplace=True)
+
+    def set_time(df_, freq):
+        df_ = df_.copy()
+        if df_.empty:
+            df_["TimeKey"] = []
+            return df_
+        if freq=="Weekly":
+            df_["TimeKey"] = df_["Date"].dt.to_period("W").apply(lambda r: r.start_time)
+        elif freq=="Monthly":
+            df_["TimeKey"] = df_["Date"].dt.to_period("M").apply(lambda r: r.start_time)
+        elif freq=="Yearly":
+            df_["TimeKey"] = df_["Date"].dt.year
+        else:
+            df_["TimeKey"] = df_["Date"]
+        return df_
+
+    cat_df = set_time(cat_df, chosen_time)
+    brand_subset = set_time(brand_subset, chosen_time)
+
+    for col in ["SalesValue","Volume"]:
+        if col not in cat_df.columns:
+            cat_df[col] = 0
+        if col not in brand_subset.columns:
+            brand_subset[col] = 0
+
+    # -----------------------------------------------------------------------
+    # 8) Category aggregator => sums for correct denominator
+    # -----------------------------------------------------------------------
+    cat_agg = cat_df.groupby("TimeKey", as_index=False).agg(
+        CatSalesValue=("SalesValue","sum"),
+        CatVolume=("Volume","sum")
+    )
+
+    # aggregator for dimension with correct share
+    def aggregator_for_dimension(df_, dim_col):
+        if df_.empty:
+            return df_.assign(Value=[], CatSalesValue=[], CatVolume=[])
+
+        grouped = df_.groupby(["TimeKey",dim_col], as_index=False).agg(
+            SalesValue=("SalesValue","sum"),
+            Volume=("Volume","sum")
+        )
+
+        # Merge with cat_agg => get CatSalesValue, CatVolume
+        merged = pd.merge(grouped, cat_agg, on="TimeKey", how="left")
+
+        if chosen_metric == "MS Value":
+            merged["Value"] = np.where(
+                merged["CatSalesValue"] != 0,
+                merged["SalesValue"] / merged["CatSalesValue"],
+                0
+            )
+        elif chosen_metric == "Volume":
+            merged["Value"] = merged["Volume"]
+        elif chosen_metric == "Price":
+            merged["Value"] = np.where(
+                merged["Volume"] != 0,
+                merged["SalesValue"] / merged["Volume"],
+                0
+            )
+        elif chosen_metric == "MS Volume":
+            merged["Value"] = np.where(
+                merged["CatVolume"] != 0,
+                merged["Volume"] / merged["CatVolume"],
+                0
+            )
+        else:
+            merged["Value"] = 0
+        return merged
+
+    # We also define a function to check if dimension aggregator has only 1 unique value
+    # if user left dimension == "All", we'll skip aggregator if it has 1 unique dimension label
+    def skip_if_only_one(dim_df, dim_col, user_chosen):
+        """
+        Return True if we should skip aggregator because it has only 1 distinct dim_col
+        AND user_chosen is "All".
+        """
+        if user_chosen != "All":
+            return False  # user explicitly picked, so don't skip
+        distinct_vals = dim_df[dim_col].nunique()
+        return (distinct_vals <= 1)
+
+    # Category aggregator => dimension col "Dimension" = "Category"
+    # We'll compute Value for category aggregator
+    category_agg = cat_agg.copy()
+    if chosen_metric == "MS Value":
+        category_agg["Value"] = np.where(category_agg["CatSalesValue"]!=0, 1, 0)
+    elif chosen_metric == "Volume":
+        category_agg["Value"] = category_agg["CatVolume"]
+    elif chosen_metric == "Price":
+        category_agg["Value"] = np.where(
+            category_agg["CatVolume"]!=0,
+            category_agg["CatSalesValue"]/category_agg["CatVolume"],
+            0
+        )
+    elif chosen_metric == "MS Volume":
+        category_agg["Value"] = np.where(category_agg["CatVolume"]!=0, 1, 0)
     else:
-        # ---------------------------------
-        #   DEFAULT BEHAVIOR (SECTION 3, ETC.)
-        # ---------------------------------
-        st.write("Choose an action:")
-        for i in range(1, 4):
-            if st.button(f"Action {i} in {displayed_name}"):
-                go_to(f"section{section_number}_action{i}")
+        category_agg["Value"] = 0
+    category_agg["Dimension"] = "Category"
 
-        # Navigation for leftover sections
-        st.markdown("---")
-        col_a, col_b = st.columns(2)
-        with col_a:
-            if st.button("Back"):
-                go_back()
-        with col_b:
-            if st.button("Home"):
-                go_home()
+    brand_agg = aggregator_for_dimension(brand_subset, "Brand")
+    pt_agg = aggregator_for_dimension(brand_subset, "PackType")
+    ppg_agg = aggregator_for_dimension(brand_subset, "PPG")
+    var_agg = aggregator_for_dimension(brand_subset, "Variant")
+
+    st.markdown(f"### {chosen_metric} ({chosen_time})")
+
+    # Collect all dimension chart data
+    dimension_charts = []
+
+    # Category aggregator is always included if not empty
+    if not category_agg.empty:
+        dimension_charts.append(("Category", category_agg, "Dimension"))
+
+    # Brand aggregator
+    if not brand_agg.empty:
+        if not skip_if_only_one(brand_agg, "Brand", chosen_brand):
+            dimension_charts.append(("Brand", brand_agg, "Brand"))
+        else:
+            st.warning("Skipped Brand aggregator because it has only one distinct brand, and user is at 'All' brand.")
+    else:
+        st.warning("No brand data after product filters.")
+
+    # PackType aggregator
+    if not pt_agg.empty:
+        if not skip_if_only_one(pt_agg, "PackType", chosen_packtype):
+            dimension_charts.append(("PackType", pt_agg, "PackType"))
+        else:
+            st.warning("Skipped PackType aggregator because it has only one distinct packtype, and user is at 'All'.")
+    else:
+        st.warning("No packtype data after product filters.")
+
+    # PPG aggregator
+    if not ppg_agg.empty:
+        if not skip_if_only_one(ppg_agg, "PPG", chosen_ppg):
+            dimension_charts.append(("PPG", ppg_agg, "PPG"))
+        else:
+            st.warning("Skipped PPG aggregator because it has only one distinct PPG, and user is at 'All'.")
+    else:
+        st.warning("No PPG data after product filters.")
+
+    # Variant aggregator
+    if not var_agg.empty:
+        if not skip_if_only_one(var_agg, "Variant", chosen_variant):
+            dimension_charts.append(("Variant", var_agg, "Variant"))
+        else:
+            st.warning("Skipped Variant aggregator because it has only one distinct variant, and user is at 'All'.")
+    else:
+        st.warning("No variant data after product filters.")
+
+    # Chart-building function
+    def build_chart(df_, dim_col):
+        df_ = df_.copy().sort_values("TimeKey")
+        if chosen_time == "Weekly":
+            fig = px.line(df_, x="TimeKey", y="Value", color=dim_col, markers=True, template="plotly_white")
+        else:
+            fig = px.bar(df_, x="TimeKey", y="Value", color=dim_col, barmode="group", template="plotly_white")
+        fig.update_layout(margin=dict(l=10, r=10, t=40, b=40))
+        return fig
+
+    # Layout logic
+    def layout_chunks(n):
+        if n <= 4:
+            return [n]
+        elif n == 5:
+            return [3,2]
+        elif n == 6:
+            return [3,3]
+        elif n == 7:
+            return [4,3]
+        elif n == 8:
+            return [4,4]
+        else:
+            leftover = n - 8
+            return [4,4,leftover]
+
+    # Output the aggregator charts
+    n_charts = len(dimension_charts)
+    if n_charts == 0:
+        st.info("No dimension charts to display.")
+        return
+
+    chunk_sizes = layout_chunks(n_charts)
+    idx = 0
+    for row_size in chunk_sizes:
+        row_data = dimension_charts[idx : idx+row_size]
+        idx += row_size
+        cols = st.columns(row_size)
+        for i, (title, aggregator_df, dimension_col) in enumerate(row_data):
+            with cols[i]:
+                st.write(f"#### {title} ({chosen_metric})")
+                fig = build_chart(aggregator_df, dimension_col)
+                st.plotly_chart(fig, use_container_width=True)
+                st.text_area(f"Comments ({title})", "")
+
+    st.markdown('<hr class="accent-hr">', unsafe_allow_html=True)
 
 
-# ------------------------------------
-#  Base/Promo Sub-Pages (3 modules)
-# ------------------------------------
+
+
+    st.markdown("---")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Back"):
+            go_back()
+    with col2:
+        if st.button("Home"):
+            go_home()
+            
+
 def base_price_estimator_page():
     st.subheader("📊 Automated Base Price Estimator")
     
@@ -3250,6 +4045,20 @@ def section2_module2_page():
     # MAIN "Post Modelling" content
     # ------------------------------
     st.title("Post Modelling – Final Model Summary (Type 1 & Type 2)")
+    
+    
+        # ------------------------------------------------------------------------
+    # NAVIGATION BUTTONS
+    # ------------------------------------------------------------------------
+    st.markdown("---")
+    cBack, cHome = st.columns(2)
+    with cBack:
+        if st.button("Back", key="section2_module1_back"):
+            go_back()
+    with cHome:
+        if st.button("Home", key="section2_module1_home"):
+            go_home()
+
 
     # (A) Let user pick a data source from session state
     st.markdown("<div class='custom-subheader'>Data Source for Post Modelling</div>", unsafe_allow_html=True)
@@ -4147,1742 +4956,1065 @@ def section2_module2_page():
         )
         st.plotly_chart(fig, use_container_width=True)
 
-    st.success("Finished Type 2 aggregator approach!")
 
-
-
-# def section2_module2_page():
-#     """
-#     SECTION 2 – MODULE 2: Post Modeling
-#     This encapsulates all your "final model summary" code, 
-#     competitor pricing, elasticity, scenario planning, etc.
-#     """
-
-#     import streamlit as st
-#     import pandas as pd
-#     import numpy as np
-#     import plotly.graph_objects as go
-
-#     # ------------------------------
-#     # Helper: MAPE ignoring zero actuals
-#     # ------------------------------
-#     def compute_mape(actual_vals, pred_vals):
-#         mask = (actual_vals != 0)
-#         if not np.any(mask):
-#             return np.nan
-#         return np.mean(np.abs((actual_vals[mask] - pred_vals[mask]) / actual_vals[mask])) * 100
-
-#     # ------------------------------
-#     # For neat elasticity display
-#     # ------------------------------
-#     def format_elas(e_):
-#         if e_ is not None and not np.isnan(e_):
-#             return f"{e_:.2f}"
-#         return "N/A"
-
-#     # ------------------------------
-#     # Inject your custom CSS style
-#     # ------------------------------
-#     st.markdown(
-#         """
-#         <style>
-#         /* Overall background color (slight pastel gradient) */
-#         body {
-#             background: linear-gradient(120deg, #f0f4f8, #f8faff);
-#         }
-
-#         /* Slightly larger font for subheaders */
-#         .custom-subheader {
-#             font-size: 1.15rem !important;
-#             font-weight: 600 !important;
-#             color: #2C3E50 !important;
-#             margin-top: 1rem !important;
-#             margin-bottom: 0.5rem !important;
-#         }
-
-#         /* Table text smaller */
-#         .dataframe table td, .dataframe table th {
-#             font-size: 0.95rem !important;
-#         }
-
-#         /* Additional margin for code clarity */
-#         .stMarkdown {
-#             margin-bottom: 1rem !important;
-#         }
-
-#         /* Make expander headers more colorful */
-#         .streamlit-expanderHeader {
-#             font-size: 1.05rem;
-#             font-weight: 600;
-#             color: #1F618D;
-#         }
-
-#         /* Slight accent for number input fields */
-#         .stNumberInput>div>div>input {
-#             background-color: #FBFCFC;
-#             border: 1px solid #BBBDC1;
-#             color: #2C3E50;
-#         }
-
-#         /* Tweak st.info, st.warning, st.success with pastel backgrounds */
-#         .stAlert, .stWarning, .stInfo, .stSuccess {
-#             border-radius: 0.5rem;
-#         }
-#         .stAlert {
-#             background-color: #FEF9E7; /* pale yellow */
-#         }
-#         .stInfo {
-#             background-color: #EBF5FB; /* pale blue */
-#         }
-#         .stSuccess {
-#             background-color: #E9F7EF; /* pale green */
-#         }
-#         .stWarning {
-#             background-color: #FDF2E9; /* pale orange */
-#         }
-#         </style>
-#         """,
-#         unsafe_allow_html=True
-#     )
-
-#     # ------------------------------
-#     # MAIN "Post Modelling" content
-#     # ------------------------------
-#     st.title("Post Modelling – Final Model Summary (Type 1 & Type 2)")
-
-#     # (A) Let user pick a data source from session state
-#     st.markdown("<div class='custom-subheader'>Data Source for Post Modelling</div>", unsafe_allow_html=True)
-#     possible_sources = []
-#     if "D0" in st.session_state and st.session_state["D0"] is not None:
-#         possible_sources.append("D0")
-#     if "dataframe1" in st.session_state and st.session_state["dataframe1"] is not None:
-#         possible_sources.append("dataframe1")
-#     if "dataframe" in st.session_state and st.session_state["dataframe"] is not None:
-#         possible_sources.append("dataframe")
-
-#     if not possible_sources:
-#         st.error("No suitable data sources found in session.")
-#         st.stop()
-
-#     chosen_data_source = st.selectbox("Select Data Source:", possible_sources)
-#     df_source = st.session_state[chosen_data_source].copy()
-#     st.markdown(f"**Chosen data source**: `{chosen_data_source}`")
-
-#     # ------------- Check for Type1 or Type2 final models -------------
-#     def have_type1_models():
-#         if "final_saved_models_type1" not in st.session_state:
-#             return False
-#         val = st.session_state["final_saved_models_type1"]
-#         if val is None:
-#             return False
-#         if isinstance(val, list):
-#             return (len(val) > 0)
-#         if isinstance(val, pd.DataFrame):
-#             return not val.empty
-#         return False
-
-#     def have_type2_models():
-#         if "saved_models_type2" not in st.session_state:
-#             return False
-#         val = st.session_state["saved_models_type2"]
-#         return (val is not None) and (len(val) > 0)
-
-#     is_type1 = have_type1_models()
-#     is_type2 = have_type2_models()
-
-#     if not is_type1 and not is_type2:
-#         st.error("No Type 1 or Type 2 final models found in session.")
-#         st.stop()
-
-#     model_options = []
-#     if is_type1:
-#         model_options.append("Type 1")
-#     if is_type2:
-#         model_options.append("Type 2")
-
-#     if len(model_options) == 1:
-#         selected_model_type = model_options[0]
-#         st.markdown(f"<b>Only one model type found:</b> **{selected_model_type}**", unsafe_allow_html=True)
-#     else:
-#         selected_model_type = st.radio("Choose Model Type:", model_options, horizontal=True)
-
-#     st.markdown("---", unsafe_allow_html=True)
-
-#     # ============================= TYPE 1 =============================
-#     if selected_model_type == "Type 1":
-#         st.markdown("<div class='custom-subheader'>Type 1: Single Aggregated Model – Own Price + Competitor Impact</div>", unsafe_allow_html=True)
-
-#         # Grab final models for Type 1
-#         val_type1 = st.session_state["final_saved_models_type1"]
-#         if isinstance(val_type1, list):
-#             df_type1 = pd.DataFrame(val_type1)
-#         else:
-#             df_type1 = val_type1.copy()
-
-#         if df_type1.empty:
-#             st.warning("No Type 1 final models in session. Stopping.")
-#             st.stop()
-
-#         # Show table of final Type 1 models
-#         st.markdown("Below are Type 1 final models. Select a row to see demand curve(s).")
-#         st.dataframe(df_type1, use_container_width=True)
-
-#         row_indices = list(range(len(df_type1)))
-#         chosen_idx = st.selectbox("Select a row for Type 1 models:", row_indices)
-#         row_selected = df_type1.iloc[chosen_idx]
-
-#         st.markdown("**Selected Row**:")
-#         st.dataframe(row_selected.to_frame().T, use_container_width=True)
-
-#         # Identify the model name from the chosen row
-#         if "Model" not in row_selected:
-#             st.error("No 'Model' column found in final Type 1 DataFrame. Cannot identify the model automatically.")
-#             st.stop()
-#         model_name_in_row = row_selected["Model"]
-#         st.markdown(f"**Auto-detected Model Name**: `{model_name_in_row}`")
-
-#         # aggregator columns
-#         channel_ = row_selected.get("Channel", None)
-#         brand_   = row_selected.get("Brand", None)
-#         variant_ = row_selected.get("Variant", None)
-#         ppg_     = row_selected.get("PPG", None)
-
-#         # intercept
-#         intercept_col = "B0 (Original)"
-#         if intercept_col not in row_selected:
-#             st.error(f"Missing intercept col '{intercept_col}'. Aborting.")
-#             st.stop()
-#         raw_intercept = float(row_selected[intercept_col])
-
-#         # Identify Beta_ columns
-#         beta_cols = [c for c in df_type1.columns if c.startswith("Beta_")]
-#         if not beta_cols:
-#             st.error("No Beta_ columns found. Stopping.")
-#             st.stop()
-#         betas = {}
-#         for bc in beta_cols:
-#             predictor = bc.replace("Beta_", "")
-#             betas[predictor] = float(row_selected[bc])
-
-#         st.markdown(f"**Intercept** = `{raw_intercept}`")
-#         st.markdown(f"**Betas**: `{betas}`")
-
-#         # gather default values
-#         missing_cols = []
-#         default_vals = {}
-#         for p_ in betas.keys():
-#             if p_ not in row_selected or pd.isna(row_selected[p_]):
-#                 missing_cols.append(p_)
-#             else:
-#                 default_vals[p_] = float(row_selected[p_])
-#         if missing_cols:
-#             st.error(f"Missing or NaN columns for {missing_cols}. Aborting.")
-#             st.stop()
-
-#         # competitor ratio columns
-#         rpi_cols = []
-#         for predictor in betas:
-#             if predictor.endswith("_RPI") and betas[predictor] != 0:
-#                 rpi_cols.append(predictor)
-
-#         # ~~~~~ Demand curve UI
-#         st.markdown("### Own Price & Scenario Setup")
-#         user_own_price = st.number_input("My Current Price (PPU):", value=default_vals.get("PPU",5.0), step=0.5)
-#         competitor_impact = st.checkbox("Enable Competitor Impact?", value=False)
-
-#         user_overrides_orig = {}
-#         user_competitor_prices = {}
-
-#         st.markdown("**Average/Default Values (from row)**:")
-#         st.write(default_vals)
-
-#         with st.expander("Predictor Configurator", expanded=False):
-#             st.markdown("#### Other (non-PPU, non-RPI) Predictors")
-#             for p_ in betas.keys():
-#                 if (p_ != "PPU") and (not p_.endswith("_RPI")):
-#                     user_overrides_orig[p_] = st.number_input(
-#                         f"{p_} default",
-#                         value=default_vals[p_],
-#                         step=0.5
-#                     )
-
-#             if competitor_impact and rpi_cols:
-#                 st.markdown("#### Competitor Prices (New scenario)")
-#                 col_list = st.columns(len(rpi_cols))
-#                 old_own_price = default_vals.get("PPU",5.0)
-#                 for i, rp_ in enumerate(rpi_cols):
-#                     old_ratio= default_vals[rp_]
-#                     if old_ratio != 0:
-#                         old_comp_price= old_own_price / old_ratio
-#                     else:
-#                         old_comp_price= 0.0
-#                     with col_list[i]:
-#                         user_competitor_prices[rp_] = st.number_input(
-#                             f"{rp_[:-4]} Price",
-#                             value= old_comp_price,
-#                             step=0.5
-#                         )
-
-#         if ("PPU" not in betas) or (betas["PPU"]==0):
-#             st.error("No 'PPU' or Beta_PPU=0 => can't invert volume vs price. Aborting.")
-#             st.stop()
-
-#         b_own= betas["PPU"]
-
-#         def scenario_rpi_dict(my_price: float, new_scenario: bool) -> dict:
-#             d_out = {}
-#             for rp_ in rpi_cols:
-#                 if (not competitor_impact) or (not new_scenario):
-#                     d_out[rp_] = default_vals[rp_]
-#                 else:
-#                     new_cp= user_competitor_prices[rp_]
-#                     ratio= 0.0 if (new_cp == 0) else (my_price / new_cp)
-#                     d_out[rp_] = ratio
-#             return d_out
-
-#         def compute_current_volume(betas, raw_int, my_price, user_over, rpi_vals):
-#             sum_others= 0.0
-#             for c_ in betas:
-#                 if (not c_.endswith("_RPI")) and (c_!="PPU"):
-#                     sum_others += betas[c_]* user_over.get(c_,0.0)
-#             sum_rpi= 0.0
-#             for rp_ in rpi_cols:
-#                 sum_rpi += betas[rp_]* rpi_vals[rp_]
-#             return raw_int + sum_others + sum_rpi + betas["PPU"]* my_price
-
-#         def compute_elasticity_simple(b_own_, price_val, volume_val):
-#             if (volume_val>0) and (price_val>0):
-#                 return b_own_*(price_val/ volume_val)
-#             return np.nan
-
-#         def build_curve_df(betas, raw_int, my_price, user_over, rpi_vals, n_points=15):
-#             import numpy as np
-#             b_own_ = betas["PPU"]
-#             sum_others= 0.0
-#             for c_ in betas:
-#                 if (not c_.endswith("_RPI")) and (c_!="PPU"):
-#                     sum_others += betas[c_]* user_over.get(c_,0.0)
-#             sum_rpi= 0.0
-#             for rp_ in rpi_cols:
-#                 sum_rpi+= betas[rp_]* rpi_vals[rp_]
-#             zero_x= raw_int + sum_others + sum_rpi
-#             if b_own_>0:
-#                 if zero_x<0: zero_x=10
-#                 max_vol= 2* zero_x
-#             else:
-#                 if zero_x<=0: zero_x=10
-#                 max_vol= zero_x
-#             if max_vol<=0:
-#                 max_vol= 10
-
-#             volumes= np.linspace(0,max_vol, n_points)
-#             price_list= []
-#             rev_list= []
-#             elas_list= []
-
-#             for Q_ in volumes:
-#                 p_= (Q_ - zero_x)/ b_own_ if b_own_!=0 else 0
-#                 p_= max(p_,0)
-#                 rev_= p_* Q_
-#                 if (Q_>0) and (p_>0):
-#                     e_= b_own_*(p_/ Q_)
-#                 else:
-#                     e_= np.nan
-#                 price_list.append(p_)
-#                 rev_list.append(rev_)
-#                 elas_list.append(e_)
-
-#             df_out= pd.DataFrame({
-#                 "Price": price_list,
-#                 "Volume": volumes,
-#                 "Revenue": rev_list,
-#                 "Elasticity": elas_list
-#             })
-#             df_out.sort_values("Price", inplace=True)
-#             df_out.reset_index(drop=True, inplace=True)
-#             return df_out
-
-#         # Original scenario
-#         rpi_old= scenario_rpi_dict(user_own_price, new_scenario=False)
-#         df_old= build_curve_df(betas, raw_intercept, user_own_price, user_overrides_orig, rpi_old, 15)
-#         Q_cur_old= compute_current_volume(betas, raw_intercept, user_own_price, user_overrides_orig, rpi_old)
-#         elas_old= compute_elasticity_simple(b_own, user_own_price, Q_cur_old)
-
-#         idx_oldmax= df_old["Revenue"].idxmax() if not df_old["Revenue"].empty else None
-#         vol_oldmax, pri_oldmax= 0,0
-#         if idx_oldmax is not None:
-#             vol_oldmax= df_old.loc[idx_oldmax,"Volume"]
-#             pri_oldmax= df_old.loc[idx_oldmax,"Price"]
-
-#         df_new= None
-#         Q_cur_new= None
-#         elas_new= np.nan
-#         if competitor_impact and (rpi_cols):
-#             rpi_new= scenario_rpi_dict(user_own_price, new_scenario=True)
-#             df_new= build_curve_df(betas, raw_intercept, user_own_price, user_overrides_orig, rpi_new, 15)
-#             Q_cur_new= compute_current_volume(betas, raw_intercept, user_own_price, user_overrides_orig, rpi_new)
-#             elas_new= compute_elasticity_simple(b_own, user_own_price, Q_cur_new)
-
-#         # Plotly figure
-#         fig= go.Figure()
-#         fig.update_layout(
-#             colorway=["#1F77B4","#D62728","#2CA02C","#FF7F0E"],
-#             plot_bgcolor="rgba(245,245,250,0.9)",
-#             paper_bgcolor="rgba(245,245,250,0.9)"
-#         )
-
-#         # original scenario line
-#         fig.add_trace(go.Scatter(
-#             x=df_old["Volume"], y=df_old["Price"],
-#             mode="lines+markers",
-#             name="Original RPI",
-#             line=dict(color="blue",width=2),
-#         ))
-#         if (Q_cur_old>0) and (user_own_price>0):
-#             fig.add_shape(
-#                 type="rect", xref="x", yref="y",
-#                 x0=0, y0=0, x1=Q_cur_old, y1=user_own_price,
-#                 fillcolor="blue", opacity=0.25,
-#                 line=dict(color="blue",width=2,dash="dash")
-#             )
-#             fig.add_trace(go.Scatter(
-#                 x=[Q_cur_old], y=[user_own_price],
-#                 mode="markers",
-#                 name="My Price (Orig)",
-#                 marker=dict(color="blue", size=8, symbol="x")
-#             ))
-#         if (vol_oldmax>0) and (pri_oldmax>0):
-#             fig.add_shape(
-#                 type="rect", xref="x", yref="y",
-#                 x0=0, y0=0, x1=vol_oldmax, y1=pri_oldmax,
-#                 fillcolor="blue", opacity=0.10,
-#                 line=dict(color="blue",width=1,dash="dot")
-#             )
-#             fig.add_trace(go.Scatter(
-#                 x=[vol_oldmax], y=[pri_oldmax],
-#                 mode="markers",
-#                 name="MaxRev (Orig)",
-#                 marker=dict(color="blue", size=6),
-#             ))
-
-#         # competitor scenario line
-#         if competitor_impact and (df_new is not None) and not df_new.empty:
-#             fig.add_trace(go.Scatter(
-#                 x=df_new["Volume"], y=df_new["Price"],
-#                 mode="lines+markers",
-#                 name="New RPI",
-#                 line=dict(color="purple", width=2, dash="dot")
-#             ))
-#             if (Q_cur_new is not None) and (Q_cur_new>0) and (user_own_price>0):
-#                 fig.add_shape(
-#                     type="rect", xref="x", yref="y",
-#                     x0=0, y0=0, x1=Q_cur_new, y1=user_own_price,
-#                     fillcolor="purple", opacity=0.25,
-#                     line=dict(color="purple",width=2,dash="dash")
-#                 )
-#                 fig.add_trace(go.Scatter(
-#                     x=[Q_cur_new], y=[user_own_price],
-#                     mode="markers",
-#                     name="My Price (New)",
-#                     marker=dict(color="purple", size=8, symbol="x")
-#                 ))
-
-#         elas_old_str= f"Elas(Orig)= {format_elas(elas_old)}"
-#         fig.add_annotation(
-#             x=0.98, y=0.85, xref="paper", yref="paper",
-#             text=elas_old_str,
-#             showarrow=False,
-#             font=dict(size=12, color="blue"),
-#             bgcolor="white"
-#         )
-#         if competitor_impact and df_new is not None:
-#             elas_new_str= f"Elas(New)= {format_elas(elas_new)}"
-#             fig.add_annotation(
-#                 x=0.98, y=0.75, xref="paper", yref="paper",
-#                 text=elas_new_str,
-#                 showarrow=False,
-#                 font=dict(size=12, color="purple"),
-#                 bgcolor="white"
-#             )
-
-#         fig.update_layout(
-#             title="Type 1 Demand – Own Price + (Optional) Competitor Impact",
-#             xaxis_title="Volume (Q)",
-#             yaxis_title="Price (P)",
-#             template="plotly_white"
-#         )
-#         st.plotly_chart(fig, use_container_width=True)
-
-#         # Original scenario table
-#         st.markdown("### Original Scenario Table (Price ascending)")
-#         st.dataframe(df_old, use_container_width=True)
-#         st.write("---")
-
-#         if idx_oldmax is not None:
-#             rev_old_max_= df_old.loc[idx_oldmax,"Revenue"]
-#             pri_old_max_= df_old.loc[idx_oldmax,"Price"]
-#             vol_old_max_= df_old.loc[idx_oldmax,"Volume"]
-#         else:
-#             rev_old_max_, pri_old_max_, vol_old_max_= 0,0,0
-
-#         st.markdown(
-#             f"<b>Original scenario:</b> Max Revenue= <b>{rev_old_max_:.2f}</b> "
-#             f"at Price=<b>{pri_old_max_:.2f}</b>, Volume=<b>{vol_old_max_:.2f}</b>",
-#             unsafe_allow_html=True
-#         )
-#         Q_cur_old_val= max(0, Q_cur_old)
-#         st.markdown(
-#             f"<b>Your Current Price</b>={user_own_price:.2f}, "
-#             f"Volume=<b>{Q_cur_old_val:.2f}</b>, "
-#             f"Revenue=<b>{Q_cur_old_val * user_own_price:.2f}</b>",
-#             unsafe_allow_html=True
-#         )
-#         if competitor_impact and df_new is not None and not df_new.empty:
-#             idx_new_max_= df_new["Revenue"].idxmax()
-#             rev_new_max_= df_new.loc[idx_new_max_,"Revenue"]
-#             pri_new_max_= df_new.loc[idx_new_max_,"Price"]
-#             vol_new_max_= df_new.loc[idx_new_max_,"Volume"]
-#             st.write("---")
-#             st.markdown(
-#                 f"<b>New scenario:</b> Max Revenue= <b>{rev_new_max_:.2f}</b> "
-#                 f"at Price=<b>{pri_new_max_:.2f}</b>, Volume=<b>{vol_new_max_:.2f}</b>",
-#                 unsafe_allow_html=True
-#             )
-
-#         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#         # PROMO CLUSTERS (Type 1) – Additional Promo Elasticities
-#         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#         st.markdown("<div class='custom-subheader'>Promo Clusters (Type 1) – Additional Promo Elasticities</div>", unsafe_allow_html=True)
-#         if "final_clusters_depth" in st.session_state and st.session_state["final_clusters_depth"]:
-#             final_data= st.session_state["final_clusters_depth"]
-#             key_tup= (channel_, brand_, variant_, ppg_)
-#             if key_tup in final_data:
-#                 st.markdown(f"**Found cluster definitions** for: `{key_tup}`")
-#                 cluster_defs= final_data[key_tup]
-#                 if not cluster_defs:
-#                     st.info("No cluster bins for this combination.")
-#                 else:
-#                     st.markdown("**Cluster Definitions:**")
-#                     st.dataframe(pd.DataFrame(cluster_defs))
-
-#                     cluster_names= [cd["ClusterName"] for cd in cluster_defs]
-#                     chosen_cluster= st.selectbox("Select a cluster (promo bin):", cluster_names)
-#                     cobj= next(cd for cd in cluster_defs if cd["ClusterName"]==chosen_cluster)
-#                     discount_pct= float(cobj["Centroid"])
-#                     st.write(f"Chosen cluster centroid discount: {discount_pct}%")
-
-#                     # scenario
-#                     promo_price= user_own_price*(1- discount_pct/100.0)
-#                     def compute_current_volume(betas, raw_int, my_price, user_over, rpi_vals):
-#                         sum_others= 0.0
-#                         for c_ in betas:
-#                             if (not c_.endswith("_RPI")) and (c_!="PPU"):
-#                                 sum_others += betas[c_]* user_over.get(c_,0.0)
-#                         sum_rpi= 0.0
-#                         for rp_ in rpi_cols:
-#                             sum_rpi+= betas[rp_]* rpi_vals[rp_]
-#                         return raw_int + sum_others + sum_rpi + betas["PPU"]* my_price
-
-#                     Q_promo= compute_current_volume(betas, raw_intercept, promo_price, user_overrides_orig, rpi_old)
-#                     def compute_elasticity_simple(b_own_, price_val, volume_val):
-#                         if (volume_val>0) and (price_val>0):
-#                             return b_own_*(price_val/ volume_val)
-#                         return np.nan
-#                     elas_promo= compute_elasticity_simple(b_own, promo_price, Q_promo)
-#                     st.markdown(
-#                         f"<b>Promo scenario</b>: Price={promo_price:.2f}, "
-#                         f"Volume={Q_promo:.2f}, Elasticity={format_elas(elas_promo)}",
-#                         unsafe_allow_html=True
-#                     )
-
-#                     st.markdown("---")
-#                     st.markdown("<b>Summary Table: Base + All Promo Bins</b>", unsafe_allow_html=True)
-#                     def build_all_bins(base_price, cluster_list):
-#                         out_ = []
-#                         out_.append({"BinName":"Promo1 (Base)","Discount":0.0})
-#                         for cd_ in cluster_list:
-#                             out_.append({
-#                                 "BinName": cd_["ClusterName"],
-#                                 "Discount": float(cd_["Centroid"])
-#                             })
-#                         return out_
-#                     base_vol= Q_cur_old
-#                     bins_info= build_all_bins(user_own_price, cluster_defs)
-#                     table_rows= []
-
-#                     for binrow in bins_info:
-#                         binname= binrow["BinName"]
-#                         disc_  = binrow["Discount"]
-#                         new_price= user_own_price*(1- disc_/100.0)
-#                         Q_ = compute_current_volume(betas, raw_intercept, new_price, user_overrides_orig, rpi_old)
-#                         e_ = compute_elasticity_simple(b_own, new_price, Q_)
-#                         if binname=="Promo1 (Base)":
-#                             vol_chg_str= "-"
-#                         else:
-#                             if base_vol>0:
-#                                 vol_chg_pct= (Q_ - base_vol)/ base_vol* 100.0
-#                                 vol_chg_str= f"{vol_chg_pct:.1f}%"
-#                             else:
-#                                 vol_chg_str= "N/A"
-#                         table_rows.append({
-#                             "PromoBin": binname,
-#                             "Discount%": round(disc_,2),
-#                             "Price": round(new_price,2),
-#                             "VolumeChange%": vol_chg_str,
-#                             "Volume": round(Q_,2),
-#                             "Elasticity": round(e_,2) if not np.isnan(e_) else None
-#                         })
-
-#                     df_summary= pd.DataFrame(table_rows)
-#                     df_summary= df_summary[["PromoBin","Discount%","Price","VolumeChange%","Volume","Elasticity"]]
-#                     st.dataframe(df_summary, use_container_width=True)
-#             else:
-#                 st.info(f"No entry in final_clusters_depth for key: {key_tup}")
-#         else:
-#             st.info("No final_clusters_depth in session or it's empty.")
-
-
-#         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#         # Method2 Covariance-based approach
-#         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#         st.markdown("<div class='custom-subheader'>Method2: Covariance-based Approach (modulus inside sqrt)</div>", unsafe_allow_html=True)
-#         needed_cols= {"BasePrice","Price","Volume"}
-#         if needed_cols.issubset(df_source.columns):
-#             key_tup= (channel_, brand_, variant_, ppg_)
-#             df_combo= df_source.copy()
-#             if "Channel" in df_combo.columns and channel_:
-#                 df_combo= df_combo[df_combo["Channel"]==channel_]
-#             if "Brand" in df_combo.columns and brand_:
-#                 df_combo= df_combo[df_combo["Brand"]==brand_]
-#             if variant_ is not None and variant_!="ALL" and "Variant" in df_combo.columns:
-#                 df_combo= df_combo[df_combo["Variant"]==variant_]
-#             if "PPG" in df_combo.columns and ppg_:
-#                 df_combo= df_combo[df_combo["PPG"]==ppg_]
-
-#             if df_combo.empty:
-#                 st.warning("No rows found for aggregator => can't do Cov-based Method2.")
-#             else:
-#                 if "final_clusters_depth" not in st.session_state:
-#                     st.warning("No final_clusters_depth in session for covariance-based method.")
-#                 else:
-#                     cluster_defs_map= st.session_state["final_clusters_depth"]
-#                     if key_tup not in cluster_defs_map:
-#                         st.warning(f"No cluster bins for aggregator {key_tup}.")
-#                     else:
-#                         cdefs= cluster_defs_map[key_tup]
-#                         if not cdefs:
-#                             st.warning(f"Empty cluster defs for aggregator {key_tup}.")
-#                         else:
-#                             df_combo= df_combo.dropna(subset=["BasePrice","Price","Volume"])
-#                             df_combo["Discount"]= (df_combo["BasePrice"]- df_combo["Price"])/ df_combo["BasePrice"]
-#                             def assign_bin(row):
-#                                 disc_pct= row["Discount"]*100
-#                                 if disc_pct<0:
-#                                     return "Base"
-#                                 for c_ in cdefs:
-#                                     mn_, mx_= float(c_["Min"]), float(c_["Max"])
-#                                     if mn_<= disc_pct<= mx_:
-#                                         return c_["ClusterName"]
-#                                 return "Base"
-#                             df_combo["PromoBin"]= df_combo.apply(assign_bin, axis=1)
-
-#                             all_vol= df_combo["Volume"].values
-#                             all_pri= df_combo["Price"].values
-#                             cov_all=0.0
-#                             if len(all_vol)>1:
-#                                 mat_all= np.cov(all_vol,all_pri, ddof=1)
-#                                 cov_all= mat_all[0,1]
-#                             st.write(f"Global Cov(Volume, Price) = {cov_all:.3f}")
-#                             abs_cov_all= abs(cov_all)
-
-#                             if abs_cov_all>0 and (elas_old is not None) and (not np.isnan(elas_old)):
-#                                 index_val= elas_old/ np.sqrt(abs_cov_all)
-#                             else:
-#                                 index_val= None
-
-#                             st.markdown(f"<b>Base aggregator elasticity</b>={format_elas(elas_old)}", unsafe_allow_html=True)
-#                             if index_val is not None:
-#                                 st.markdown(
-#                                     f"<b>Index</b> = elas_old / sqrt(|Cov(Y_all, X_all)|)= <b>{index_val:.3f}</b>",
-#                                     unsafe_allow_html=True
-#                                 )
-#                             else:
-#                                 st.write("Index cannot be computed (cov_all=0 or elas_old=NaN).")
-
-#                             method2_rows= []
-#                             bins_in_combo= df_combo["PromoBin"].dropna().unique()
-#                             for b_ in bins_in_combo:
-#                                 sub_= df_combo[df_combo["PromoBin"]==b_]
-#                                 if len(sub_)<2:
-#                                     method2_rows.append({
-#                                         "Bin": b_,
-#                                         "Count": len(sub_),
-#                                         "Cov_bin": None,
-#                                         "ScaledElas": None
-#                                     })
-#                                     continue
-#                                 mat_bin= np.cov(sub_["Volume"], sub_["Price"], ddof=1)
-#                                 cov_bin= mat_bin[0,1]
-#                                 abs_cov_bin= abs(cov_bin)
-#                                 scaled_elas= None
-#                                 if index_val and abs_cov_bin>0:
-#                                     scaled_elas= index_val* np.sqrt(abs_cov_bin)
-#                                 method2_rows.append({
-#                                     "Bin": b_,
-#                                     "Count": len(sub_),
-#                                     "Cov_bin": round(cov_bin,4),
-#                                     "ScaledElas": round(scaled_elas,4) if scaled_elas else None
-#                                 })
-#                             df_m2= pd.DataFrame(method2_rows)
-#                             st.markdown("**Bin-level elasticity from covariance-based method (using modulus inside sqrt):**")
-#                             st.dataframe(df_m2, use_container_width=True)
-#         else:
-#             st.warning("Method2: Need columns 'BasePrice','Price','Volume' to do Cov-based approach.")
-
-
-#         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#         # CROSS ELASTICITY SECTION – BOX LAYOUT
-#         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#         st.markdown("""
-#         <div style="
-#         border: 1px solid #ccc;
-#         padding: 1rem;
-#         margin-top: 1rem;
-#         margin-bottom: 1rem;
-#         border-radius: 0.5rem;
-#         background-color: #f7f7f9;
-#         ">
-#         <h3 style="margin-top: 0;">Cross Elasticities – Competitor Price Overrides</h3>
-#         """, unsafe_allow_html=True)
-
-#         if len(rpi_cols) == 0:
-#             st.info("No competitor RPI columns => no cross elasticities to display.")
-#         else:
-#             # Decide scenario volume for cross elasticity
-#             if competitor_impact and (Q_cur_new is not None):
-#                 Q_scenario = Q_cur_new
-#                 st.write(f"Using Q_cur_new = {Q_scenario:.2f} (Competitor Impact scenario).")
-#             else:
-#                 Q_scenario = Q_cur_old if (Q_cur_old is not None) else 1.0
-#                 st.write(f"Using Q_cur_old = {Q_scenario:.2f} (Original scenario, or 1.0 if unknown).")
-
-#             competitor_data = []
-
-#             def chunk_list(lst, n=2):
-#                 for i in range(0, len(lst), n):
-#                     yield lst[i:i+n]
-
-#             for pair in chunk_list(rpi_cols,2):
-#                 cols_ = st.columns(len(pair))
-#                 for i, rp_ in enumerate(pair):
-#                     comp_name= rp_[:-4]
-#                     beta_i   = betas[rp_]
-#                     old_ratio= default_vals.get(rp_, 0.0)
-#                     if old_ratio != 0.0:
-#                         old_comp_price= user_own_price / old_ratio
-#                     else:
-#                         old_comp_price= 0.0
-#                     with cols_[i]:
-#                         st.markdown(f"**{comp_name}** (β=**{beta_i:.5f}**)")
-#                         user_price= st.number_input(
-#                             f"{comp_name} Price override:",
-#                             value=float(f"{old_comp_price:.2f}"),
-#                             step=1.0,
-#                             key=f"{comp_name}_override_box"
-#                         )
-#                         import numpy as np
-#                         if (user_price>0) and (Q_scenario>0):
-#                             # cross elasticity => -beta_i*(myPrice/user_price)*(1/Q_scenario)
-#                             cross_elas= -beta_i*(user_own_price/ user_price)*(1.0/ Q_scenario)
-#                         else:
-#                             cross_elas= np.nan
-#                         st.write(f"CrossElas: **{cross_elas:.5f}**")
-#                         competitor_data.append({
-#                             "Competitor": comp_name,
-#                             "Beta": float(f"{beta_i:.5f}"),
-#                             "PriceOverride": round(user_price,2),
-#                             "CrossElas": cross_elas
-#                         })
-
-#         st.markdown("</div>", unsafe_allow_html=True)
-
-#         if len(rpi_cols) > 0:
-#             st.markdown("### Cross Elasticities (Descending)")
-#             df_cross= pd.DataFrame(competitor_data)
-#             df_cross["CrossElas"]= df_cross["CrossElas"].apply(
-#                 lambda x: float(f"{x:.5f}") if pd.notnull(x) else None
-#             )
-#             df_cross.sort_values("CrossElas", ascending=False, inplace=True, ignore_index=True)
-#             st.dataframe(df_cross, use_container_width=True)
-
-#         # FINISH TYPE 1
-#         st.stop()
-
-#     # ============================= TYPE 2 =============================
-#     st.title("Post Modelling – Final Model Summary (Brand + PPG, Shares Computed From Data)")
-#     st.subheader("Final Saved Models (Type 2)")
-
-#     if "saved_models_type2" in st.session_state and st.session_state["saved_models_type2"]:
-#         for key_name, model_list in st.session_state["saved_models_type2"].items():
-#             with st.expander(f"Type 2 Models – Key: {key_name}", expanded=False):
-#                 if model_list:
-#                     df_type2 = pd.DataFrame(model_list)
-#                     st.dataframe(df_type2, use_container_width=True)
-#                 else:
-#                     st.write(f"No final models under key='{key_name}'.")
-#     else:
-#         st.info("No final models for Type 2 found.")
-
-#     st.write("---")
-#     st.subheader("Promo Depth Clusters (if any)")
-#     if "final_clusters_depth" in st.session_state and st.session_state["final_clusters_depth"]:
-#         final_data = st.session_state["final_clusters_depth"]
-#         all_rows= []
-#         for combo_key, bins_list in final_data.items():
-#             all_rows.extend(bins_list)
-#         if all_rows:
-#             df_clusters = pd.DataFrame(all_rows)
-#             st.markdown("Below are the cluster definitions from the Promo Depth Estimator:")
-#             st.dataframe(df_clusters, use_container_width=True)
-#         else:
-#             st.info("`final_clusters_depth` is present but empty.")
-#     else:
-#         st.info("No final clusters from the Promo Depth module found.")
-
-#     st.write("---")
-#     st.subheader("Data for Post-Modelling Analysis (Type 2 aggregator)")
-#     with st.expander("Show DataFrame", expanded=False):
-#         st.dataframe(df_source, use_container_width=True)
-
-#     required_cols = {"Date","Channel","Brand","PPG","Volume","SalesValue"}
-#     if not required_cols.issubset(df_source.columns):
-#         st.error(f"The chosen DataFrame must have columns: {required_cols}.")
-#         st.stop()
-
-#     df_source["Date"] = pd.to_datetime(df_source["Date"], errors="coerce")
-#     if df_source["Date"].isna().all():
-#         st.error("All dates are NaN after converting 'Date'.")
-#         st.stop()
-
-#     st.markdown("#### Select Time Range (Type 2)")
-#     time_options= ["Last Quarter (3 mo)","Last 12 Months","Entire Data"]
-#     time_choice= st.radio("Time Range for Type 2:", time_options, index=1)
-
-#     max_date= df_source["Date"].max()
-#     df_filtered= df_source.copy()
-#     import pandas as pd
-#     if time_choice == "Last Quarter (3 mo)":
-#         cutoff_date= max_date - pd.DateOffset(months=3)
-#         df_filtered= df_filtered[df_filtered["Date"]>=cutoff_date]
-#     elif time_choice == "Last 12 Months":
-#         cutoff_date= max_date - pd.DateOffset(months=12)
-#         df_filtered= df_filtered[df_filtered["Date"]>=cutoff_date]
-
-#     if df_filtered.empty:
-#         st.warning("No data left after the selected time range.")
-#         st.stop()
-
-#     # Summaries for Type 2 aggregator approach
-#     df_price = (
-#         df_filtered
-#         .groupby(["Channel","Brand","PPG"], as_index=False)
-#         .agg({"SalesValue":"sum","Volume":"sum"})
-#     )
-#     df_price["Price"] = df_price["SalesValue"] / df_price["Volume"].replace(0, np.inf)
-#     df_price.rename(columns={"Volume":"SumVolume"}, inplace=True)
-
-#     df_filtered["YearMonth"] = df_filtered["Date"].dt.to_period("M")
-#     group_ym = (
-#         df_filtered
-#         .groupby(["Channel","Brand","PPG"])["YearMonth"]
-#         .nunique()
-#         .reset_index(name="MonthsCount")
-#     )
-#     df_price = pd.merge(df_price, group_ym, on=["Channel","Brand","PPG"], how="left")
-#     df_price["AvgVolume"] = df_price["SumVolume"] / df_price["MonthsCount"].replace(0,1)
-
-#     # Retrieve your stored model picks
-#     df_brand_models= pd.DataFrame(st.session_state["saved_models_type2"]["Brand"])
-#     df_ppg_models  = pd.DataFrame(st.session_state["saved_models_type2"]["PPG"])
-#     df_brand_models.rename(columns={"MCV":"brand_MCV"}, inplace=True)
-#     df_ppg_models.rename(columns={"MCV":"ppg_MCV"}, inplace=True)
-
-#     df_merged= pd.merge(
-#         df_price,
-#         df_brand_models[["Channel","Brand","brand_MCV"]],
-#         on=["Channel","Brand"],
-#         how="inner"
-#     )
-#     df_merged= pd.merge(
-#         df_merged,
-#         df_ppg_models[["Channel","PPG","ppg_MCV"]],
-#         on=["Channel","PPG"],
-#         how="inner"
-#     )
-
-#     brand_vol= (
-#         df_merged.groupby(["Channel","Brand"], as_index=False)["SumVolume"]
-#         .sum()
-#         .rename(columns={"SumVolume":"brandVol"})
-#     )
-#     df_merged= pd.merge(df_merged, brand_vol, on=["Channel","Brand"], how="left")
-#     df_merged["ppg_share"]= df_merged["SumVolume"]/ df_merged["brandVol"].replace(0, np.inf)
-#     df_merged["ppg_partial"]= df_merged["ppg_share"]* df_merged["ppg_MCV"]
-#     brand_index= (
-#         df_merged.groupby(["Channel","Brand"], as_index=False)["ppg_partial"]
-#         .sum()
-#         .rename(columns={"ppg_partial":"brand_index"})
-#     )
-#     df_merged= pd.merge(df_merged, brand_index, on=["Channel","Brand"], how="left")
-#     df_merged["final_mcv"] = (df_merged["brand_MCV"]* df_merged["ppg_MCV"])/ df_merged["brand_index"].replace(0,np.inf)
-#     df_merged["c"]= df_merged["final_mcv"]
-#     df_merged["m"]= (df_merged["Price"]- df_merged["c"])/ df_merged["AvgVolume"].replace(0, np.inf)
-
-#     def compute_elasticity(row):
-#         m_= row["m"]
-#         p_= row["Price"]
-#         q_= row["AvgVolume"]
-#         if (m_==0) or (q_==0):
-#             return np.nan
-#         return (1.0/ m_)*(p_/ q_)
-
-#     df_merged["Elasticity"]= df_merged.apply(compute_elasticity, axis=1)
-
-#     with st.expander("Final Merged Table (Type 2)", expanded=False):
-#         st.dataframe(df_merged, use_container_width=True)
-
-#     st.markdown("<b>Demand Curves (Volume vs. Price) + Elasticity (Type 2)</b>", unsafe_allow_html=True)
-
-#     # Demand curves for Type 2
-#     for idx, row in df_merged.iterrows():
-#         channel_   = row["Channel"]
-#         brand_     = row["Brand"]
-#         ppg_       = row["PPG"]
-#         intercept  = row["c"]
-#         slope_     = row["m"]
-#         avg_vol    = row["AvgVolume"]
-#         avg_price  = row["Price"]
-#         elasticity = row["Elasticity"]
-
-#         if avg_vol<=0:
-#             st.write(f"Skipping {channel_}-{brand_}-{ppg_}, no positive volume.")
-#             continue
-
-#         max_domain_vol= 1.5* avg_vol
-#         if slope_<0:
-#             zero_cross= -intercept/ slope_
-#             if 0< zero_cross< max_domain_vol:
-#                 max_domain_vol= zero_cross
-#         if max_domain_vol<=0:
-#             st.write(f"Skipping {channel_}-{brand_}-{ppg_} (domain negative).")
-#             continue
-
-#         volumes= np.linspace(0, max_domain_vol, 100)
-#         prices= intercept+ slope_* volumes
-#         prices[prices<0]= 0
-#         revenues= volumes* prices
-#         idx_max_= np.argmax(revenues)
-#         vol_max= volumes[idx_max_]
-#         rev_max= revenues[idx_max_]
-#         price_max= prices[idx_max_]
-
-#         fig= go.Figure()
-#         fig.update_layout(
-#             colorway=["#17BECF","#BCBD22","#9467BD"],
-#             plot_bgcolor="rgba(245,245,250,0.9)",
-#             paper_bgcolor="rgba(245,245,250,0.9)"
-#         )
-#         fig.add_trace(go.Scatter(
-#             x=volumes, y=prices,
-#             mode="lines", name="Demand Curve",
-#             line=dict(color="blue",width=2),
-#         ))
-#         fig.update_layout(
-#             shapes=[
-#                 dict(
-#                     type="rect", xref="x", yref="y",
-#                     x0=0, y0=0,
-#                     x1= avg_vol, y1= avg_price,
-#                     fillcolor="limegreen",
-#                     opacity=0.3,
-#                     line=dict(color="red",width=2,dash="dash")
-#                 )
-#             ]
-#         )
-#         fig.add_trace(go.Scatter(
-#             x=[avg_vol], y=[avg_price],
-#             mode="markers",
-#             name="Avg Price & Volume",
-#             marker=dict(color="orange", size=10),
-#         ))
-#         if vol_max>0 and price_max>0:
-#             fig.add_shape(
-#                 type="rect",
-#                 xref="x", yref="y",
-#                 x0=0, y0=0,
-#                 x1=vol_max, y1= price_max,
-#                 fillcolor="red", opacity=0.15,
-#                 line=dict(color="red",width=1,dash="dot")
-#             )
-#             fig.add_trace(go.Scatter(
-#                 x=[vol_max], y=[price_max],
-#                 mode="markers",
-#                 name="Max Revenue",
-#                 marker=dict(color="red", size=10),
-#             ))
-#         elas_str= f"{elasticity:.2f}" if not np.isnan(elasticity) else "N/A"
-#         fig.add_annotation(
-#             x=0.5, y=1.06, xref="paper", yref="paper",
-#             text=f"<b>Elasticity: {elas_str}</b>",
-#             showarrow=False,
-#             font=dict(size=14, color="black"),
-#         )
-#         fig.update_layout(
-#             title=f"Demand Curve – (Channel={channel_}, Brand={brand_}, PPG={ppg_})",
-#             xaxis_title="Volume (Q)",
-#             yaxis_title="Price",
-#             template="plotly_white",
-#             legend=dict(x=0.02, y=0.98, bgcolor="rgba(255,255,255,0.5)"),
-#         )
-#         st.plotly_chart(fig, use_container_width=True)
-
-#     st.success("Finished Type 2 aggregator approach!")
-
-    # -----------------------------------------------------------
-    # NAVIGATION
-    # -----------------------------------------------------------
+    # ------------------------------------------------------------------------
+    # NAVIGATION BUTTONS
+    # ------------------------------------------------------------------------
     st.markdown("---")
     cBack, cHome = st.columns(2)
     with cBack:
-        if st.button("Back", key="section2_module2_back"):
-            go_back()  # You must define go_back() in your main app
-    with cHome:
-        if st.button("Home", key="section2_module2_home"):
-            go_home()  # You must define go_home() in your main app
-
-
-def section2_module3_page():
-    """
-    SECTION 2 – MODULE 3: Scenario Planner
-
-    This function encapsulates your 'Scenario Planner (Tables Only)' 
-    code for aggregator-level scenario logic, usage, landed, brand-level 
-    results, etc.
-    """
-
-    import streamlit as st
-    import pandas as pd
-    import numpy as np
-    import plotly.graph_objects as go
-
-    # --------------- (A) compute_scenario_volume_from_row ---------------
-    def compute_scenario_volume_from_row(
-        intercept_val: float,
-        betas: dict,
-        aggregator_row_vals: dict,
-        scenario_price: float,
-        competitor_overrides: dict,
-        additional_overrides: dict,
-        clip_zero: bool = True
-    ) -> float:
-        vol = intercept_val
-        for factor_name, beta_val in betas.items():
-            if abs(beta_val) < 1e-12:
-                continue
-
-            if factor_name == "PPU":
-                x_val = scenario_price
-
-            elif factor_name.endswith("_RPI"):
-                if factor_name in competitor_overrides:
-                    comp_price = competitor_overrides[factor_name]
-                    x_val = scenario_price / comp_price if comp_price > 0 else 0.0
-                else:
-                    row_ratio = aggregator_row_vals.get(factor_name, 0.0)
-                    if pd.isna(row_ratio) or row_ratio == 0:
-                        x_val = scenario_price / 5.0
-                    else:
-                        x_val = row_ratio
-            else:
-                if factor_name in additional_overrides:
-                    x_val = additional_overrides[factor_name]
-                else:
-                    row_val = aggregator_row_vals.get(factor_name, 0.0)
-                    x_val = 0.0 if pd.isna(row_val) else row_val
-
-            vol += beta_val * x_val
-
-        if clip_zero and vol < 0:
-            vol = 0.0
-        return vol
-
-    # --------------- (B) build_scenario_table_from_usage ---------------
-    def build_scenario_table_from_usage(usage_df, cluster_defs):
-        """
-        usage_df => rows with [ClusterName, Weeks]
-        cluster_defs => each => {ClusterName, Min, Max, Centroid}
-        We'll produce columns => [ClusterName, Centroid, Discount(%), Weeks].
-        """
-        usage_map = {r["ClusterName"]: float(r["Weeks"]) for _, r in usage_df.iterrows()}
-        def_map = {
-            cd.get("ClusterName", "Base"): float(cd.get("Centroid", 0.0))
-            for cd in cluster_defs
-        }
-
-        rows, used = [], set()
-        for _, row_ in usage_df.iterrows():
-            cname = row_.get("ClusterName", "Base")
-            w_    = float(row_.get("Weeks", 0))
-            cVal  = def_map.get(cname, 0.0)
-            rows.append({
-                "ClusterName": cname,
-                "Centroid": cVal,
-                "Discount(%)": cVal,  # user can override
-                "Weeks": w_
-            })
-            used.add(cname)
-
-        for cd_ in cluster_defs:
-            c_ = cd_.get("ClusterName","Base")
-            if c_ not in used:
-                cVal = float(cd_.get("Centroid",0.0))
-                rows.append({
-                    "ClusterName": c_,
-                    "Centroid": cVal,
-                    "Discount(%)": cVal,
-                    "Weeks": 0
-                })
-
-        return pd.DataFrame(rows, columns=["ClusterName","Centroid","Discount(%)","Weeks"])
-
-    # --------------- (C) compute_aggregator_scenario ---------------
-    def compute_aggregator_scenario(
-        df_usage: pd.DataFrame,
-        aggregator_row_vals: dict,
-        betas: dict,
-        base_price: float,
-        competitor_overrides: dict,
-        aggregator_cogs: float,
-        landed_df: pd.DataFrame
-    ):
-        """
-        Loops over cluster discount usage, computing total aggregator volume, RSV, profit.
-        Returns (tot_vol, tot_rsv, tot_profit, df_breakdown).
-        """
-        tot_vol, tot_rsv, tot_profit = 0.0, 0.0, 0.0
-        row_arr = []
-
-        for _, rowU in df_usage.iterrows():
-            cName_ = rowU["ClusterName"]
-            w_     = float(rowU.get("Weeks", 0))
-            disc_  = float(rowU.get("Discount(%)", 0))
-            if w_ <= 0:
-                continue
-
-            eff_price = base_price * (1 - disc_/100)
-            intercept_val = float(aggregator_row_vals.get("B0 (Original)", 0.0))
-            vol_1wk = compute_scenario_volume_from_row(
-                intercept_val= intercept_val,
-                betas= betas,
-                aggregator_row_vals= aggregator_row_vals,
-                scenario_price= eff_price,
-                competitor_overrides= competitor_overrides,
-                additional_overrides={},
-                clip_zero=True
-            )
-            tv = vol_1wk * w_
-            tot_vol += tv
-            tot_rsv += (eff_price * tv)
-
-            # Landed from single "Landed" col
-            match = landed_df[landed_df["ClusterName"] == cName_]
-            if match.empty:
-                landedVal = 0.0
-            else:
-                landedVal = float(match["Landed"].iloc[0])
-
-            cluster_profit = (landedVal - aggregator_cogs) * tv
-            tot_profit += cluster_profit
-
-            row_arr.append({
-                "Cluster": cName_,
-                "Weeks": w_,
-                "Discount(%)": disc_,
-                "PriceUsed": eff_price,
-                "Volume/week": vol_1wk,
-                "TotalVolume": tv
-            })
-
-        df_breakdown = pd.DataFrame(row_arr)
-        if tot_vol > 0:
-            df_breakdown["%_Scenario"] = df_breakdown["TotalVolume"] / tot_vol * 100
-        else:
-            df_breakdown["%_Scenario"] = 0
-
-        return tot_vol, tot_rsv, tot_profit, df_breakdown
-
-    # --------------- (D) compute_full_brand_scenario ---------------
-    def compute_full_brand_scenario(df_brand, usage_agg):
-        """
-        For each aggregator in df_brand, read scenario from session_state,
-        compute aggregator volume, sum to brand-level totals.
-        Returns (aggregator_scenario_rows, brand_vol, brand_rsv, brand_profit, brand_wpr).
-        """
-        aggregator_scenario_rows = []
-
-        for _, rowX in df_brand.iterrows():
-            if "B0 (Original)" not in rowX:
-                continue
-
-            chX, varX, ppgX = rowX["Channel"], rowX["Variant"], rowX["PPG"]
-            agg_labelX= f"{chX}-{rowX['Brand']}-{varX}-{ppgX}"
-            combo_keyX= (chX, rowX['Brand'], varX, ppgX)
-
-            sc_tbl_keyX= f"scenario_tbl_{combo_keyX}"
-            base_price_keyX= f"scenarioBasePrice_{combo_keyX}"
-            landed_keyX= f"landed_{combo_keyX}"
-
-            if sc_tbl_keyX not in st.session_state:
-                continue
-            if base_price_keyX not in st.session_state:
-                continue
-            if landed_keyX not in st.session_state:
-                continue
-
-            df_usageX = st.session_state[sc_tbl_keyX].copy()
-            user_base_priceX = float(st.session_state[base_price_keyX])
-            landed_dfX = st.session_state[landed_keyX].copy()
-
-            aggregator_finX = st.session_state["combo_financials"].get(combo_keyX, {})
-            aggregator_cogsX= aggregator_finX.get("cogs", 0.0)
-
-            betasX={}
-            for col_ in df_brand.columns:
-                if col_.startswith("Beta_"):
-                    nm = col_.replace("Beta_","")
-                    val_ = rowX[col_]
-                    betasX[nm] = float(val_) if not pd.isna(val_) else 0.0
-
-            aggregator_row_valsX= rowX.to_dict()
-
-            comp_overridesX={}
-            for f_name, bval in betasX.items():
-                if f_name.endswith("_RPI") and abs(bval)>1e-12:
-                    pk_ = f"{f_name}_AggKey"
-                    cAgg_ = aggregator_row_valsX.get(pk_, None)
-                    if cAgg_ is not None:
-                        comp_overridesX[f_name] = float(
-                            st.session_state.get(f"scenarioBasePrice_{cAgg_}", 0.0)
-                        )
-
-            s_volX, s_rsvX, s_profX, _ = compute_aggregator_scenario(
-                df_usageX, aggregator_row_valsX, betasX,
-                user_base_priceX, comp_overridesX, aggregator_cogsX, landed_dfX
-            )
-            wpriceX = s_rsvX / s_volX if s_volX>0 else 0
-
-            d_mapX = st.session_state["default_scenario_map"].get(agg_labelX, None)
-            if not d_mapX:
-                d_vol, d_rsv, d_prof, wprice_d = (0.0,0.0,0.0,0.0)
-            else:
-                d_vol = d_mapX["Volume"]
-                d_rsv = d_mapX["RSV"]
-                d_prof= d_mapX["Profit"]
-                wprice_d = d_mapX["WeightedPrice"]
-
-            aggregator_scenario_rows.append({
-                "AggregatorLabel": agg_labelX,
-                "ScenarioVolume": s_volX,
-                "ScenarioRSV": s_rsvX,
-                "ScenarioProfit": s_profX,
-                "ScenarioWeightedPrice": wpriceX,
-                "DefaultVolume": d_vol,
-                "DefaultRSV": d_rsv,
-                "DefaultProfit": d_prof,
-                "DefaultWeightedPrice": wprice_d
-            })
-
-        df_temp = pd.DataFrame(aggregator_scenario_rows)
-        if df_temp.empty:
-            return aggregator_scenario_rows, 0, 0, 0, 0
-
-        brand_s_vol   = df_temp["ScenarioVolume"].sum()
-        brand_s_rsv   = df_temp["ScenarioRSV"].sum()
-        brand_s_prof  = df_temp["ScenarioProfit"].sum()
-        brand_s_wprice= (brand_s_rsv / brand_s_vol) if brand_s_vol>0 else 0
-
-        return aggregator_scenario_rows, brand_s_vol, brand_s_rsv, brand_s_prof, brand_s_wprice
-
-    # --------------- MAIN PAGE CONTENT ---------------
-    if st.session_state.get("page") == "Scenario Planner":
-        st.title("Real-Time Scenario Planner (Tables Only)")
-
-        # (1) Load aggregator rows (model results)
-        if "final_saved_models_type1" not in st.session_state:
-            st.stop()
-        df_type1 = st.session_state["final_saved_models_type1"]
-        if isinstance(df_type1, list):
-            df_type1 = pd.DataFrame(df_type1)
-        if df_type1.empty:
-            st.stop()
-
-        for c_ in ["Channel","Brand","Variant","PPG"]:
-            if c_ not in df_type1.columns:
-                df_type1[c_] = None
-
-        # (2) Pick brand
-        all_brands = sorted(df_type1["Brand"].dropna().unique())
-        chosen_brand = st.selectbox("Select a Brand:", all_brands)
-        df_brand = df_type1[df_type1["Brand"] == chosen_brand].copy()
-        if df_brand.empty:
-            st.warning("No aggregator rows for that brand.")
-            st.stop()
-
-        # Keep default scenario maps in session
-        if "default_scenario_map" not in st.session_state:
-            st.session_state["default_scenario_map"] = {}
-        if "default_brand_scenario" not in st.session_state:
-            st.session_state["default_brand_scenario"] = None
-
-        # -----------------------------------------------
-        # (0) Model Beta Overview
-        # -----------------------------------------------
-        with st.expander("0) Model Beta Overview", expanded=True):
-            beta_cols = [c for c in df_brand.columns if c.startswith("Beta_") or c == "B0 (Original)"]
-            show_cols = ["Channel","Variant","PPG"] + beta_cols
-            df_betas = df_brand[show_cols].copy()
-            st.dataframe(df_betas, use_container_width=True)
-
-        # -----------------------------------------------
-        # (1) Last 12-month aggregator data
-        # -----------------------------------------------
-        with st.expander("1) Last 12-Month Aggregator Data", expanded=True):
-            ds_candidates = [
-                k for k in ["D0","dataframe1","dataframe"]
-                if k in st.session_state and st.session_state[k] is not None
-            ]
-            if not ds_candidates:
-                st.info("No aggregator data => can't do usage.")
-            else:
-                chosen_data_12 = st.selectbox("Data source (12 mo)?", ds_candidates)
-                df_data = st.session_state[chosen_data_12].copy()
-
-                # Filter to just the chosen Brand
-                if "Brand" in df_data.columns:
-                    df_data = df_data[df_data["Brand"] == chosen_brand]
-
-                # If there's a Channel col, let user select one
-                if "Channel" in df_data.columns:
-                    possible_channels = sorted(df_data["Channel"].dropna().unique())
-                    if len(possible_channels) > 1:
-                        chosen_channel = st.selectbox("Pick a Channel:", possible_channels)  
-                        df_data = df_data[df_data["Channel"] == chosen_channel]
-
-                # If there's a "Date" column, filter last 12 months
-                if "Date" in df_data.columns:
-                    df_data["Date"] = pd.to_datetime(df_data["Date"], errors="coerce")
-                    valid_dt = df_data["Date"].dropna()
-                    if not valid_dt.empty:
-                        cutoff = valid_dt.max() - pd.DateOffset(months=12)
-                        df_data = df_data[df_data["Date"] >= cutoff]
-
-                if df_data.empty:
-                    st.info("No brand/channel data => volume=0, usage=0.")
-                else:
-                    def agg_key(r):
-                        return f"{r.get('Channel','')}-{r.get('Brand','')}-{r.get('Variant','')}-{r.get('PPG','')}"
-                    df_data["AggKey"] = df_data.apply(agg_key, axis=1)
-
-                    df_data["WeekStart"] = pd.to_datetime(df_data["Date"]).dt.to_period("W").apply(lambda r: r.start_time)
-                    grp = df_data.groupby(["AggKey","WeekStart"], as_index=False).agg({
-                        "Volume":"sum","Price":"mean","BasePrice":"mean","SalesValue":"sum"
-                    })
-
-                    fig = go.Figure()
-                    for agg_ in grp["AggKey"].unique():
-                        sub_ = grp[grp["AggKey"] == agg_].sort_values("WeekStart")
-                        fig.add_trace(go.Scatter(
-                            x=sub_["WeekStart"], 
-                            y=sub_["Volume"],
-                            mode="lines+markers", 
-                            name=agg_
-                        ))
-                    fig.update_layout(xaxis_title="Week", yaxis_title="Volume")
-                    st.plotly_chart(fig, use_container_width=True)
-
-                    df_summ = df_data.groupby("AggKey", as_index=False).agg({
-                        "Volume":"sum","Price":"mean","SalesValue":"sum"
-                    }).rename(columns={
-                        "Volume":"Vol_12","Price":"Price_12","SalesValue":"Rev_12"
-                    })
-                    missing = df_summ["Rev_12"].isna() | (df_summ["Rev_12"] == 0)
-                    if missing.any():
-                        df_summ.loc[missing, "Rev_12"] = (
-                            df_summ.loc[missing, "Vol_12"] *
-                            df_summ.loc[missing, "Price_12"]
-                        )
-                    st.dataframe(df_summ, use_container_width=True)
-
-                    final_clusters_map = st.session_state.get("final_clusters_depth", {})
-                    df_data["ClusterName"] = "Base"
-
-                    def assign_cluster(row):
-                        cset = final_clusters_map.get(
-                            (row.get("Channel"), row.get("Brand"), row.get("Variant"), row.get("PPG")), []
-                        )
-                        if not cset:
-                            return "Base"
-                        bp, pr = row.get("BasePrice", 0), row.get("Price", 0)
-                        disc_ = 0 if bp<=0 else (bp - pr)/bp*100
-                        for cd_ in cset:
-                            if cd_.get("Min",0) <= disc_ <= cd_.get("Max",99):
-                                return cd_.get("ClusterName","Base")
-                        return "Base"
-
-                    df_data["ClusterName"] = df_data.apply(assign_cluster, axis=1)
-                    usageG = df_data.groupby(["AggKey","ClusterName","WeekStart"], as_index=False)["Volume"].sum()
-                    usage2 = usageG.groupby(["AggKey","ClusterName"], as_index=False).agg({
-                        "WeekStart":"nunique","Volume":"sum"
-                    }).rename(columns={
-                        "WeekStart":"Weeks","Volume":"TotalVolume"
-                    })
-                    usage2["Volume_per_Week"] = usage2["TotalVolume"] / usage2["Weeks"]
-                    st.dataframe(usage2, use_container_width=True)
-
-                    # Auto-fill scenario base price from average Price_12
-                    for _, rowS in df_summ.iterrows():
-                        aggK = rowS["AggKey"]
-                        ch_, br_, var_, ppg_ = aggK.split("-")
-                        combo_key_ = (ch_, br_, var_, ppg_)
-                        basePriceKey_ = f"scenarioBasePrice_{combo_key_}"
-                        if basePriceKey_ not in st.session_state:
-                            avgPrice = rowS["Price_12"] if not pd.isna(rowS["Price_12"]) else 0.0
-                            st.session_state[basePriceKey_] = float(avgPrice)
-
-                    st.session_state["brand_aggregator_12summ"] = df_summ
-                    st.session_state["brand_aggregator_usage"]  = usage2
-
-        # -----------------------------------------------
-        # (2) COGS & Landed Price
-        # -----------------------------------------------
-        with st.expander("2) COGS & Landed Price (Auto Save => sets default scenario)", expanded=True):
-            if "combo_financials" not in st.session_state:
-                st.session_state["combo_financials"] = {}
-
-            usage_agg= st.session_state.get("brand_aggregator_usage", pd.DataFrame())
-
-            for idxA, rowA in df_brand.iterrows():
-                chA, varA, ppgA = rowA["Channel"], rowA["Variant"], rowA["PPG"]
-                combo_keyA= (chA, chosen_brand, varA, ppgA)
-                agg_labelA= f"{chA}-{chosen_brand}-{varA}-{ppgA}"
-
-                old_store = st.session_state["combo_financials"].get(combo_keyA, {})
-                old_cogs  = old_store.get("cogs", 0.0)
-                old_baseL = old_store.get("landed_base", 0.0)
-                old_cls   = old_store.get("clusters", {})
-
-                cogs_key= f"cogs_{combo_keyA}"
-                if cogs_key not in st.session_state:
-                    st.session_state[cogs_key] = float(old_cogs)
-                new_cogs = st.number_input(f"COGS => {combo_keyA}", 0.0, step=0.5, key=cogs_key)
-
-                landed_base_key= f"landed_base_{combo_keyA}"
-                if landed_base_key not in st.session_state:
-                    st.session_state[landed_base_key] = float(old_baseL)
-                new_baseL= st.number_input(f"Landed Base Price => {combo_keyA}",0.0,step=0.5,key=landed_base_key)
-
-                aggregator_clusters = st.session_state.get("final_clusters_depth", {}).get(combo_keyA, [{"ClusterName":"Base"}])
-                new_cls= {}
-                for cd_ in aggregator_clusters:
-                    cname_ = cd_.get("ClusterName","Base")
-                    ln_key= f"landed_{combo_keyA}_{cname_}"
-                    old_ld= old_cls.get(cname_,{}).get("landed",0.0)
-
-                    if ln_key not in st.session_state:
-                        st.session_state[ln_key] = float(old_ld)
-
-                    c1, c2= st.columns([1,1])
-                    with c1:
-                        st.write(f"Cluster '{cname_}' (Min={cd_.get('Min',0)},Max={cd_.get('Max',99)})")
-                    with c2:
-                        new_cluster_landed= st.number_input(f"Landed_{combo_keyA}_{cname_}",0.0,step=0.5,key=ln_key)
-                    new_cls[cname_]={"landed": new_cluster_landed}
-
-                st.session_state["combo_financials"][combo_keyA]={
-                    "cogs": new_cogs,
-                    "landed_base": new_baseL,
-                    "clusters": new_cls
-                }
-                st.write("---")
-
-            # aggregator default scenario => discount=0 for each cluster
-            brand_defaults_rows= []
-            for _, rowD in df_brand.iterrows():
-                if "B0 (Original)" not in rowD:
-                    continue
-                chD,varD,ppgD= rowD["Channel"], rowD["Variant"],rowD["PPG"]
-                combo_keyD=(chD,chosen_brand,varD,ppgD)
-                agg_labelD=f"{chD}-{chosen_brand}-{varD}-{ppgD}"
-
-                aggregator_finD= st.session_state["combo_financials"].get(combo_keyD,{})
-                aggregator_cogsD= aggregator_finD.get("cogs",0.0)
-                aggregator_clustersD= aggregator_finD.get("clusters",{})
-
-                usage_subD= usage_agg[usage_agg["AggKey"]== agg_labelD] if not usage_agg.empty else pd.DataFrame()
-                if usage_subD.empty:
-                    usage_dfD= pd.DataFrame([{"ClusterName":"Base","Weeks":0,"Discount(%)":0.0}])
-                else:
-                    usage_dfD= usage_subD[["ClusterName","Weeks"]].copy()
-                    usage_dfD["Discount(%)"]=0.0
-
-                landed_rowsD=[]
-                for _, rU in usage_dfD.iterrows():
-                    cN_= rU["ClusterName"]
-                    if cN_=="Base":
-                        ld_= aggregator_finD.get("landed_base",0.0)
-                    else:
-                        ld_= aggregator_clustersD.get(cN_,{}).get("landed", aggregator_finD.get("landed_base",0.0))
-                    landed_rowsD.append({"ClusterName":cN_,"Landed":ld_})
-                landed_dfD=pd.DataFrame(landed_rowsD)
-
-                base_price_keyD=f"scenarioBasePrice_{combo_keyD}"
-                if base_price_keyD not in st.session_state:
-                    st.session_state[base_price_keyD]=0.0
-                user_base_priceD= st.session_state[base_price_keyD]
-
-                betasD={}
-                for c_2 in df_brand.columns:
-                    if c_2.startswith("Beta_"):
-                        nm_2= c_2.replace("Beta_","")
-                        val_2= rowD[c_2]
-                        betasD[nm_2]= float(val_2) if not pd.isna(val_2) else 0.0
-
-                aggregator_row_valsD= rowD.to_dict()
-
-                comp_overridesD={}
-                for f_name,bvalD in betasD.items():
-                    if f_name.endswith("_RPI") and abs(bvalD)>1e-12:
-                        pk__= f"{f_name}_AggKey"
-                        cAgg__= aggregator_row_valsD.get(pk__, None)
-                        if cAgg__ is not None:
-                            comp_overridesD[f_name]= float(st.session_state.get(f"scenarioBasePrice_{cAgg__}",0.0))
-
-                from copy import deepcopy
-                usage_df_copy= deepcopy(usage_dfD)
-                d_vol, d_rsv, d_prof, _ = compute_aggregator_scenario(
-                    usage_df_copy, aggregator_row_valsD, betasD, user_base_priceD,
-                    comp_overridesD, aggregator_cogsD, landed_dfD
-                )
-                wprice_d= d_rsv/d_vol if d_vol>0 else 0
-
-                st.session_state["default_scenario_map"][agg_labelD]={
-                    "Volume": d_vol,
-                    "RSV": d_rsv,
-                    "Profit": d_prof,
-                    "WeightedPrice": wprice_d
-                }
-                brand_defaults_rows.append({
-                    "AggLabel": agg_labelD,
-                    "DefVol": d_vol,
-                    "DefRSV": d_rsv,
-                    "DefProfit": d_prof
-                })
-
-            df_bdef= pd.DataFrame(brand_defaults_rows)
-            total_b_vol= df_bdef["DefVol"].sum()
-            total_b_rsv= df_bdef["DefRSV"].sum()
-            total_b_prof= df_bdef["DefProfit"].sum()
-            wpr_def_b= total_b_rsv/ total_b_vol if total_b_vol>0 else 0
-
-            st.session_state["default_brand_scenario"]={
-                "Volume": total_b_vol,
-                "RSV": total_b_rsv,
-                "Profit": total_b_prof,
-                "WeightedPrice": wpr_def_b
-            }
-
-    # (3) Scenario Planner => aggregator by aggregator
-    st.subheader("3) Scenario Planner (Tables Only)")
-    usage_agg= st.session_state.get("brand_aggregator_usage", pd.DataFrame())
-
-    for _, rowB in df_brand.iterrows():
-        chB, varB, ppgB = rowB["Channel"], rowB["Variant"], rowB["PPG"]
-        combo_keyB= (chB, chosen_brand, varB, ppgB)
-        agg_label= f"{chB}-{chosen_brand}-{varB}-{ppgB}"
-
-        st.write(f"## Aggregator => {agg_label}")
-        if "B0 (Original)" not in rowB:
-            st.warning("No intercept => skip scenario.")
-            continue
-
-        sub_usage= usage_agg[usage_agg["AggKey"]== agg_label] if not usage_agg.empty else pd.DataFrame()
-        if sub_usage.empty:
-            usage_df= pd.DataFrame([{"ClusterName":"Base","Weeks":0}])
-        else:
-            usage_df= sub_usage[["ClusterName","Weeks"]].copy()
-
-        aggregator_cdefs= st.session_state.get("final_clusters_depth",{}).get(
-            combo_keyB, [{"ClusterName":"Base","Centroid":0.0}]
-        )
-        default_tbl= build_scenario_table_from_usage(usage_df, aggregator_cdefs)
-
-        base_price_key= f"scenarioBasePrice_{combo_keyB}"
-        if base_price_key not in st.session_state:
-            st.session_state[base_price_key] = 0.0
-
-        sc_tbl_key= f"scenario_tbl_{combo_keyB}"
-        if sc_tbl_key not in st.session_state:
-            st.session_state[sc_tbl_key] = default_tbl.copy()
-
-        def reset_scenario():
-            st.session_state[base_price_key] = 0.0
-            st.session_state[sc_tbl_key]     = default_tbl.copy()
-            st.rerun()
-
-        cL, cR = st.columns([1,1], gap="large")
-        with cL:
-            st.number_input(
-                f"Scenario Base Price_{combo_keyB}",
-                min_value=0.0,
-                step=0.5,
-                key= base_price_key
-            )
-            st.button("Reset usage", key=f"btnReset_{combo_keyB}", on_click=reset_scenario)
-
-            sc_edit = st.data_editor(
-                st.session_state[sc_tbl_key],
-                key= f"editor_{combo_keyB}",
-                use_container_width=True
-            )
-            st.session_state[sc_tbl_key] = sc_edit.copy()
-
-            aggregator_fin= st.session_state["combo_financials"].get(combo_keyB, {})
-            aggregator_clusters= aggregator_fin.get("clusters", {})
-
-            landed_key= f"landed_{combo_keyB}"
-            all_clusters= st.session_state[sc_tbl_key]["ClusterName"].unique()
-
-            landed_rows=[]
-            for cN in all_clusters:
-                if cN=="Base":
-                    saved_landed= aggregator_fin.get("landed_base", 0.0)
-                else:
-                    saved_landed= aggregator_clusters.get(cN,{}).get("landed", aggregator_fin.get("landed_base",0.0))
-                landed_rows.append({
-                    "ClusterName": cN,
-                    "Landed": saved_landed
-                })
-
-            landed_df_init= pd.DataFrame(landed_rows, columns=["ClusterName","Landed"])
-            if landed_key not in st.session_state:
-                st.session_state[landed_key]= landed_df_init.copy()
-            else:
-                old_df= st.session_state[landed_key].copy()
-                for i, row_2 in old_df.iterrows():
-                    old_df.loc[i,"Landed"]= max(0.0, old_df.loc[i,"Landed"])
-                st.session_state[landed_key]= old_df
-
-            lo_edit= st.data_editor(
-                st.session_state[landed_key],
-                key= f"landed_editor_{combo_keyB}",
-                use_container_width=True
-            )
-            st.session_state[landed_key]= lo_edit.copy()
-
-        with cR:
-            aggregator_row_vals= rowB.to_dict()
-            betasB={}
-            for col_2 in df_brand.columns:
-                if col_2.startswith("Beta_"):
-                    nm_2= col_2.replace("Beta_","")
-                    val_2= rowB[col_2]
-                    betasB[nm_2]= float(val_2) if not pd.isna(val_2) else 0.0
-
-            aggregator_finB= st.session_state["combo_financials"].get(combo_keyB, {})
-            aggregator_cogsB= aggregator_finB.get("cogs", 0.0)
-            sc_dataB= st.session_state[sc_tbl_key].copy()
-            landed_dfB= st.session_state[landed_key].copy()
-
-            comp_overridesB={}
-            for f_name,bvalB in betasB.items():
-                if f_name.endswith("_RPI") and abs(bvalB)>1e-12:
-                    pk_2= f"{f_name}_AggKey"
-                    cagg_2= aggregator_row_vals.get(pk_2,None)
-                    if cagg_2 is not None:
-                        comp_overridesB[f_name]= float(st.session_state.get(f"scenarioBasePrice_{cagg_2}",0.0))
-
-            s_volB, s_rsvB, s_profB, df_sresB = compute_aggregator_scenario(
-                sc_dataB, aggregator_row_vals, betasB,
-                st.session_state[base_price_key], comp_overridesB,
-                aggregator_cogsB, landed_dfB
-            )
-            wprice_sB= (s_rsvB/s_volB) if s_volB>0 else 0
-
-            st.write("**Scenario Computation Table (Aggregator)**:")
-            st.dataframe(df_sresB, use_container_width=True)
-
-            d_mapB= st.session_state["default_scenario_map"].get(agg_label,{})
-            d_volB= d_mapB.get("Volume",0.0)
-            d_rsvB= d_mapB.get("RSV",0.0)
-            d_profB= d_mapB.get("Profit",0.0)
-            wpr_dB= d_mapB.get("WeightedPrice",0.0)
-
-            def diffpct(n, o):
-                diffv= n - o
-                pct= (diffv/o*100) if o!=0 else 0
-                return diffv, pct
-
-            vol_diffB, vol_pctB= diffpct(s_volB, d_volB)
-            wpr_diffB, wpr_pctB= diffpct(wprice_sB, wpr_dB)
-            rsv_diffB, rsv_pctB= diffpct(s_rsvB, d_rsvB)
-            prof_diffB, prof_pctB= diffpct(s_profB, d_profB)
-
-            df_agg_comp= pd.DataFrame({
-                "Metric": ["Volume","WeightedPrice","RSV","Profit"],
-                "Scenario": [s_volB, wprice_sB, s_rsvB, s_profB],
-                "Default":  [d_volB, wpr_dB, d_rsvB, d_profB],
-                "Diff":     [vol_diffB, wpr_diffB, rsv_diffB, prof_diffB],
-                "Diff(%)":  [vol_pctB, wpr_pctB, rsv_pctB, prof_pctB]
-            })
-            st.write("**Aggregator-Level Comparison**:")
-            st.dataframe(df_agg_comp, use_container_width=True)
-
-            all_rows, brand_vol, brand_rsv, brand_prof, brand_wpr = compute_full_brand_scenario(df_brand, usage_agg)
-            def_map_b= st.session_state["default_brand_scenario"] or {}
-            d_b_vol= def_map_b.get("Volume",0.0)
-            d_b_rsv= def_map_b.get("RSV",0.0)
-            d_b_prof= def_map_b.get("Profit",0.0)
-            d_b_wpr= def_map_b.get("WeightedPrice",0.0)
-
-            b_vol_diff, b_vol_pct= diffpct(brand_vol, d_b_vol)
-            b_wpr_diff, b_wpr_pct= diffpct(brand_wpr, d_b_wpr)
-            b_rsv_diff, b_rsv_pct= diffpct(brand_rsv, d_b_rsv)
-            b_prof_diff, b_prof_pct= diffpct(brand_prof, d_b_prof)
-
-            df_brand_comp= pd.DataFrame({
-                "Metric": ["Volume","WeightedPrice","RSV","Profit"],
-                "Scenario": [brand_vol, brand_wpr, brand_rsv, brand_prof],
-                "Default":  [d_b_vol, d_b_wpr, d_b_rsv, d_b_prof],
-                "Diff":     [b_vol_diff, b_wpr_diff, b_rsv_diff, b_prof_diff],
-                "Diff(%)":  [b_vol_pct, b_wpr_pct, b_rsv_pct, b_prof_pct]
-            })
-            st.write("**Brand-Level Comparison**:")
-            st.dataframe(df_brand_comp, use_container_width=True)
-            
-            
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Back"):
+        if st.button("Back", key="section2_module1_back"):
             go_back()
-    with col2:
-        if st.button("Home"):
+    with cHome:
+        if st.button("Home", key="section2_module1_home"):
             go_home()
 
 
 
 
+def section2_module3_page():
+    
+
+
+    # ------------------------------------------------------------------------
+    # NAVIGATION BUTTONS
+    # ------------------------------------------------------------------------
+    st.markdown("---")
+    cBack, cHome = st.columns(2)
+    with cBack:
+        if st.button("Back", key="section2_module3_back"):
+            go_back()
+    with cHome:
+        if st.button("Home", key="section2_module3_home"):
+            go_home()
+
+##############################section 3 
+# def section3_module2_page():
+#     import streamlit as st
+#     import plotly.graph_objects as go
+
+#     # -----------------------------------------------------------------------
+#     # CUSTOM CSS FOR VISUAL ENHANCEMENTS
+#     # -----------------------------------------------------------------------
+#     st.markdown("""
+#     <style>
+#     /* Overall app background */
+#     .stApp {
+#         background-color: #F5F5F5;
+#     }
+
+#     /* Primary headers */
+#     .custom-header {
+#         font-family: 'Inter', sans-serif;
+#         font-size: 36px; 
+#         font-weight: 600;
+#         color: #333333;
+#         margin-bottom: 0.2rem;
+#     }
+
+#     .subheader {
+#         font-family: 'Inter', sans-serif;
+#         font-size: 18px;
+#         color: #666666;
+#         margin-top: 0;
+#         margin-bottom: 1rem;
+#     }
+
+#     /* Accent horizontal rule */
+#     .accent-hr {
+#         border: 0;
+#         height: 2px;
+#         background: linear-gradient(to right, #FFBD59, #FFC87A);
+#         margin: 0.5rem 0 1.5rem 0;
+#     }
+
+#     /* Card container styling */
+#     .card {
+#         background-color: #FFFFFF; 
+#         padding: 1.2rem 1.2rem;
+#         margin-bottom: 1rem;
+#         border-radius: 8px;
+#         box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+#     }
+
+#     /* Card headings */
+#     .card h2 {
+#         font-family: 'Inter', sans-serif;
+#         font-size: 24px;
+#         margin: 0.2rem 0 1rem 0;
+#         color: #333333;
+#     }
+
+#     /* Buttons in horizontal block (Back, Home) */
+#     div[data-testid="stHorizontalBlock"] button {
+#         background-color: #FFBD59 !important; 
+#         color: #333333 !important;
+#         font-weight: 600 !important;
+#         border-radius: 4px !important;
+#         border: none !important;
+#         margin-bottom: 0.5rem;
+#     }
+#     div[data-testid="stHorizontalBlock"] button:hover {
+#         background-color: #FFC87A !important;
+#     }
+
+#     /* Dataframe styling */
+#     .dataframe-table {
+#         font-family: 'Inter', sans-serif;
+#         font-size: 14px;
+#         color: #333333;
+#     }
+#     </style>
+#     """, unsafe_allow_html=True)
+
+#     # -----------------------------------------------------------------------
+#     # MAIN HEADER & NAVIGATION
+#     # -----------------------------------------------------------------------
+#     st.markdown('<h1 class="custom-header">📶 Brand Ladder Analysis with Custom Product Aggregation</h1>', unsafe_allow_html=True)
+#     st.markdown('<p class="subheader">Compare pricing across custom-defined products, using a subtle yet cohesive design.</p>', unsafe_allow_html=True)
+#     st.markdown('<hr class="accent-hr">', unsafe_allow_html=True)
+
+
+
+#     cBack, cHome = st.columns(2)
+#     with cBack:
+#         if st.button("Back", key="section3_module2_back"):
+#             go_back()
+#     with cHome:
+#         if st.button("Home", key="section3_module2_home"):
+#             go_home()
+
+#     # -----------------------------------------------------------------------
+#     # RETRIEVE DATA
+#     # -----------------------------------------------------------------------
+#     dataframe = st.session_state.get("D0", None)
+
+#     # -----------------------------------------------------------------------
+#     # VALIDATE DATA
+#     # -----------------------------------------------------------------------
+#     if dataframe is None or dataframe.empty:
+#         st.warning("No data uploaded yet. Please upload a file in the sidebar.")
+#         st.stop()
+
+#     # =============================================================================
+#     # CARD 1: FILTERS & SELECTION
+#     # =============================================================================
+#     st.markdown('<div class="card">', unsafe_allow_html=True)
+#     st.write("## Step 1: Configure Filters and Aggregations")
+
+#     # 1) (Optional) CHANNEL SELECTION
+#     channel_data = dataframe
+#     if "Channel" in dataframe.columns:
+#         colA, colB = st.columns(2)
+#         with colA:
+#             selected_channel = st.selectbox("Select Channel:", dataframe["Channel"].unique())
+#         channel_data = dataframe[dataframe["Channel"] == selected_channel]
+#         if channel_data.empty:
+#             st.warning("No data available for the selected channel.")
+#             st.markdown('</div>', unsafe_allow_html=True)
+#             st.stop()
+#     else:
+#         st.info("No 'Channel' column found; proceeding without channel filtering.")
+
+#     # 2) POSSIBLE AGGREGATOR COLUMNS
+#     possible_aggregator_cols = ["Brand", "Variant", "PackType", "PPG", "PackSize"]
+#     cols_found = [c for c in possible_aggregator_cols if c in channel_data.columns]
+
+#     if not cols_found:
+#         st.error("None of the expected columns (Brand, Variant, PackType, PPG, PackSize) exist in the data.")
+#         st.markdown('</div>', unsafe_allow_html=True)
+#         st.stop()
+
+#     # Let the user pick how they want to measure volume if both columns exist
+#     volume_options = []
+#     if "VolumeUnits" in channel_data.columns:
+#         volume_options.append("By Unit")
+#     if "Volume" in channel_data.columns:
+#         volume_options.append("By Litre")
+
+#     volume_col = None
+#     if volume_options:
+#         # e.g., default to "By Unit" if both exist
+#         user_volume_choice = st.selectbox("Choose how to compute Price:", volume_options)
+#         if user_volume_choice == "By Unit":
+#             volume_col = "VolumeUnits"
+#         elif user_volume_choice == "By Litre":
+#             volume_col = "Volume"
+
+#     # 3-COLUMN LAYOUT: aggregator cols, base aggregator + volume checkbox, competitor aggregator
+#     c1, c2, c3 = st.columns([1.2, 1.2, 1.2])
+
+#     with c1:
+#         st.markdown("**Select aggregator columns**")
+#         selected_agg_cols = st.multiselect(
+#             "Aggregator definition:",
+#             options=cols_found,
+#             default=["Brand"]
+#         )
+#         st.caption("Combined into a single product identifier.")
+
+#     with c2:
+#         st.markdown("**Base Aggregator & Volume**")
+#         show_volume = st.checkbox("Display Volume on Secondary Y-Axis", value=False)
+
+#     with c3:
+#         st.markdown("**Competitors**")
+#         # We'll define competitor aggregator after aggregator column is set.
+
+#     if not selected_agg_cols:
+#         st.warning("No aggregator columns selected. Please pick at least one column.")
+#         st.markdown('</div>', unsafe_allow_html=True)
+#         st.stop()
+
+#     # Build aggregator column
+#     channel_data = channel_data.copy()
+#     def combine_cols(row):
+#         return " - ".join(str(row[c]) for c in selected_agg_cols)
+
+#     channel_data["Aggregator"] = channel_data.apply(combine_cols, axis=1)
+
+#     all_aggregators = sorted(channel_data["Aggregator"].unique())
+#     with c2:
+#         base_agg = st.selectbox(
+#             "Base Aggregator:",
+#             options=all_aggregators
+#         )
+#     with c3:
+#         comp_aggs = st.multiselect(
+#             "Competitor(s):",
+#             options=[a for a in all_aggregators if a != base_agg]
+#         )
+
+#     st.markdown('</div>', unsafe_allow_html=True)
+
+#     # =============================================================================
+#     # CARD 2: BRAND LADDER + MARKET SHARE (SIDE-BY-SIDE)
+#     # =============================================================================
+#     st.markdown('<div class="card">', unsafe_allow_html=True)
+#     st.write("## Step 2: Brand Ladder & Market Share")
+
+#     selected_data = channel_data[channel_data["Aggregator"].isin([base_agg] + comp_aggs)]
+#     if selected_data.empty:
+#         st.warning("No data found for the selected aggregators.")
+#         st.markdown('</div>', unsafe_allow_html=True)
+#         st.stop()
+
+#     colLeft, colRight = st.columns([2, 1])  # Left chart is bigger, right chart narrower
+
+#     # --------------------------
+#     # BRAND LADDER (Left Column)
+#     # --------------------------
+#     with colLeft:
+#         st.write("### Brand Ladder Chart")
+        
+#         # Helper function: create custom marker colors & sizes 
+#         # so our brand aggregator stands out a bit, without being too bold
+#         def get_marker_properties(df, base_aggregator):
+#             marker_colors = []
+#             marker_sizes = []
+#             for _, row in df.iterrows():
+#                 if row["Aggregator"] == base_agg:
+#                     marker_colors.append("#FF7F7F")  # Soft red highlight
+#                     marker_sizes.append(10)
+#                 else:
+#                     marker_colors.append("#458EE2")  # Subtle blue
+#                     marker_sizes.append(7)
+#             return marker_colors, marker_sizes
+
+#         # SCENARIO A: Price & BasePrice
+#         if "Price" in channel_data.columns and "BasePrice" in channel_data.columns:
+#             grouped_data = (
+#                 selected_data.groupby("Aggregator", as_index=False)
+#                 .agg(MeanBasePrice=("BasePrice", "mean"), MeanPrice=("Price", "mean"))
+#             )
+
+#             # If either "VolumeUnits" or "Volume" is present, merge it in as "VolumeUnits" col
+#             # if user wants to display volume. But this usage is optional for scenario A.
+#             if volume_col and volume_col in selected_data.columns:
+#                 vol_data = selected_data.groupby("Aggregator", as_index=False)[volume_col].sum()
+#                 vol_data.rename(columns={volume_col: "VolumeUnits"}, inplace=True) 
+#                 grouped_data = grouped_data.merge(vol_data, on="Aggregator", how="left")
+#             else:
+#                 grouped_data["VolumeUnits"] = 0
+
+#             base_price_val = grouped_data.loc[grouped_data["Aggregator"] == base_agg, "MeanPrice"].values[0]
+#             grouped_data["Price Difference (%)"] = (
+#                 (grouped_data["MeanPrice"] - base_price_val) / base_price_val * 100
+#             )
+#             grouped_data.sort_values(by="MeanPrice", inplace=True)
+
+#             marker_colors, marker_sizes = get_marker_properties(grouped_data, base_agg)
+
+#             fig_ladder = go.Figure()
+#             fig_ladder.add_trace(go.Scatter(
+#                 x=grouped_data["Aggregator"],
+#                 y=grouped_data["MeanPrice"],
+#                 mode="lines+markers",
+#                 line=dict(shape="hv", width=2, color="#666666"),
+#                 marker=dict(color=marker_colors, size=marker_sizes, line=dict(width=1, color="#666")),
+#                 name="Mean Price"
+#             ))
+
+#             # If show_volume is checked, display volume on secondary axis
+#             if show_volume and grouped_data["VolumeUnits"].any():
+#                 fig_ladder.add_trace(go.Scatter(
+#                     x=grouped_data["Aggregator"],
+#                     y=grouped_data["VolumeUnits"],
+#                     mode="lines+markers",
+#                     line=dict(shape="hv", width=2, color="#41C185"),
+#                     name="Volume",
+#                     yaxis="y2"
+#                 ))
+
+#             for _, row in grouped_data.iterrows():
+#                 if row["Aggregator"] == base_agg:
+#                     note_text = f"${row['MeanPrice']:.2f}"
+#                 else:
+#                     note_text = f"${row['MeanPrice']:.2f} ({row['Price Difference (%)']:+.1f}%)"
+#                 fig_ladder.add_annotation(
+#                     x=row["Aggregator"],
+#                     y=row["MeanPrice"],
+#                     text=note_text,
+#                     showarrow=False,
+#                     yshift=8,
+#                     font=dict(family="Inter", size=12, color="#333")
+#                 )
+
+#             fig_ladder.update_layout(
+#                 title="Brand Ladder (Base vs. Mean Price)",
+#                 xaxis_title="Aggregators",
+#                 yaxis_title="Mean Price",
+#                 yaxis2=dict(title="Volume", overlaying="y", side="right"),
+#                 template="plotly_white",
+#                 margin=dict(l=40, r=40, t=60, b=40),
+#                 font=dict(family="Inter", size=13, color="#333")
+#             )
+
+#             st.plotly_chart(fig_ladder, use_container_width=True)
+#             st.dataframe(grouped_data.style.set_table_styles(
+#                 [{'selector': 'th', 'props': [('font-family', 'Inter'), ('font-weight', 'normal')]}]
+#             ), use_container_width=True)
+
+#         # SCENARIO B: SalesValue & Volume
+#         elif "SalesValue" in channel_data.columns and volume_col and volume_col in channel_data.columns:
+#             # e.g., computing Avg Price = SalesValue / Volume
+#             grouped_data = (
+#                 selected_data.groupby("Aggregator", as_index=False)
+#                 .agg(TotalSalesValue=("SalesValue", "sum"), TotalVolume=(volume_col, "sum"))
+#             )
+#             grouped_data["Avg Price"] = grouped_data["TotalSalesValue"] / grouped_data["TotalVolume"]
+
+#             base_avg_price = grouped_data.loc[grouped_data["Aggregator"] == base_agg, "Avg Price"].values[0]
+#             grouped_data["Price Difference (%)"] = (
+#                 (grouped_data["Avg Price"] - base_avg_price) / base_avg_price * 100
+#             )
+#             grouped_data.sort_values(by="Avg Price", inplace=True)
+
+#             marker_colors, marker_sizes = get_marker_properties(grouped_data, base_agg)
+
+#             fig_ladder = go.Figure()
+#             fig_ladder.add_trace(go.Scatter(
+#                 x=grouped_data["Aggregator"],
+#                 y=grouped_data["Avg Price"],
+#                 mode="lines+markers",
+#                 line=dict(shape="hv", width=2, color="#666666"),
+#                 marker=dict(color=marker_colors, size=marker_sizes, line=dict(width=1, color="#666")),
+#                 name="Avg Price"
+#             ))
+
+#             if show_volume:
+#                 fig_ladder.add_trace(go.Scatter(
+#                     x=grouped_data["Aggregator"],
+#                     y=grouped_data["TotalVolume"],
+#                     mode="lines+markers",
+#                     line=dict(shape="hv", width=2, color="#41C185"),
+#                     name="Total Volume",
+#                     yaxis="y2"
+#                 ))
+
+#             for _, row in grouped_data.iterrows():
+#                 if row["Aggregator"] == base_agg:
+#                     note_text = f"${row['Avg Price']:.2f}"
+#                 else:
+#                     note_text = f"${row['Avg Price']:.2f} ({row['Price Difference (%)']:+.1f}%)"
+#                 fig_ladder.add_annotation(
+#                     x=row["Aggregator"],
+#                     y=row["Avg Price"],
+#                     text=note_text,
+#                     showarrow=False,
+#                     yshift=8,
+#                     font=dict(family="Inter", size=12, color="#333")
+#                 )
+
+#             fig_ladder.update_layout(
+#                 title="Brand Ladder: Price & Volume",
+#                 xaxis_title="Aggregators",
+#                 yaxis_title="Avg Price",
+#                 yaxis2=dict(title="Total Volume", overlaying="y", side="right"),
+#                 template="plotly_white",
+#                 margin=dict(l=40, r=40, t=60, b=40),
+#                 font=dict(family="Inter", size=13, color="#333")
+#             )
+
+#             st.plotly_chart(fig_ladder, use_container_width=True)
+#             st.dataframe(grouped_data.style.set_table_styles(
+#                 [{'selector': 'th', 'props': [('font-family', 'Inter'), ('font-weight', 'normal')]}]
+#             ), use_container_width=True)
+
+#         else:
+#             st.error("Required columns for analysis are missing. Need either: "
+#                     "('Price' & 'BasePrice') or ('SalesValue' & a chosen volume column).")
+
+#     # --------------------------
+#     # MARKET SHARE PIE (Right Column)
+#     # --------------------------
+#     with colRight:
+#         st.write("### Market Share")
+#         # We'll show aggregator-level share for the entire channel
+#         pie_colors = ["#FFBD59", "#FFC87A", "#41C185", "#458EE2", "#999999"]
+
+#         # If the user picked "VolumeUnits" or "Volume", we can do volume-based share;
+#         # else if we have "SalesValue", we do sales-based share
+#         # or else we warn the user
+#         if volume_col and volume_col in channel_data.columns:
+#             share_data = (
+#                 channel_data.groupby("Aggregator", as_index=False)
+#                 .agg(TotalVolume=(volume_col, "sum"))
+#             )
+#             total_volume = share_data["TotalVolume"].sum()
+#             if total_volume == 0:
+#                 st.warning("Total volume is zero, cannot compute market share.")
+#             else:
+#                 share_data["Share (%)"] = share_data["TotalVolume"] / total_volume * 100
+
+#                 fig_pie = go.Figure(data=[go.Pie(
+#                     labels=share_data["Aggregator"],
+#                     values=share_data["TotalVolume"],
+#                     hole=0.4
+#                 )])
+#                 fig_pie.update_layout(
+#                     colorway=pie_colors,
+#                     title="Market Share (Volume)",
+#                     margin=dict(l=10, r=10, t=60, b=10),
+#                     height=400
+#                 )
+#                 st.plotly_chart(fig_pie, use_container_width=True)
+
+#                 st.dataframe(share_data.style.set_table_styles(
+#                     [{'selector': 'th', 'props': [('font-family', 'Inter'), ('font-weight', 'normal')]}]
+#                 ), use_container_width=True)
+
+#         elif "SalesValue" in channel_data.columns:
+#             # fallback to sales-based share
+#             share_data = (
+#                 channel_data.groupby("Aggregator", as_index=False)
+#                 .agg(TotalSales=("SalesValue", "sum"))
+#             )
+#             total_sales = share_data["TotalSales"].sum()
+#             if total_sales == 0:
+#                 st.warning("Total sales is zero, cannot compute market share.")
+#             else:
+#                 share_data["Share (%)"] = share_data["TotalSales"] / total_sales * 100
+
+#                 fig_pie = go.Figure(data=[go.Pie(
+#                     labels=share_data["Aggregator"],
+#                     values=share_data["TotalSales"],
+#                     hole=0.4
+#                 )])
+#                 fig_pie.update_layout(
+#                     colorway=pie_colors,
+#                     title="Market Share (Sales)",
+#                     margin=dict(l=10, r=10, t=60, b=10),
+#                     height=400
+#                 )
+#                 st.plotly_chart(fig_pie, use_container_width=True)
+
+#                 st.dataframe(share_data.style.set_table_styles(
+#                     [{'selector': 'th', 'props': [('font-family', 'Inter'), ('font-weight', 'normal')]}]
+#                 ), use_container_width=True)
+
+#         else:
+#             st.warning("No 'Volume'/'VolumeUnits' or 'SalesValue' columns found, so market share cannot be computed.")
+
+#     st.markdown('</div>', unsafe_allow_html=True)
+
+def section3_module2_page():
+    import streamlit as st
+    import pandas as pd
+    import numpy as np
+    import plotly.graph_objects as go
+
+    # -----------------------------------------------------------------------
+    # CUSTOM CSS
+    # -----------------------------------------------------------------------
+    st.markdown("""
+    <style>
+    .stApp {
+        background-color: #F5F5F5;
+    }
+    .custom-header {
+        font-family: 'Inter', sans-serif;
+        font-size: 36px; 
+        font-weight: 600;
+        color: #333333;
+        margin-bottom: 0.2rem;
+    }
+    .subheader {
+        font-family: 'Inter', sans-serif;
+        font-size: 18px;
+        color: #666666;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+    .accent-hr {
+        border: 0;
+        height: 2px;
+        background: linear-gradient(to right, #FFBD59, #FFC87A);
+        margin: 0.5rem 0 1.5rem 0;
+    }
+    .card {
+        background-color: #FFFFFF; 
+        padding: 1.2rem 1.2rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+    }
+    .card h2 {
+        font-family: 'Inter', sans-serif;
+        font-size: 24px;
+        margin: 0.2rem 0 1rem 0;
+        color: #333333;
+    }
+    div[data-testid="stHorizontalBlock"] button {
+        background-color: #FFBD59 !important; 
+        color: #333333 !important;
+        font-weight: 600 !important;
+        border-radius: 4px !important;
+        border: none !important;
+        margin-bottom: 0.5rem;
+    }
+    div[data-testid="stHorizontalBlock"] button:hover {
+        background-color: #FFC87A !important;
+    }
+    .dataframe-table {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        color: #333333;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # MAIN HEADER & NAVIGATION
+    # -----------------------------------------------------------------------
+    st.markdown('<h1 class="custom-header">Brand Ladder with Monthly Selection</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="subheader">Pick one or two months in your dataset to see each aggregator\'s last BasePrice (and optional Vol/Week). Multiple own aggregators, no % difference.</p>', unsafe_allow_html=True)
+    st.markdown('<hr class="accent-hr">', unsafe_allow_html=True)
+
+
+
+    cBack, cHome = st.columns(2)
+    with cBack:
+        if st.button("Back"):
+            go_back()
+    with cHome:
+        if st.button("Home"):
+            go_home()
+
+    # -----------------------------------------------------------------------
+    # RETRIEVE DATA (assuming final BasePrice is in st.session_state["dataframe1"])
+    # -----------------------------------------------------------------------
+    df_bp = st.session_state.get("dataframe1", None)
+    if df_bp is None or df_bp.empty:
+        st.warning("No data with final BasePrice found. Please ensure 'dataframe1' is loaded.")
+        st.stop()
+
+    # We must have columns: 'Year','Month', or something to define "one-month" subsets
+    if not ({"Year","Month"} <= set(df_bp.columns)):
+        st.warning("No 'Year'/'Month' columns found; cannot do monthly selection. Please ensure these exist.")
+        st.stop()
+
+    # Ensure numeric or integer Year/Month
+    df_bp["Year"] = pd.to_numeric(df_bp["Year"], errors="coerce")
+    df_bp["Month"] = pd.to_numeric(df_bp["Month"], errors="coerce")
+    df_bp.dropna(subset=["Year","Month"], inplace=True)
+    df_bp = df_bp.astype({"Year":"int","Month":"int"})
+
+    if df_bp.empty:
+        st.warning("After forcing numeric Year/Month, no data remain.")
+        st.stop()
+
+    # We'll define a helper "YYYY-MM" aggregator for user picks
+    df_bp["YearMonth"] = df_bp["Year"].astype(str).str.zfill(4) + "-" + df_bp["Month"].astype(str).str.zfill(2)
+
+    # Figure out all distinct months, sorted ascending
+    all_months = sorted(df_bp["YearMonth"].unique())
+
+    # =============================================================================
+    # CARD 1: FILTERS & MONTH PICK
+    # =============================================================================
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## Step 1: Filters & Month Selection")
+
+    # (Optional) Channel filter
+    channel_data = df_bp.copy()
+    if "Channel" in channel_data.columns:
+        colA, colB = st.columns(2)
+        with colA:
+            selected_channel = st.selectbox("Select Channel:", channel_data["Channel"].dropna().unique())
+        channel_data = channel_data[channel_data["Channel"] == selected_channel]
+        if channel_data.empty:
+            st.warning("No data for that channel.")
+            st.markdown('</div>', unsafe_allow_html=True)
+            st.stop()
+    else:
+        st.info("No 'Channel' column – skipping channel filter.")
+
+    # aggregator columns
+    possible_agg_cols = ["Brand","Variant","PackType","PPG","PackSize"]
+    found_agg_cols = [c for c in possible_agg_cols if c in channel_data.columns]
+    if not found_agg_cols:
+        st.error("No aggregator columns found.")
+        st.stop()
+
+    c1, c2, c3 = st.columns([1.2,1.2,1.2])
+    with c1:
+        st.markdown("**Select aggregator columns**")
+        selected_agg_cols = st.multiselect(
+            "Aggregator definition:",
+            options=found_agg_cols,
+            default=["Brand"]
+        )
+
+    if not selected_agg_cols:
+        st.warning("No aggregator columns selected.")
+        st.stop()
+
+    def combine_cols(row):
+        return " - ".join(str(row[c]) for c in selected_agg_cols)
+
+    channel_data["Aggregator"] = channel_data.apply(combine_cols, axis=1)
+    all_aggs = sorted(channel_data["Aggregator"].unique())
+
+    # Instead of "Base Aggregator" single pick, let user pick multiple "own brand" aggregator(s).
+    with c2:
+        st.markdown("**Own Aggregator(s)**")
+        own_aggs = st.multiselect("Pick your aggregator(s):", all_aggs)
+
+    with c3:
+        st.markdown("**Competitors**")
+        comp_aggs = st.multiselect(
+            "Competitor(s):",
+            [a for a in all_aggs if a not in own_aggs]
+        )
+
+    # Merge final aggregator list
+    final_aggs = own_aggs + comp_aggs
+    if not final_aggs:
+        st.warning("No aggregator chosen.")
+        st.stop()
+
+    # Compare Mode?
+    compare_mode = st.checkbox("Compare Two Different Months?", value=False)
+
+    if compare_mode:
+        colM1, colM2 = st.columns(2)
+        with colM1:
+            month_1 = st.selectbox("Pick Month #1", all_months)
+        with colM2:
+            month_2 = st.selectbox("Pick Month #2", all_months)
+    else:
+        month_1 = st.selectbox("Pick Month", all_months)
+        month_2 = None
+
+    show_vol_week = st.checkbox("Show Vol/Week on the brand ladder?", value=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # =============================================================================
+    # CARD 2: BRAND LADDER (and Market Share if not compare)
+    # =============================================================================
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## Step 2: Brand Ladder")
+
+    data_sub = channel_data[channel_data["Aggregator"].isin(final_aggs)]
+    if data_sub.empty:
+        st.warning("No data after aggregator picks.")
+        st.markdown('</div>', unsafe_allow_html=True)
+        st.stop()
+
+    # filter by months
+    def data_for_month(df_, yearmonth):
+        return df_[df_["YearMonth"] == yearmonth]
+
+    data1 = data_for_month(data_sub, month_1)
+    data2 = None
+    if compare_mode and month_2:
+        data2 = data_for_month(data_sub, month_2)
+
+    if data1.empty and not compare_mode:
+        st.warning("No data for selected month.")
+        st.stop()
+
+    # define build_ladder_data
+    def build_ladder_data(df_, aggregator_list):
+        # We'll find "last base price"
+        # If multiple rows, we sort by (Year,Week) or by index
+        df_ = df_.copy()
+        if "Year" in df_.columns and "Week" in df_.columns:
+            df_.sort_values(["Year","Week"], inplace=True)
+        elif "Date" in df_.columns:
+            df_.sort_values("Date", inplace=True)
+        else:
+            df_.reset_index(drop=True, inplace=True)
+
+        # pick a volume col
+        used_vol = None
+        if show_vol_week:
+            if "VolumeUnits" in df_.columns:
+                used_vol = "VolumeUnits"
+            elif "Volume" in df_.columns:
+                used_vol = "Volume"
+
+        rows = []
+        for agg in aggregator_list:
+            sub = df_[(df_["Aggregator"]==agg) & df_["BasePrice"].notna()]
+            if sub.empty:
+                rows.append({"Aggregator": agg, "LastBasePrice": 0, "VolumePerWeek": 0})
+                continue
+            last_bp = sub.iloc[-1]["BasePrice"]
+            same_bp = sub[sub["BasePrice"]==last_bp]
+            volpw = 0
+            if used_vol and not same_bp.empty:
+                total_vol = same_bp[used_vol].sum()
+                if {"Year","Week"} <= set(same_bp.columns):
+                    wcount = same_bp[["Year","Week"]].drop_duplicates().shape[0]
+                else:
+                    wcount = len(same_bp)
+                volpw = total_vol/wcount if wcount else 0
+
+            rows.append({
+                "Aggregator": agg,
+                "LastBasePrice": last_bp,
+                "VolumePerWeek": volpw
+            })
+        return pd.DataFrame(rows)
+
+    def plot_ladder(ladder_df, own_list, chart_title):
+        if ladder_df.empty:
+            return None
+        # sort by LastBasePrice
+        ladder_df.sort_values("LastBasePrice", inplace=True)
+        # define color / size
+        def color_n_size(agg):
+            if agg in own_list:
+                return "#FF7F7F",10
+            else:
+                return "#458EE2",7
+        cvals, svals = [], []
+        for _, row in ladder_df.iterrows():
+            c,s = color_n_size(row["Aggregator"])
+            cvals.append(c)
+            svals.append(s)
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=ladder_df["Aggregator"],
+            y=ladder_df["LastBasePrice"],
+            mode="lines+markers",
+            line=dict(shape="hv", width=2, color="#666666"),
+            marker=dict(color=cvals, size=svals, line=dict(width=1, color="#666")),
+            name="Last BasePrice"
+        ))
+        # if show_vol_week
+        if show_vol_week and "VolumePerWeek" in ladder_df.columns:
+            if ladder_df["VolumePerWeek"].any():
+                fig.add_trace(go.Scatter(
+                    x=ladder_df["Aggregator"],
+                    y=ladder_df["VolumePerWeek"],
+                    mode="lines+markers",
+                    line=dict(shape="hv", width=2, color="#41C185"),
+                    name="Volume/Week",
+                    yaxis="y2"
+                ))
+        # annotation => only price
+        for i, row in ladder_df.iterrows():
+            note_text = f"${row['LastBasePrice']:.2f}"
+            fig.add_annotation(
+                x=row["Aggregator"],
+                y=row["LastBasePrice"],
+                text=note_text,
+                showarrow=False,
+                yshift=8
+            )
+        fig.update_layout(
+            title=chart_title,
+            xaxis_title="Aggregators",
+            yaxis_title="Last BasePrice",
+            yaxis2=dict(title="Volume/Week", overlaying="y", side="right"),
+            template="plotly_white",
+            margin=dict(l=40,r=40,t=60,b=40)
+        )
+        return fig
+
+    # single or compare
+    cLeft, cRight = st.columns(2)
+    ladder1 = build_ladder_data(data1, final_aggs)
+    fig1 = plot_ladder(ladder1, own_aggs, f"Brand Ladder (Month: {month_1})")
+
+    if fig1:
+        cLeft.plotly_chart(fig1, use_container_width=True)
+        cLeft.dataframe(ladder1, use_container_width=True)
+    else:
+        cLeft.warning(f"No data in first month: {month_1}")
+
+    if compare_mode and month_2:
+        # second chart, no market share
+        ladder2 = build_ladder_data(data2, final_aggs)
+        fig2 = plot_ladder(ladder2, own_aggs, f"Brand Ladder (Month: {month_2})")
+        if fig2:
+            cRight.plotly_chart(fig2, use_container_width=True)
+            cRight.dataframe(ladder2, use_container_width=True)
+        else:
+            cRight.warning(f"No data in second month: {month_2}")
+    else:
+        # market share
+        cRight.write("### Market Share")
+        share_colors = ["#FFBD59","#FFC87A","#41C185","#458EE2","#999999"]
+
+        # pick volume or fallback to sales
+        def compute_market_share(df_):
+            vol_col = None
+            if "VolumeUnits" in df_.columns:
+                vol_col = "VolumeUnits"
+            elif "Volume" in df_.columns:
+                vol_col = "Volume"
+            if vol_col:
+                share_df = df_.groupby("Aggregator", as_index=False).agg(TotalVol=(vol_col,"sum"))
+                tv = share_df["TotalVol"].sum()
+                if tv>0:
+                    share_df["Share(%)"] = share_df["TotalVol"]/tv*100
+                    fig_pie = go.Figure(data=[go.Pie(
+                        labels=share_df["Aggregator"],
+                        values=share_df["TotalVol"],
+                        hole=0.4
+                    )])
+                    fig_pie.update_layout(
+                        colorway=share_colors,
+                        title="Market Share (Volume)",
+                        margin=dict(l=10,r=10,t=60,b=10),
+                        height=400
+                    )
+                    return fig_pie, share_df
+                else:
+                    return None,None
+            elif "SalesValue" in df_.columns:
+                share_df = df_.groupby("Aggregator", as_index=False).agg(TotalSales=("SalesValue","sum"))
+                ts = share_df["TotalSales"].sum()
+                if ts>0:
+                    share_df["Share(%)"] = share_df["TotalSales"]/ts*100
+                    fig_pie = go.Figure(data=[go.Pie(
+                        labels=share_df["Aggregator"],
+                        values=share_df["TotalSales"],
+                        hole=0.4
+                    )])
+                    fig_pie.update_layout(
+                        colorway=share_colors,
+                        title="Market Share (Sales)",
+                        margin=dict(l=10,r=10,t=60,b=10),
+                        height=400
+                    )
+                    return fig_pie, share_df
+                else:
+                    return None,None
+            return None,None
+
+        fig_share, df_share = compute_market_share(data1)
+        if fig_share:
+            cRight.plotly_chart(fig_share, use_container_width=True)
+            cRight.dataframe(df_share, use_container_width=True)
+        else:
+            cRight.warning("No volume or sales for share calculation or total is 0.")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+def section3_module4_page():
+
+
+
+    cBack, cHome = st.columns(2)
+    with cBack:
+        if st.button("Back"):
+            go_back()
+    with cHome:
+        if st.button("Home"):
+            go_home()
+
+    # -----------------------------------------------------------------------
+    # RETRIEVE DATA
+    # -----------------------------------------------------------------------
+    df = st.session_state.get("D0", None)  # or "dataframe1" if your data is there
+    if df is None or df.empty:
+        st.warning("No data uploaded yet. Please upload a file in the sidebar or store in st.session_state['D0'].")
+        st.stop()
+
+    # For this example, we assume:
+    # 1) There's an "Aggregator" column or an easy way to build it
+    # 2) "SalesValue" is RSV
+    # 3) We'll compute "Market Share" = aggregator's SalesValue / sum(all)
+    # 4) We'll compute "Brand Share" = aggregator's SalesValue / sum(all aggregator that share the aggregator's brand)
+    #    * This logic is flexible. You might define brand share differently.
+
+    # If you need to build aggregator from columns like [Brand, PackSize], do it here:
+    # e.g.:
+    # df["Aggregator"] = df["Brand"] + " (" + df["PackSize"] + ")"
+
+    # Check we have "Aggregator", "SalesValue", maybe "Brand"
+    needed_cols = {"Aggregator","SalesValue","Brand"}
+    missing = needed_cols - set(df.columns)
+    if missing:
+        st.error(f"Missing columns for aggregator analysis: {missing}")
+        st.stop()
+
+    # -----------------------------------------------------------------------
+    # CARD 1: FILTERS
+    # -----------------------------------------------------------------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## Step 1: Configure Filters")
+
+    # Optional channel, brand, etc. 
+    if "Channel" in df.columns:
+        channel_list = ["All"] + sorted(df["Channel"].dropna().unique())
+        chosen_channel = st.selectbox("Select Channel:", channel_list)
+        if chosen_channel!="All":
+            df = df[df["Channel"]==chosen_channel]
+            if df.empty:
+                st.warning(f"No data after channel filter: {chosen_channel}")
+                st.markdown('</div>', unsafe_allow_html=True)
+                st.stop()
+
+    # Possibly more filters
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # CARD 2: TRIPLE SUBPLOT
+    # -----------------------------------------------------------------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## Step 2: Triple Subplot: RSV, Market Share, Brand Share")
+
+    # For each aggregator, sum SalesValue => aggregator_rsv
+    aggregator_df = (
+        df.groupby(["Aggregator","Brand"], as_index=False)
+          .agg(SumSalesValue=("SalesValue","sum"))
+    )
+    if aggregator_df.empty:
+        st.warning("No aggregator data after filters.")
+        st.stop()
+
+    # Market share = aggregator_rsv / total_rsv
+    total_rsv = aggregator_df["SumSalesValue"].sum()
+    aggregator_df["MarketShare"] = np.where(
+        total_rsv!=0,
+        aggregator_df["SumSalesValue"]/total_rsv,
+        0
+    )
+
+    # Brand share = aggregator's sumSalesValue / sumSalesValue of brand
+    # first find brand total
+    brand_totals = (
+        aggregator_df.groupby("Brand", as_index=False)["SumSalesValue"].sum()
+        .rename(columns={"SumSalesValue":"BrandTotal"})
+    )
+    aggregator_df = aggregator_df.merge(brand_totals, on="Brand", how="left")
+    aggregator_df["BrandShare"] = np.where(
+        aggregator_df["BrandTotal"]!=0,
+        aggregator_df["SumSalesValue"]/aggregator_df["BrandTotal"],
+        0
+    )
+
+    # We'll store aggregator, RSV, MarketShare, BrandShare
+    aggregator_df.sort_values("SumSalesValue", ascending=False, inplace=True)
+    xvals = aggregator_df["Aggregator"].tolist()
+    rsv = aggregator_df["SumSalesValue"].tolist()
+    mk_share = aggregator_df["MarketShare"].tolist()
+    br_share = aggregator_df["BrandShare"].tolist()
+
+    # Build 3-subplot figure with shared X?
+    # Actually we can do subplots with shared x, but each trace might want separate x
+    # We'll do subplots w/ row=1, col=3
+    fig = make_subplots(
+        rows=1, cols=3,
+        shared_xaxes=False,
+        subplot_titles=["RSV (Sales Value)", "Market Share (%)", "Brand Share (%)"]
+    )
+
+    # Subplot 1: RSV as bar
+    fig.add_trace(
+        go.Bar(
+            x=xvals,
+            y=rsv,
+            marker_color="blue",
+            name="RSV (SalesValue)"
+        ),
+        row=1, col=1
+    )
+
+    # Subplot 2: Market Share as line
+    fig.add_trace(
+        go.Scatter(
+            x=xvals,
+            y=mk_share,
+            mode="lines+markers",
+            line=dict(color="orange"),
+            name="Market Share (%)"
+        ),
+        row=1, col=2
+    )
+
+    # Subplot 3: Brand Share as line
+    fig.add_trace(
+        go.Scatter(
+            x=xvals,
+            y=br_share,
+            mode="lines+markers",
+            line=dict(color="green", dash="dot"),
+            name="Brand Share (%)"
+        ),
+        row=1, col=3
+    )
+
+    # Update layout for each subplot
+    fig.update_xaxes(tickangle=45, row=1, col=1)
+    fig.update_xaxes(tickangle=45, row=1, col=2)
+    fig.update_xaxes(tickangle=45, row=1, col=3)
+
+    fig.update_layout(
+        title="Pack/Format Price Curves Analysis",
+        showlegend=False,
+        template="plotly_white",
+        margin=dict(l=40, r=40, t=80, b=100)
+    )
+
+    # Show the figure
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Show aggregator table
+    st.dataframe(aggregator_df, use_container_width=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+    cBack, cHome = st.columns(2)
+    with cBack:
+        if st.button("Back"):
+            go_back()
+    with cHome:
+        if st.button("Home"):
+            go_home()
+            
 #############################ADDITONAL APPS CODES
 def myEDA():
+    
 
     import streamlit as st
     import pandas as pd
@@ -8084,6 +8216,9 @@ elif "_" in page:
     elif page == "section1_calendar":
         calendar_comparison_page()
         
+    elif page == "section1_market_construct":
+        market_construct_page()
+        
     # --- NEW SUB-PAGES FOR SECTION 2 ---
     elif page == "section2_module1":
         section2_module1_page()
@@ -8091,19 +8226,14 @@ elif "_" in page:
         section2_module2_page()
     elif page == "section2_module3":
         section2_module3_page()
+        
+        
+    elif page == "section3_module2":
+        section3_module2_page()
+    elif page == "section3_module4":
+        section3_module4_page()
+        
 
-    elif page == "data_upload":
-        data_upload_page()
-    elif page == "data_processing":
-        data_processing_page()
-    elif page == "feature_engineering":
-        feature_engineering_page()
-    elif page == "model_building":
-        model_building_page()
-    elif page == "evaluation":
-        evaluation_page()
-    elif page == "export":
-        export_page()
 
 
     
