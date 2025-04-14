@@ -2839,9 +2839,136 @@ def promo_depth_page():
 
 
 def calendar_comparison_page():
+    
+    import plotly.express as px
     st.subheader("Promo Calendar Comparison")
     st.write("This module helps you compare and evaluate different promo calendars.")
     st.markdown("---")
+    
+    # -----------------------------------------
+    # Caching: Aggregate Weekly Data Function
+    # -----------------------------------------
+    @st.cache_data
+    def aggregate_weekly_data(df, retailer, brands):
+        df_filtered = df[(df["Channel"] == retailer) & (df["Brand"].isin(brands))].copy()
+        grouping_cols = ["Year", "Week", "Brand", "PPG"]
+        agg_dict = {
+            "SalesValue": "sum",
+            "Volume": "sum",
+            "Price": "mean",       # initial average; will be recalculated
+            "BasePrice": "mean"    # assume BasePrice is correct
+        }
+        weekly = df_filtered.groupby(grouping_cols, as_index=False).agg(agg_dict)
+        # Recalculate weighted Price:
+        weekly["Price"] = weekly["SalesValue"] / weekly["Volume"]
+        # Compute promo depth (relative drop from BasePrice) and express as percentage:
+        weekly["PromoDepth"] = (weekly["BasePrice"] - weekly["Price"]) / weekly["BasePrice"]
+        weekly["PromoDepthPercent"] = weekly["PromoDepth"] * 100
+        # Create WeekStartDate and WeekLabel:
+        weekly["WeekStartDate"] = pd.to_datetime(
+            weekly["Year"].astype(str) + weekly["Week"].astype(str).str.zfill(2) + "1",
+            format="%G%V%u", errors="coerce"
+        )
+        weekly.dropna(subset=["WeekStartDate"], inplace=True)
+        weekly.sort_values("WeekStartDate", inplace=True)
+        weekly["WeekLabel"] = weekly["WeekStartDate"].dt.strftime("%Y-W%V")
+        return weekly
+
+    # --- Step 1. Select Retailer and Brand(s) in One Row ---
+    col1, col2 = st.columns([1, 2])
+    with col1:
+        retailer = st.selectbox(
+            "Select Retailer",
+            options=sorted(st.session_state["dataframe1"]["Channel"].dropna().unique())
+        )
+    with col2:
+        available_brands = sorted(
+            st.session_state["dataframe1"][
+                st.session_state["dataframe1"]["Channel"] == retailer
+            ]["Brand"].dropna().unique()
+        )
+        selected_brands = st.multiselect("Select Brand(s)", options=available_brands, default=available_brands)
+    
+    # --- Step 2. Aggregate Weekly Data ---
+    weekly_data = aggregate_weekly_data(st.session_state["dataframe1"], retailer, selected_brands)
+    
+    # --- Step 3. Determine Effective Price Level for Each Week ---
+    # Use saved cluster definitions from the previous promo depth flow.
+    # st.session_state["final_clusters_depth"] is expected to be a dict keyed by (Channel, Brand, PPG)
+    def assign_level(row):
+        promo_depth_percent = row["PromoDepthPercent"]
+        # If discount is very low (< 5%), consider it as Base Price
+        if promo_depth_percent < 5:
+            return "Base Price", 0
+        # Look up the final cluster definitions for this combination
+        key = (retailer, row["Brand"], row["PPG"])
+        if "final_clusters_depth" in st.session_state and key in st.session_state["final_clusters_depth"]:
+            cluster_defs = st.session_state["final_clusters_depth"][key]
+            # cluster_defs should be a list of dicts with keys "Min", "Max", "Centroid", "ClusterName"
+            for cd in cluster_defs:
+                if float(cd["Min"]) <= promo_depth_percent <= float(cd["Max"]):
+                    return cd["ClusterName"], float(cd["Centroid"])
+            return "Base Price", 0
+        else:
+            return "Base Price", 0
+
+    # Apply assign_level row-wise; create two new columns: Level and Discount (centroid)
+    weekly_data[["Level", "Discount"]] = weekly_data.apply(
+        lambda row: pd.Series(assign_level(row)), axis=1
+    )
+    
+    def compute_effective_price(row):
+        if row["Level"] == "Base Price":
+            return row["BasePrice"]
+        else:
+            # Use the centroid discount to compute effective price
+            return row["BasePrice"] * (1 - row["Discount"] / 100)
+    
+    weekly_data["EffectivePrice"] = weekly_data.apply(compute_effective_price, axis=1)
+    
+    # --- Step 4. For Each Pack (PPG): Plot and Display Summary Table ---
+    st.subheader("Promo Calendar and Summary by Pack")
+    unique_ppgs = sorted(weekly_data["PPG"].unique())
+    
+    def style_summary_table(df):
+        def highlight(row):
+            # Highlight rows where Level is not "Base Price" in light yellow.
+            return ['background-color: lightyellow' if row["Level"] != "Base Price" else '' for _ in row]
+        return df.style.apply(highlight, axis=1)
+    
+    for ppg in unique_ppgs:
+        st.markdown(f"### Pack: {ppg}")
+        data_ppg = weekly_data[weekly_data["PPG"] == ppg].copy()
+        if data_ppg.empty:
+            continue
+        # Use two columns: one for the chart and one for the summary table.
+        col1, col2 = st.columns([1.5, 1])
+        with col1:
+            fig = px.line(
+                data_ppg,
+                x="WeekStartDate",
+                y="EffectivePrice",
+                color="Brand",
+                title=f"Promo Calendar for Pack {ppg}",
+                labels={"WeekStartDate": "Week", "EffectivePrice": "Effective Price"}
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        with col2:
+            # Build a summary table grouped by Brand and Level.
+            summary = data_ppg.groupby(["Brand", "Level"]).agg(
+                AvgBasePrice=("BasePrice", "mean"),
+                WeeksCount=("Week", "count"),
+                TotalVol=("Volume", "sum")
+            ).reset_index()
+            summary["VolPerWeek"] = summary["TotalVol"] / summary["WeeksCount"]
+            # Compute total volume per Brand for that pack.
+            brand_pack_vol = data_ppg.groupby(["Brand"])["Volume"].sum().reset_index().rename(columns={"Volume": "BrandPackTotalVol"})
+            summary = summary.merge(brand_pack_vol, on="Brand")
+            summary["VolContribution%"] = 100 * summary["TotalVol"] / summary["BrandPackTotalVol"]
+            display_cols = ["Brand", "Level", "AvgBasePrice", "WeeksCount", "VolPerWeek", "VolContribution%"]
+            st.dataframe(style_summary_table(summary[display_cols]))
+                    
+                    
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Back"):
