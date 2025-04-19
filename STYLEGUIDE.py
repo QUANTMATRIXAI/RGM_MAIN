@@ -637,7 +637,7 @@ def Feature_Overview_page():
     # CARD 0: MULTI-COLUMN FILTER (RADIO-BASED)
     # -----------------------------------------------------------------------
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.write("## 0) Filter by Multiple Aggregator (Categorical) Columns")
+
 
     cat_cols_all = df.select_dtypes(include=["object","category"]).columns.tolist()
     if not cat_cols_all:
@@ -668,38 +668,38 @@ def Feature_Overview_page():
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # -----------------------------------------------------------------------
-    # CARD 1: QUICK STATS
-    # -----------------------------------------------------------------------
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.write("## 1) Quick Stats")
+    # # -----------------------------------------------------------------------
+    # # CARD 1: QUICK STATS
+    # # -----------------------------------------------------------------------
+    # st.markdown('<div class="card">', unsafe_allow_html=True)
+    # st.write("## 1) Quick Stats")
 
-    n_rows, n_cols = df.shape
-    mem_mb = df.memory_usage(deep=True).sum()/1e6
-    total_cells = n_rows*n_cols
-    missing_count = df.isna().sum().sum()
-    perc_missing = (missing_count/total_cells*100) if total_cells else 0
+    # n_rows, n_cols = df.shape
+    # mem_mb = df.memory_usage(deep=True).sum()/1e6
+    # total_cells = n_rows*n_cols
+    # missing_count = df.isna().sum().sum()
+    # perc_missing = (missing_count/total_cells*100) if total_cells else 0
 
-    colA, colB, colC = st.columns(3)
-    with colA:
-        st.markdown("**Shape**")
-        st.write(f"{n_rows} rows × {n_cols} columns")
+    # colA, colB, colC = st.columns(3)
+    # with colA:
+    #     st.markdown("**Shape**")
+    #     st.write(f"{n_rows} rows × {n_cols} columns")
 
-    with colB:
-        st.markdown("**Memory Usage**")
-        st.write(f"{mem_mb:.2f} MB")
+    # with colB:
+    #     st.markdown("**Memory Usage**")
+    #     st.write(f"{mem_mb:.2f} MB")
 
-    with colC:
-        st.markdown("**Overall Missing**")
-        st.write(f"{missing_count} ({perc_missing:.2f}%)")
+    # with colC:
+    #     st.markdown("**Overall Missing**")
+    #     st.write(f"{missing_count} ({perc_missing:.2f}%)")
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    # st.markdown('</div>', unsafe_allow_html=True)
 
     # -----------------------------------------------------------------------
     # CARD 2: COLUMN DETAILS
     # -----------------------------------------------------------------------
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.write("## 2) Column Details")
+    st.write("## 1) Column Details")
 
     column_info = []
     for c in df.columns:
@@ -897,6 +897,267 @@ def Feature_Overview_page():
 def Transform_page():
     
     
+    import streamlit as st
+    import pandas as pd
+    import numpy as np
+    import plotly.express as px
+
+
+
+    # =============================================================================
+    # CUSTOM CSS
+    # =============================================================================
+    st.markdown("""
+    <style>
+    .stApp {
+        background-color: #F5F5F5;
+    }
+    .custom-header {
+        font-family: 'Inter', sans-serif;
+        font-size: 36px; 
+        font-weight: 600;
+        color: #333333;
+        margin-bottom: 0.2rem;
+    }
+    .subheader {
+        font-family: 'Inter', sans-serif;
+        font-size: 18px;
+        color: #666666;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+    .accent-hr {
+        border: 0;
+        height: 2px;
+        background: linear-gradient(to right, #FFBD59, #FFC87A);
+        margin: 0.5rem 0 1.5rem 0;
+    }
+    .card {
+        background-color: #FFFFFF; 
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+    }
+    .card h2 {
+        font-family: 'Inter', sans-serif;
+        font-size: 24px;
+        margin: 0.2rem 0 1rem 0;
+        color: #333333;
+    }
+    div[data-testid="stHorizontalBlock"] button {
+        background-color: #FFBD59 !important; 
+        color: #333333 !important;
+        font-weight: 600 !important;
+        border-radius: 4px !important;
+        border: none !important;
+        margin-bottom: 0.5rem;
+    }
+    div[data-testid="stHorizontalBlock"] button:hover {
+        background-color: #FFC87A !important;
+    }
+    .dataframe-table {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        color: #333333;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # =============================================================================
+    # MAIN HEADER & NAVIGATION
+    # =============================================================================
+    st.markdown('<h1 class="custom-header">Transform Page</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="subheader">Filter data from your "Create" page, apply scaling transformations, and compare before–after results.</p>', unsafe_allow_html=True)
+    st.markdown('<hr class="accent-hr">', unsafe_allow_html=True)
+
+    nav_left, nav_right = st.columns(2)
+    with nav_left:
+        if st.button("Back", key="transform_btnBack"):
+            go_back()
+    with nav_right:
+        if st.button("Home", key="transform_btnHome"):
+            go_home()
+
+    # =============================================================================
+    # RETRIEVE Data from st.session_state["create_data"]
+    # =============================================================================
+    if "create_data" not in st.session_state:
+        st.warning("No data found in st.session_state['create_data']. Please ensure your 'Create' page populates it.")
+        st.stop()
+
+    # Start with the latest saved data.
+    data = st.session_state["create_data"]
+    df = data.copy()  # working copy
+
+    # =============================================================================
+    # CARD 0: Aggregator Filter (Categorical)
+    # =============================================================================
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 0) Aggregator Filter (Categorical)")
+
+    # Get the list of categorical columns.
+    cat_cols = df.select_dtypes(include=["object", "category"]).columns.tolist()
+    if cat_cols:
+        # Allow user to choose which categorical columns they want to filter
+        filter_cols = st.multiselect("Select categorical columns to filter:", cat_cols, key="filter_cols")
+        for col in filter_cols:
+            # Build options: "All" plus all unique non-null values
+            unique_vals = sorted(df[col].dropna().unique().tolist())
+            opts = ["All"] + unique_vals
+            chosen_val = st.radio(f"Filter {col} by:", opts, index=0, horizontal=True, key=f"filter_{col}")
+            if chosen_val != "All":
+                df = df[df[col] == chosen_val]
+                if df.empty:
+                    st.warning(f"No data left after filtering {col} = {chosen_val}")
+                    st.markdown('</div>', unsafe_allow_html=True)
+                    st.stop()
+    else:
+        st.info("No categorical columns available for filtering.")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # =============================================================================
+    # CARD 1: Scaling Transformations for X and Y Columns
+    # =============================================================================
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 1) Scaling Transformations")
+
+    # Identify numeric columns from the (possibly filtered) DataFrame.
+    numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+
+    colX, colY = st.columns(2)
+
+    with colX:
+        st.markdown("### X Columns (Multiple)")
+        if numeric_cols:
+            x_cols = st.multiselect("Choose one or more X numeric columns:", numeric_cols, key="x_cols")
+            x_method = st.selectbox("Select scaling method (X):", ["Standard", "MinMax", "Robust", "MeanNorm"], key="x_method")
+            x_suffix = st.text_input("Suffix for transformed X columns:", "_xScaled", key="x_suffix")
+        else:
+            st.info("No numeric columns available for X transformations.")
+            x_cols = []
+
+    with colY:
+        st.markdown("### Y Column (Single)")
+        if numeric_cols:
+            y_col = st.selectbox("Choose one Y numeric column:", ["None"] + numeric_cols, key="y_col")
+            if y_col != "None":
+                y_method = st.selectbox("Select scaling method (Y):", ["Standard", "MinMax", "Robust", "MeanNorm"], key="y_method")
+                y_suffix = st.text_input("Suffix for transformed Y column:", "_yScaled", key="y_suffix")
+            else:
+                y_method, y_suffix = None, ""
+        else:
+            st.info("No numeric columns available for Y transformation.")
+            y_col = "None"
+
+    # Helper function to perform scaling transformation.
+    def do_scale_transform(series: pd.Series, method: str) -> pd.Series:
+        s_clean = series.dropna()
+        if method == "Standard":
+            mu = s_clean.mean()
+            sigma = s_clean.std()
+            if sigma == 0:
+                return pd.Series(np.nan, index=series.index)
+            return (series - mu) / sigma
+        elif method == "MinMax":
+            mn = s_clean.min()
+            mx = s_clean.max()
+            if mx == mn:
+                return pd.Series(np.nan, index=series.index)
+            return (series - mn) / (mx - mn)
+        elif method == "Robust":
+            med = s_clean.median()
+            q1 = s_clean.quantile(0.25)
+            q3 = s_clean.quantile(0.75)
+            iqr = q3 - q1
+            if iqr == 0:
+                return pd.Series(np.nan, index=series.index)
+            return (series - med) / iqr
+        else:  # "MeanNorm"
+            mu = s_clean.mean()
+            mn = s_clean.min()
+            mx = s_clean.max()
+            denom = mx - mn
+            if denom == 0:
+                return pd.Series(np.nan, index=series.index)
+            return (series - mu) / denom
+
+    if st.button("Apply & Save Transformations", key="apply_transform_btn"):
+        # Apply transformation for each X column.
+        for col in x_cols:
+            new_col = col + x_suffix
+            df[new_col] = do_scale_transform(df[col], x_method)
+        # Apply transformation for the Y column.
+        if y_col != "None":
+            new_y = y_col + y_suffix
+            df[new_y] = do_scale_transform(df[y_col], y_method)
+        # Save updated data.
+        st.session_state["create_data"] = df.copy()
+        st.success("Transformations applied and data updated.")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # =============================================================================
+    # CARD 2: Comparison Chart ("Before vs After")
+    # =============================================================================
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 2) Comparison Chart")
+
+    # Re-read the latest updated data.
+    df_latest = st.session_state.get("create_data").copy()
+
+    # Build dynamic options for "original" and "transformed" columns.
+    orig_options = []
+    trans_options = []
+
+    # Original options come from the selected X columns and Y column.
+    if x_cols:
+        orig_options.extend(x_cols)
+    if y_col != "None":
+        orig_options.append(y_col)
+
+    # Build list of transformed column names.
+    for col in x_cols:
+        candidate = col + x_suffix
+        if candidate in df_latest.columns:
+            trans_options.append(candidate)
+    if y_col != "None":
+        candidate = y_col + y_suffix
+        if candidate in df_latest.columns:
+            trans_options.append(candidate)
+
+    orig_choice = st.selectbox("Select Original Column:", ["None"] + orig_options, key="orig_choice")
+    trans_choice = st.selectbox("Select Transformed Column:", ["None"] + trans_options, key="trans_choice")
+
+    chart_choice = st.radio("Select Chart Type:", ["Line", "Bar"], horizontal=True, key="chart_choice")
+    n_rows = st.slider("Rows to display in chart:", 5, 50, 10, key="chart_rows")
+
+    if orig_choice != "None" and trans_choice != "None":
+        comp_df = df_latest[[orig_choice, trans_choice]].head(n_rows).reset_index()
+        if chart_choice == "Line":
+            fig = px.line(comp_df, x="index", y=[orig_choice, trans_choice], markers=True)
+        else:
+            fig = px.bar(comp_df, x="index", y=[orig_choice, trans_choice], barmode="group")
+        fig.update_layout(margin=dict(l=40, r=40, t=40, b=40))
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.info("Select an original and a transformed column to display a comparison chart.")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # =============================================================================
+    # CARD 3: Final DataFrame Preview and Universal Save Button
+    # =============================================================================
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 3) Final DataFrame Preview (Top 10 Rows)")
+    st.dataframe(df_latest.head(10), use_container_width=True)
+
+    # Universal Save Button: Save all current changes.
+    if st.button("Universal Save: Save All Changes", key="universal_save"):
+        st.session_state["create_data"] = df_latest.copy()
+        st.success("All changes have been universally saved to session state!")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+
     st.markdown("---")
     col1, col2 = st.columns(2)
     with col1:
@@ -906,15 +1167,318 @@ def Transform_page():
         if st.button("Home"):
             go_home()
             
-
 
 
 def Create_page():
     
+    
+    import streamlit as st
+    import pandas as pd
+    import numpy as np
 
-    
-    
-    
+    # -----------------------------------------------------------------------
+    # Load the DataFrame: Use updated data if available, otherwise use D0.
+    # -----------------------------------------------------------------------
+    if "create_data" in st.session_state:
+        local_df = st.session_state["create_data"].copy()
+    else:
+        df = st.session_state.get("D0", None)
+        if df is None or df.empty:
+            st.warning("No data found in st.session_state['D0']. Please load or define it first.")
+            st.stop()
+        local_df = df.copy()
+        st.session_state["create_data"] = local_df.copy()
+
+    # -----------------------------------------------------------------------
+    # 1) Custom CSS
+    # -----------------------------------------------------------------------
+    st.markdown("""
+    <style>
+    .stApp {
+        background-color: #F5F5F5;
+    }
+    .custom-header {
+        font-family: 'Inter', sans-serif;
+        font-size: 36px; 
+        font-weight: 600;
+        color: #333333;
+        margin-bottom: 0.2rem;
+    }
+    .subheader {
+        font-family: 'Inter', sans-serif;
+        font-size: 18px;
+        color: #666666;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+    .accent-hr {
+        border: 0;
+        height: 2px;
+        background: linear-gradient(to right, #FFBD59, #FFC87A);
+        margin: 0.5rem 0 1.5rem 0;
+    }
+    .card {
+        background-color: #FFFFFF; 
+        padding: 1.2rem 1.2rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+    }
+    .card h2 {
+        font-family: 'Inter', sans-serif;
+        font-size: 24px;
+        margin: 0.2rem 0 1rem 0;
+        color: #333333;
+    }
+    div[data-testid="stHorizontalBlock"] button {
+        background-color: #FFBD59 !important; 
+        color: #333333 !important;
+        font-weight: 600 !important;
+        border-radius: 4px !important;
+        border: none !important;
+        margin-bottom: 0.5rem;
+    }
+    div[data-testid="stHorizontalBlock"] button:hover {
+        background-color: #FFC87A !important;
+    }
+    .dataframe-table {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        color: #333333;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<h1 class="custom-header">New Feature Creation</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="subheader">Side-by-side aggregator filtering, numeric transforms, interactions, group-based, and date/time features. Final save at the bottom.</p>', unsafe_allow_html=True)
+    st.markdown('<hr class="accent-hr">', unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # CARD 0: Aggregator Filter
+    # -----------------------------------------------------------------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 0) Aggregator (Categorical) Filter")
+
+    cat_cols = local_df.select_dtypes(include=["object", "category"]).columns.tolist()
+    if cat_cols:
+        colAggLeft, colAggRight = st.columns(2)
+        with colAggLeft:
+            st.markdown("**Pick aggregator columns:**")
+            agg_multisel = st.multiselect(
+                "Aggregator columns",
+                cat_cols,
+                default=[],
+                key="agg_cols_multisel"
+            )
+        with colAggRight:
+            if agg_multisel:
+                st.markdown("**Choose category values**")
+                for colname in agg_multisel:
+                    distinct_vals = sorted(local_df[colname].dropna().unique())
+                    all_opt = "All"
+                    radio_opts = [all_opt] + list(distinct_vals)
+                    chosen_val = st.radio(
+                        f"{colname} Filter:",
+                        radio_opts,
+                        index=0,
+                        horizontal=True,
+                        key=f"aggfilter_{colname}"
+                    )
+                    if chosen_val != all_opt:
+                        local_df = local_df[local_df[colname] == chosen_val]
+                        if local_df.empty:
+                            st.warning(f"No data left after {colname} = {chosen_val}")
+                            st.markdown('</div>', unsafe_allow_html=True)
+                            st.stop()
+        # Button to apply the aggregator filter changes
+        if st.button("Apply Aggregator Filter", key="btn_apply_agg"):
+            st.session_state["create_data"] = local_df.copy()
+            st.success("Aggregator filter applied.")
+    else:
+        st.info("No categorical columns found.")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Get numeric columns from the updated DataFrame.
+    numeric_cols = local_df.select_dtypes(include=[np.number]).columns.tolist()
+
+    # -----------------------------------------------------------------------
+    # CARD 1: Basic Numeric Transforms
+    # -----------------------------------------------------------------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 1) Basic Numeric Transforms")
+
+    colNumLeft, colNumRight = st.columns(2)
+    with colNumLeft:
+        new_basic_col = st.text_input("New Numeric Feature Name", "NewNumeric1", key="basic_newcol")
+        basic_mode = st.radio("Mode:", ["Two-Column Arithmetic", "Single-Column"], horizontal=True, key="basic_mode_radio")
+    with colNumRight:
+        if basic_mode == "Two-Column Arithmetic":
+            if numeric_cols:
+                cA = st.selectbox("Column A:", ["(None)"] + numeric_cols, key="arith_colA")
+                cB_ = st.selectbox("Column B:", ["(None)"] + numeric_cols, key="arith_colB")
+                operation = st.selectbox("Operation:", ["Add", "Subtract", "Multiply", "Divide"], key="arith_op_sel")
+                if cA != "(None)" and cB_ != "(None)" and cA != cB_:
+                    if st.button("Create Feature", key="btn_basic_two"):
+                        if operation == "Add":
+                            local_df[new_basic_col] = local_df[cA] + local_df[cB_]
+                        elif operation == "Subtract":
+                            local_df[new_basic_col] = local_df[cA] - local_df[cB_]
+                        elif operation == "Multiply":
+                            local_df[new_basic_col] = local_df[cA] * local_df[cB_]
+                        else:  # "Divide"
+                            local_df[new_basic_col] = np.where(local_df[cB_] != 0, local_df[cA] / local_df[cB_], np.nan)
+                        st.session_state["create_data"] = local_df.copy()
+                        st.success(f"Created '{new_basic_col}' (not saved yet).")
+            else:
+                st.info("No numeric columns to transform.")
+        else:
+            if numeric_cols:
+                single_col = st.selectbox("Pick numeric column:", ["(None)"] + numeric_cols, key="single_sel")
+                single_op = st.selectbox("Transform:", ["Log", "Sqrt", "Negate"], key="single_op")
+                if single_col != "(None)":
+                    if st.button("Create Feature", key="btn_basic_single"):
+                        if single_op == "Log":
+                            local_df[new_basic_col] = np.where(local_df[single_col] > 0, np.log(local_df[single_col]), np.nan)
+                        elif single_op == "Sqrt":
+                            local_df[new_basic_col] = np.where(local_df[single_col] >= 0, np.sqrt(local_df[single_col]), np.nan)
+                        else:
+                            local_df[new_basic_col] = -1 * local_df[single_col]
+                        st.session_state["create_data"] = local_df.copy()
+                        st.success(f"Created '{new_basic_col}' (not saved yet).")
+            else:
+                st.info("No numeric columns to transform.")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # CARD 2: Interaction Features
+    # -----------------------------------------------------------------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 2) Interaction Features")
+
+    colIntLeft, colIntRight = st.columns(2)
+    with colIntLeft:
+        interact_mode = st.radio("Interaction:", ["Pairwise Numeric", "Feature Crossing (Categorical)", "Min/Max of Columns"], horizontal=True, key="interact_mode_sel")
+        new_interact_col = st.text_input("New Interaction Column:", "NewInteract1", key="interact_col_name")
+    with colIntRight:
+        if interact_mode == "Pairwise Numeric":
+            if numeric_cols:
+                x_col = st.selectbox("Numeric X:", ["(None)"] + numeric_cols, key="pairwise_x")
+                y_col = st.selectbox("Numeric Y:", ["(None)"] + numeric_cols, key="pairwise_y")
+                if x_col != "(None)" and y_col != "(None)" and x_col != y_col:
+                    if st.button("Create Pairwise Numeric", key="btn_pairwise"):
+                        local_df[new_interact_col] = local_df[x_col] * local_df[y_col]
+                        st.session_state["create_data"] = local_df.copy()
+                        st.success(f"Created '{new_interact_col}' (not saved yet).")
+            else:
+                st.info("No numeric columns remain.")
+        elif interact_mode == "Feature Crossing (Categorical)":
+            cat_after = local_df.select_dtypes(include=["object", "category"]).columns.tolist()
+            if cat_after:
+                catA = st.selectbox("Categorical A:", ["(None)"] + cat_after, key="catA_sel")
+                catB = st.selectbox("Categorical B:", ["(None)"] + cat_after, key="catB_sel")
+                if catA != "(None)" and catB != "(None)" and catA != catB:
+                    if st.button("Create Feature Crossing", key="btn_catCross"):
+                        local_df[new_interact_col] = local_df[catA].astype(str) + "_" + local_df[catB].astype(str)
+                        st.session_state["create_data"] = local_df.copy()
+                        st.success(f"Created '{new_interact_col}' (not saved yet).")
+            else:
+                st.info("No categorical columns remain.")
+        else:
+            multi_sel = st.multiselect("Pick numeric columns:", numeric_cols, key="minmax_multi")
+            mm_mode = st.selectbox("Compute:", ["Min", "Max"], key="minmax_mode")
+            if multi_sel:
+                if st.button("Create Min/Max", key="btn_minmax"):
+                    if mm_mode == "Min":
+                        local_df[new_interact_col] = local_df[multi_sel].min(axis=1)
+                    else:
+                        local_df[new_interact_col] = local_df[multi_sel].max(axis=1)
+                    st.session_state["create_data"] = local_df.copy()
+                    st.success(f"Created '{new_interact_col}' (not saved yet).")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # CARD 3: Group-Based Features
+    # -----------------------------------------------------------------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 3) Group-Based Features")
+
+    colGrpLeft, colGrpRight = st.columns(2)
+    with colGrpLeft:
+        cat_after_filter = local_df.select_dtypes(include=["object", "category"]).columns.tolist()
+        group_col = st.selectbox("Group Column:", ["(None)"] + cat_after_filter, key="group_col_sel")
+        group_newcol = st.text_input("New Group Feature Name:", "NewGroup1", key="group_newcol_name")
+    with colGrpRight:
+        group_op = st.selectbox("Operation:", ["Mean", "Count", "Difference from Mean"], key="group_op_mode")
+        if numeric_cols:
+            group_num = st.selectbox("Numeric Column for group stats:", ["(None)"] + numeric_cols, key="group_num_sel")
+        else:
+            group_num = "(None)"
+        if group_col != "(None)" and group_num != "(None)" and group_op and group_newcol:
+            if st.button("Create Group Feature", key="btn_group_feat"):
+                grouping = local_df.groupby(group_col)[group_num]
+                if group_op == "Mean":
+                    local_df[group_newcol] = grouping.transform("mean")
+                elif group_op == "Count":
+                    local_df[group_newcol] = local_df.groupby(group_col)[group_col].transform("count")
+                else:
+                    mean_vals = grouping.transform("mean")
+                    local_df[group_newcol] = local_df[group_num] - mean_vals
+                st.session_state["create_data"] = local_df.copy()
+                st.success(f"Created '{group_newcol}' with {group_op} of {group_num} (not saved yet).")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # CARD 4: Date/Time Features
+    # -----------------------------------------------------------------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 4) Date/Time Features")
+
+    colDtLeft, colDtRight = st.columns(2)
+    with colDtLeft:
+        all_cols = local_df.columns.tolist()
+        time_col_pick = st.selectbox("Pick a date/time column:", ["(None)"] + all_cols, key="time_colPick")
+        new_timecol = st.text_input("New Time Feature Name:", "NewTime1", key="new_timecol_text")
+    with colDtRight:
+        time_op = st.selectbox("Time Operation:", ["Extract Day/Month", "Delta from Now", "Lag by 1 row"], key="time_op_type")
+        if time_col_pick != "(None)":
+            if np.issubdtype(local_df[time_col_pick].dtype, np.datetime64):
+                pass
+            elif local_df[time_col_pick].dtype == object:
+                local_df[time_col_pick] = pd.to_datetime(local_df[time_col_pick], errors="coerce")
+                st.info(f"Converted {time_col_pick} to datetime64. Some rows might be NaT if parse failed.")
+            if not np.issubdtype(local_df[time_col_pick].dtype, np.datetime64):
+                st.warning(f"Column '{time_col_pick}' not valid datetime. Time-based transform might fail.")
+            else:
+                if st.button("Create Time Feature", key="btn_timefeat"):
+                    if time_op == "Extract Day/Month":
+                        local_df[new_timecol + "_day"] = local_df[time_col_pick].dt.day
+                        local_df[new_timecol + "_month"] = local_df[time_col_pick].dt.month
+                        st.success(f"Created {new_timecol+'_day'} and {new_timecol+'_month'} (not saved yet).")
+                    elif time_op == "Delta from Now":
+                        now = pd.to_datetime("today")
+                        local_df[new_timecol] = (now - local_df[time_col_pick]).dt.days
+                        st.success(f"Created '{new_timecol}' as day difference from now (not saved yet).")
+                    else:  # Lag by 1 row
+                        local_df[new_timecol] = local_df[time_col_pick].shift(1)
+                        st.success(f"Created lag column '{new_timecol}' from {time_col_pick} (not saved yet).")
+                    st.session_state["create_data"] = local_df.copy()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # CARD 5: Preview & Save
+    # -----------------------------------------------------------------------
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.write("## 5) Preview & Save")
+    st.dataframe(local_df.head(10), use_container_width=True)
+    st.write("Confirm & Save new features to st.session_state['transform_data'].")
+    if st.button("Save All Changes", key="save_all_final"):
+        st.session_state["transform_data"] = local_df.copy()
+        st.success("All changes have been saved to st.session_state['transform_data']!")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # -----------------------------------------------------------------------
+    # Navigation Buttons
+    # -----------------------------------------------------------------------
     st.markdown("---")
     col1, col2 = st.columns(2)
     with col1:
@@ -923,13 +1487,226 @@ def Create_page():
     with col2:
         if st.button("Home"):
             go_home()
-            
-
 
 
 def Select_page():
-    
-    
+    import streamlit as st
+    import pandas as pd
+    import numpy as np
+
+    from sklearn.feature_selection import VarianceThreshold
+    from xgboost import XGBClassifier, XGBRegressor
+
+    st.title("Feature Selection Page")
+    st.write("Select features from the data in `st.session_state['transform_data']` using various techniques.")
+
+    # -----------------------------------------------------------------------
+    # A) Check for transform_data in session_state
+    # -----------------------------------------------------------------------
+    if "transform_data" not in st.session_state:
+        st.error("No data found in st.session_state['transform_data']. Please run the transform page first.")
+        st.stop()
+
+    # Copy the data for local use
+    df = st.session_state["transform_data"].copy()
+
+    st.markdown("### Initial Data Preview")
+    st.dataframe(df.head(10), use_container_width=True)
+
+    all_columns = df.columns.tolist()
+    numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+
+    # -----------------------------------------------------------------------
+    # B) Pick Your Target (Y) and XGBoost Task
+    # -----------------------------------------------------------------------
+    st.markdown("## Select Target Variable & Task Type")
+    y_col = st.selectbox("Pick your target (Y) column:", ["(None)"] + all_columns, index=0)
+    task_type = st.radio("Task type for XGBoost:", ["Classifier", "Regressor"], index=0)
+    st.write("---")
+
+    # Helper: Minimal label encoding for classification if Y is not numeric
+    def label_encode_series(series: pd.Series) -> pd.Series:
+        """Converts any series into numeric codes (0, 1, 2...) for classification."""
+        return pd.Series(pd.factorize(series)[0], index=series.index)
+
+    # -----------------------------------------------------------------------
+    # C) Manual Feature Selection
+    # -----------------------------------------------------------------------
+    st.markdown("## A. Manual Feature Selection")
+    selected_manual = st.multiselect(
+        "Manually pick columns to keep:",
+        options=all_columns,
+        default=all_columns
+    )
+
+    st.write("Preview of manually selected columns:")
+    st.dataframe(df[selected_manual].head(10), use_container_width=True)
+
+    # -----------------------------------------------------------------------
+    # D) Correlation-Based Selection
+    # -----------------------------------------------------------------------
+    st.markdown("## B. Correlation-Based Selection")
+    selected_corr_cols = []
+
+    # Only attempt correlation if Y is numeric and not None
+    if y_col != "(None)" and y_col in numeric_cols:
+        corr_threshold = st.slider(
+            "Correlation threshold (absolute value):",
+            min_value=0.0, max_value=1.0,
+            value=0.0,  # default to minimal threshold
+            step=0.01
+        )
+        # DataFrame of only numeric columns
+        numeric_data = df[numeric_cols]
+        corrs = numeric_data.corr()[y_col].dropna()
+        # Filter columns by correlation threshold
+        high_corr = corrs[abs(corrs) >= corr_threshold]
+        selected_corr_cols = high_corr.index.tolist()  # includes y_col as well
+
+        st.write(f"Correlation with target '{y_col}' (above ±{corr_threshold}):")
+        st.dataframe(corrs.to_frame("Correlation"), use_container_width=True)
+        st.write(f"Columns with |corr| ≥ {corr_threshold}: {selected_corr_cols}")
+    else:
+        st.info("Correlation-based filtering skipped (either target is '(None)' or not numeric).")
+
+    # -----------------------------------------------------------------------
+    # E) Variance Threshold Filtering
+    # -----------------------------------------------------------------------
+    st.markdown("## C. Variance Threshold Filtering")
+    selected_var_cols = []
+
+    if numeric_cols:
+        var_threshold_value = st.slider(
+            "Variance threshold:",
+            min_value=0.0, max_value=10.0,
+            value=0.0, step=0.1
+        )
+
+        if st.button("Apply Variance Threshold"):
+            vt = VarianceThreshold(threshold=var_threshold_value)
+            numeric_data = df[numeric_cols].copy()
+
+            vt.fit(numeric_data)
+            keep_mask = vt.get_support()  # Boolean array
+            selected_var_cols = [col for col, keep in zip(numeric_cols, keep_mask) if keep]
+
+            st.write(f"Columns passing variance threshold of {var_threshold_value}:")
+            st.write(selected_var_cols if selected_var_cols else "(None)")
+        else:
+            st.info("Click 'Apply Variance Threshold' to see which columns pass the filter.")
+    else:
+        st.info("No numeric columns found for variance threshold selection.")
+
+    # -----------------------------------------------------------------------
+    # F) XGBoost Feature Importance
+    # -----------------------------------------------------------------------
+    st.markdown("## D. XGBoost Feature Importance")
+    selected_xgb_cols = []
+
+    # We'll fit a quick XGBoost model if the user has chosen a valid Y.
+    if y_col != "(None)":
+        # Let user trigger the feature-importance calculation.
+        if st.button("Compute XGBoost Feature Importances"):
+            # Prepare X, y for XGBoost
+            X = df.drop(columns=[y_col], errors="ignore").copy()
+
+            # Filter to numeric columns only for X
+            X = X.select_dtypes(include=[np.number])
+            # If Y is not numeric but the user wants classification, label-encode
+            y_series = df[y_col]
+            if task_type == "Classifier":
+                if y_series.dtype not in [np.number, np.float64, np.int64]:
+                    # Perform label encoding
+                    y_series = label_encode_series(y_series)
+                model = XGBClassifier(use_label_encoder=False, eval_metric="logloss")
+            else:
+                # Regressor
+                # If y is not numeric, we can't do a simple regression
+                if y_series.dtype not in [np.number, np.float64, np.int64]:
+                    st.warning("Y is non-numeric. XGBRegressor won't work properly. Skipping.")
+                    st.stop()
+                model = XGBRegressor()
+
+            # Train quickly
+            try:
+                model.fit(X, y_series)
+                importances = model.feature_importances_
+                col_importances = sorted(
+                    zip(X.columns, importances),
+                    key=lambda x: x[1],
+                    reverse=True
+                )
+
+                st.write("XGBoost Feature Importances (descending):")
+                st.dataframe(pd.DataFrame(col_importances, columns=["Feature", "Importance"]), use_container_width=True)
+
+                # Let user set an importance threshold or top-k
+                imp_threshold = st.slider("Minimum importance threshold:", 0.0, 1.0, 0.0, 0.01)
+                # Filter columns by threshold
+                selected_xgb_cols = [col for col, imp in col_importances if imp >= imp_threshold]
+
+                st.write(f"Columns with importance ≥ {imp_threshold}: {selected_xgb_cols if selected_xgb_cols else '(None)'}")
+            except Exception as e:
+                st.error(f"Error training XGBoost model: {e}")
+        else:
+            st.info("Click 'Compute XGBoost Feature Importances' to see XGBoost-based filtering.")
+    else:
+        st.info("XGBoost feature importance skipped (no Y selected).")
+
+    # -----------------------------------------------------------------------
+    # G) Combine & Save Final Selection
+    # -----------------------------------------------------------------------
+    st.markdown("## E. Combine & Save Final Selection")
+    st.write("""
+    You can choose how to combine your selected sets:
+
+    - **Manual Only**  
+    - **Intersection of All** (Manual ∩ Correlation ∩ Variance ∩ XGBoost)  
+    - **Union of All** (Manual ∪ Correlation ∪ Variance ∪ XGBoost)
+    """)
+
+    combine_option = st.radio(
+        "How do you want to combine the selected sets?",
+        ["Manual Only", "Intersection of All", "Union of All"],
+        index=0
+    )
+
+    # Build sets from each selection method
+    manual_set = set(selected_manual)
+    corr_set = set(selected_corr_cols) if selected_corr_cols else set()
+    var_set = set(selected_var_cols) if selected_var_cols else set()
+    xgb_set = set(selected_xgb_cols) if selected_xgb_cols else set()
+
+    if combine_option == "Manual Only":
+        final_selection = list(manual_set)
+    elif combine_option == "Intersection of All":
+        # Intersect only the non-empty sets
+        sets_to_combine = [manual_set]
+        if corr_set:
+            sets_to_combine.append(corr_set)
+        if var_set:
+            sets_to_combine.append(var_set)
+        if xgb_set:
+            sets_to_combine.append(xgb_set)
+
+        final_selection = list(set.intersection(*sets_to_combine)) if sets_to_combine else []
+    else:  # "Union of All"
+        sets_to_combine = [manual_set, corr_set, var_set, xgb_set]
+        final_selection = list(set.union(*sets_to_combine))
+
+    st.write(f"**Final selection**: {final_selection if final_selection else '(None)'}")
+
+    if final_selection:
+        st.dataframe(df[final_selection].head(10), use_container_width=True)
+    else:
+        st.warning("No columns selected!")
+
+    # Button to save final selection
+    if st.button("Save Final Selection"):
+        st.session_state["selected_features"] = final_selection
+        st.success(f"Selected features saved to session_state['selected_features']: {final_selection}")
+
+
     st.markdown("---")
     col1, col2 = st.columns(2)
     with col1:
@@ -3686,7 +4463,7 @@ def section2_module1_page():
                       mape_tr_, mape_te_, B0_std_mean ]
                     + list(mean_x_d.values())
                     + list(raw_coefs)
-                    + [self_elas, elasticity_flag]
+                    + [self_elas, elasticity_flag, avg_own_price]
                 )
 
         all_frames = []
@@ -3701,7 +4478,7 @@ def section2_module1_page():
                        "MAPE Train","MAPE Test","B0_std_mean"]
                     + list(mean_x_d.keys())
                     + ["Beta_" + c for c in present_cols]
-                    + ["SelfElasticity","ElasticityFlag"]
+                    + ["SelfElasticity","ElasticityFlag","PPU_at_Elasticity"]
                 )
             )
             df_tmp["Model"] = mname
@@ -3725,7 +4502,7 @@ def section2_module1_page():
             combined_results_df["CSF"] = combined_results_df["SelfElasticity"].apply(
                 lambda x: 1-(1/x) if x and x!=0 else np.nan
             )
-            combined_results_df["MCV"] = combined_results_df["CSF"]*combined_results_df["PPU_last_12M"]
+            combined_results_df["MCV"] = combined_results_df["CSF"] * combined_results_df["PPU_at_Elasticity"]
 
         new_order = (grouping_keys+["Model","CSF","MCV","SelfElasticity","PPU_last_12M"]+[
             c for c in combined_results_df.columns
@@ -4097,8 +4874,8 @@ def section2_module1_page():
         min_csf, max_csf = st.slider(
             "  ",
             min_value=0.0,
-            max_value=4.0,
-            value=(0.0,4.0),
+            max_value=10.0,
+            value=(0.0,10.0),
             step=0.1,
             label_visibility="collapsed"
         )
@@ -4521,15 +5298,25 @@ def section2_module1_page():
     # NAVIGATION BUTTONS
     # ------------------------------------------------------------------------
     st.markdown("---")
-    cBack, cHome = st.columns(2)
+    cBack, cHome, cPM = st.columns(3)
     with cBack:
         if st.button("Back", key="section2_module1_back"):
             go_back()
     with cHome:
         if st.button("Home", key="section2_module1_home"):
             go_home()
+            
+    with cPM:
+        if st.button(" Go to Post‑Modelling"):
+            go_to_post_modelling()
 
+def go_to_modelling():
+    st.session_state.page = "section2_module1"   # <- must match router
+    st.rerun()                                   # use experimental_rerun() on Streamlit < 1.25
 
+def go_to_post_modelling():
+    st.session_state.page = "section2_module2"
+    st.rerun()
 
 def section2_module2_page():
     """
@@ -4561,14 +5348,72 @@ def section2_module2_page():
         return "N/A"
 
     # ------------------------------
-    # Inject your custom CSS style
+    # Helper functions for back navigation
+    # ------------------------------
+    def go_back():
+        # Implement navigation logic
+        st.session_state["current_page"] = "previous_page"
+        
+    def go_home():
+        # Implement navigation logic
+        st.session_state["current_page"] = "home_page"
+
+    # ------------------------------
+    # Inject enhanced CSS style
     # ------------------------------
     st.markdown(
         """
         <style>
-        /* Overall background color (slight pastel gradient) */
+        /* Overall background color */
         body {
             background: linear-gradient(120deg, #f0f4f8, #f8faff);
+        }
+
+        /* Card-like container styling */
+        .card-container {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            margin-bottom: 1rem;
+        }
+        
+        /* Section headers */
+        .section-header {
+            color: #1F618D;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #EBF5FB;
+        }
+        
+        /* Metric tiles */
+        .metric-container {
+            background-color: #F8F9F9;
+            padding: 1rem;
+            border-radius: 0.3rem;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2C3E50;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #7F8C8D;
+        }
+        
+        /* Make tables more readable */
+        .dataframe-container {
+            font-size: 0.9rem !important;
+        }
+        
+        .dataframe-container td, .dataframe-container th {
+            padding: 0.5rem !important;
         }
 
         /* Slightly larger font for subheaders */
@@ -4628,22 +5473,14 @@ def section2_module2_page():
     # ------------------------------
     # MAIN "Post Modelling" content
     # ------------------------------
+
     st.title("Post Modelling – Final Model Summary (Type 1 & Type 2)")
-    
-    
-        # ------------------------------------------------------------------------
-    # NAVIGATION BUTTONS
-    # ------------------------------------------------------------------------
-    st.markdown("---")
-    cBack, cHome = st.columns(2)
-    with cBack:
-        if st.button("Back", key="section2_module1_back"):
-            go_back()
-    with cHome:
-        if st.button("Home", key="section2_module1_home"):
-            go_home()
 
 
+
+    if st.button("← Back to Modelling"):
+        go_to_modelling()
+        
     # (A) Let user pick a data source from session state
     st.markdown("<div class='custom-subheader'>Data Source for Post Modelling</div>", unsafe_allow_html=True)
     possible_sources = []
@@ -4660,7 +5497,7 @@ def section2_module2_page():
 
     chosen_data_source = st.selectbox("Select Data Source:", possible_sources)
     df_source = st.session_state[chosen_data_source].copy()
-    st.markdown(f"**Chosen data source**: `{chosen_data_source}`")
+    st.markdown(f"**Chosen data source**: {chosen_data_source}")
 
     # ------------- Check for Type1 or Type2 final models -------------
     def have_type1_models():
@@ -4703,37 +5540,60 @@ def section2_module2_page():
     st.markdown("---", unsafe_allow_html=True)
 
     # ============================= TYPE 1 =============================
+# ============================= TYPE 1 =============================
+# ============================= TYPE 1 =============================
     if selected_model_type == "Type 1":
-        st.markdown("<div class='custom-subheader'>Type 1: Single Aggregated Model – Own Price + Competitor Impact</div>", unsafe_allow_html=True)
+        st.markdown("## Type 1: Single Aggregated Model Analysis")
 
-        # Grab final models for Type 1
-        val_type1 = st.session_state["final_saved_models_type1"]
-        if isinstance(val_type1, list):
-            df_type1 = pd.DataFrame(val_type1)
-        else:
-            df_type1 = val_type1.copy()
-
+        # — Load & validate your saved Type 1 models —
+        raw_models = st.session_state.get("final_saved_models_type1")
+        if not raw_models:
+            st.error("No Type 1 models found in session.")
+            st.stop()
+        df_type1 = pd.DataFrame(raw_models) if isinstance(raw_models, list) else raw_models.copy()
         if df_type1.empty:
-            st.warning("No Type 1 final models in session. Stopping.")
+            st.error("Type 1 model list is empty.")
             st.stop()
 
-        # Show table of final Type 1 models
-        st.markdown("Below are Type 1 final models. Select a row to see demand curve(s).")
-        st.dataframe(df_type1, use_container_width=True)
+        # — Build unified labels showing Model + keys —
+        label_to_index = {}
+        options = []
+        for idx, row in df_type1.iterrows():
+            model_name = row.get("Model", f"Model {idx}")
+            attrs = []
+            for key in ("Channel", "Brand", "Variant", "PPG"):
+                if key in df_type1.columns:
+                    attrs.append(f"{key}:{row[key]}")
+            label = model_name + (f" ({' | '.join(attrs)})" if attrs else "")
+            label_to_index[label] = idx
+            options.append(label)
 
-        row_indices = list(range(len(df_type1)))
-        chosen_idx = st.selectbox("Select a row for Type 1 models:", row_indices)
-        row_selected = df_type1.iloc[chosen_idx]
+        # Replace radio buttons with a dropdown
+        chosen_label = st.selectbox("Select a Type 1 model to analyze:", options)
+        sel_idx = label_to_index[chosen_label]
+        row_selected = df_type1.loc[sel_idx]
 
-        st.markdown("**Selected Row**:")
-        st.dataframe(row_selected.to_frame().T, use_container_width=True)
+        # — Show key attributes and metrics in a compact layout —
+        col1, col2, col3 = st.columns(3)
+        if "R2" in row_selected:
+            col1.metric("R²", f"{row_selected['R2']:.4f}")
+        if "MAPE" in row_selected:
+            col2.metric("MAPE", f"{row_selected['MAPE']:.2f}%")
+        
+        # Show channel/brand in the third column
+        if "Channel" in row_selected and "Brand" in row_selected:
+            col3.metric("Scope", f"{row_selected['Channel']}-{row_selected['Brand']}")
+
+        # — Show full details in an expander to save space —
+        with st.expander("View Complete Model Details", expanded=False):
+            st.dataframe(row_selected.to_frame().T, use_container_width=True)
+
 
         # Identify the model name from the chosen row
         if "Model" not in row_selected:
             st.error("No 'Model' column found in final Type 1 DataFrame. Cannot identify the model automatically.")
             st.stop()
         model_name_in_row = row_selected["Model"]
-        st.markdown(f"**Auto-detected Model Name**: `{model_name_in_row}`")
 
         # aggregator columns
         channel_ = row_selected.get("Channel", None)
@@ -4758,9 +5618,6 @@ def section2_module2_page():
             predictor = bc.replace("Beta_", "")
             betas[predictor] = float(row_selected[bc])
 
-        st.markdown(f"**Intercept** = `{raw_intercept}`")
-        st.markdown(f"**Betas**: `{betas}`")
-
         # gather default values
         missing_cols = []
         default_vals = {}
@@ -4779,114 +5636,136 @@ def section2_module2_page():
             if predictor.endswith("_RPI") and betas[predictor] != 0:
                 rpi_cols.append(predictor)
 
-        # ~~~~~ Demand curve UI
-        st.markdown("### Own Price & Scenario Setup")
-        user_own_price = st.number_input("My Current Price (PPU):", value=default_vals.get("PPU",5.0), step=0.5)
-        competitor_impact = st.checkbox("Enable Competitor Impact?", value=False)
+        # IMPROVED PRICE & SCENARIO SETUP
+        st.markdown("### Analysis Parameters")
+        
+        param_col1, param_col2 = st.columns(2)
+        
+        with param_col1:
+            user_own_price = st.number_input("My Current Price (PPU):", 
+                                            value=default_vals.get("PPU", 5.0), 
+                                            step=0.5)
+        
+        with param_col2:
+            competitor_impact = st.checkbox("Enable Competitor Impact Analysis", value=False)
 
-        user_overrides_orig = {}
-        user_competitor_prices = {}
-
-        st.markdown("**Average/Default Values (from row)**:")
-        st.write(default_vals)
-
-        with st.expander("Predictor Configurator", expanded=False):
-            st.markdown("#### Other (non-PPU, non-RPI) Predictors")
-            for p_ in betas.keys():
-                if (p_ != "PPU") and (not p_.endswith("_RPI")):
+        # Advanced parameter configuration
+        with st.expander("Advanced: Predictor Configuration", expanded=False):
+            config_col1, config_col2 = st.columns(2)
+            
+            user_overrides_orig = {}
+            user_competitor_prices = {}
+            
+            with config_col1:
+                st.markdown("#### Non-Price Predictors")
+                non_rpi_predictors = [p for p in betas.keys() if not p.endswith("_RPI") and p != "PPU"]
+                for p_ in non_rpi_predictors:
                     user_overrides_orig[p_] = st.number_input(
-                        f"{p_} default",
+                        f"{p_}:",
                         value=default_vals[p_],
                         step=0.5
                     )
-
+            
             if competitor_impact and rpi_cols:
-                st.markdown("#### Competitor Prices (New scenario)")
-                col_list = st.columns(len(rpi_cols))
-                old_own_price = default_vals.get("PPU",5.0)
-                for i, rp_ in enumerate(rpi_cols):
-                    old_ratio= default_vals[rp_]
-                    if old_ratio != 0:
-                        old_comp_price= old_own_price / old_ratio
-                    else:
-                        old_comp_price= 0.0
-                    with col_list[i]:
+                with config_col2:
+                    st.markdown("#### Competitor Prices")
+                    old_own_price = default_vals.get("PPU", 5.0)
+                    for rp_ in rpi_cols:
+                        old_ratio = default_vals[rp_]
+                        old_comp_price = old_own_price / old_ratio if old_ratio != 0 else 0.0
                         user_competitor_prices[rp_] = st.number_input(
-                            f"{rp_[:-4]} Price",
-                            value= old_comp_price,
+                            f"{rp_[:-4]} Price:",
+                            value=old_comp_price,
                             step=0.5
                         )
 
-        if ("PPU" not in betas) or (betas["PPU"]==0):
+        # Check PPU validity
+        if ("PPU" not in betas) or (betas["PPU"] == 0):
             st.error("No 'PPU' or Beta_PPU=0 => can't invert volume vs price. Aborting.")
             st.stop()
 
-        b_own= betas["PPU"]
+        b_own = betas["PPU"]
 
+        # Helper functions for scenario generation and elasticity
         def scenario_rpi_dict(my_price: float, new_scenario: bool) -> dict:
             d_out = {}
             for rp_ in rpi_cols:
                 if (not competitor_impact) or (not new_scenario):
                     d_out[rp_] = default_vals[rp_]
                 else:
-                    new_cp= user_competitor_prices[rp_]
-                    ratio= 0.0 if (new_cp == 0) else (my_price / new_cp)
+                    new_cp = user_competitor_prices[rp_]
+                    ratio = 0.0 if (new_cp == 0) else (my_price / new_cp)
                     d_out[rp_] = ratio
             return d_out
 
         def compute_current_volume(betas, raw_int, my_price, user_over, rpi_vals):
-            sum_others= 0.0
+            sum_others = 0.0
             for c_ in betas:
-                if (not c_.endswith("_RPI")) and (c_!="PPU"):
-                    sum_others += betas[c_]* user_over.get(c_,0.0)
-            sum_rpi= 0.0
+                if (not c_.endswith("_RPI")) and (c_ != "PPU"):
+                    sum_others += betas[c_] * user_over.get(c_, 0.0)
+            sum_rpi = 0.0
             for rp_ in rpi_cols:
-                sum_rpi += betas[rp_]* rpi_vals[rp_]
-            return raw_int + sum_others + sum_rpi + betas["PPU"]* my_price
+                sum_rpi += betas[rp_] * rpi_vals[rp_]
+            return raw_int + sum_others + sum_rpi + betas["PPU"] * my_price
 
-        def compute_elasticity_simple(b_own_, price_val, volume_val):
-            if (volume_val>0) and (price_val>0):
-                return b_own_*(price_val/ volume_val)
-            return np.nan
+        def compute_elasticity_full(betas, price_val, volume_val, rpi_vals):
+            """
+            betas     : dict of all β's, including 'PPU' and any '<brand>_RPI'
+            price_val : the own‐price P at which we evaluate
+            volume_val: the predicted Q at that price
+            rpi_vals  : dict mapping each '<brand>_RPI' to its P_own/P_comp ratio
+            """
+            if volume_val <= 0 or price_val <= 0:
+                return np.nan
+
+            # Start with the own‐price slope
+            derivative = betas.get("PPU", 0.0)
+
+            # Add competitor‐ratio contribution: ∂(P/Pc)/∂P = 1/Pc
+            for rp_col, ratio in rpi_vals.items():
+                beta_r = betas.get(rp_col, 0.0)
+                if ratio and beta_r:
+                    P_comp = price_val / ratio
+                    if P_comp > 0:
+                        derivative += beta_r / P_comp
+
+            # Scale to get elasticity
+            return derivative * (price_val / volume_val)
 
         def build_curve_df(betas, raw_int, my_price, user_over, rpi_vals, n_points=15):
-            import numpy as np
             b_own_ = betas["PPU"]
-            sum_others= 0.0
+            sum_others = 0.0
             for c_ in betas:
-                if (not c_.endswith("_RPI")) and (c_!="PPU"):
-                    sum_others += betas[c_]* user_over.get(c_,0.0)
-            sum_rpi= 0.0
+                if (not c_.endswith("_RPI")) and (c_ != "PPU"):
+                    sum_others += betas[c_] * user_over.get(c_, 0.0)
+            sum_rpi = 0.0
             for rp_ in rpi_cols:
-                sum_rpi+= betas[rp_]* rpi_vals[rp_]
-            zero_x= raw_int + sum_others + sum_rpi
-            if b_own_>0:
-                if zero_x<0: zero_x=10
-                max_vol= 2* zero_x
+                sum_rpi += betas[rp_] * rpi_vals[rp_]
+            zero_x = raw_int + sum_others + sum_rpi
+            if b_own_ > 0:
+                if zero_x < 0: zero_x = 10
+                max_vol = 2 * zero_x
             else:
-                if zero_x<=0: zero_x=10
-                max_vol= zero_x
-            if max_vol<=0:
-                max_vol= 10
+                if zero_x <= 0: zero_x = 10
+                max_vol = zero_x
+            if max_vol <= 0:
+                max_vol = 10
 
-            volumes= np.linspace(0,max_vol, n_points)
-            price_list= []
-            rev_list= []
-            elas_list= []
+            volumes = np.linspace(0, max_vol, n_points)
+            price_list = []
+            rev_list = []
+            elas_list = []
 
             for Q_ in volumes:
-                p_= (Q_ - zero_x)/ b_own_ if b_own_!=0 else 0
-                p_= max(p_,0)
-                rev_= p_* Q_
-                if (Q_>0) and (p_>0):
-                    e_= b_own_*(p_/ Q_)
-                else:
-                    e_= np.nan
+                p_ = (Q_ - zero_x) / b_own_ if b_own_ != 0 else 0
+                p_ = max(p_, 0)
+                rev_ = p_ * Q_
+                e_ = compute_elasticity_full(betas, p_, Q_, rpi_vals)
                 price_list.append(p_)
                 rev_list.append(rev_)
                 elas_list.append(e_)
 
-            df_out= pd.DataFrame({
+            df_out = pd.DataFrame({
                 "Price": price_list,
                 "Volume": volumes,
                 "Revenue": rev_list,
@@ -4897,47 +5776,47 @@ def section2_module2_page():
             return df_out
 
         # Original scenario
-        rpi_old= scenario_rpi_dict(user_own_price, new_scenario=False)
-        df_old= build_curve_df(betas, raw_intercept, user_own_price, user_overrides_orig, rpi_old, 15)
-        Q_cur_old= compute_current_volume(betas, raw_intercept, user_own_price, user_overrides_orig, rpi_old)
-        elas_old= compute_elasticity_simple(b_own, user_own_price, Q_cur_old)
+        rpi_old = scenario_rpi_dict(user_own_price, new_scenario=False)
+        df_old = build_curve_df(betas, raw_intercept, user_own_price, user_overrides_orig, rpi_old, 15)
+        Q_cur_old = compute_current_volume(betas, raw_intercept, user_own_price, user_overrides_orig, rpi_old)
+        elas_old = compute_elasticity_full(betas, user_own_price, Q_cur_old, rpi_old)
 
-        idx_oldmax= df_old["Revenue"].idxmax() if not df_old["Revenue"].empty else None
-        vol_oldmax, pri_oldmax= 0,0
+        idx_oldmax = df_old["Revenue"].idxmax() if not df_old["Revenue"].empty else None
+        vol_oldmax, pri_oldmax = 0, 0
         if idx_oldmax is not None:
-            vol_oldmax= df_old.loc[idx_oldmax,"Volume"]
-            pri_oldmax= df_old.loc[idx_oldmax,"Price"]
+            vol_oldmax = df_old.loc[idx_oldmax, "Volume"]
+            pri_oldmax = df_old.loc[idx_oldmax, "Price"]
 
-        df_new= None
-        Q_cur_new= None
-        elas_new= np.nan
+        df_new = None
+        Q_cur_new = None
+        elas_new = np.nan
         if competitor_impact and (rpi_cols):
-            rpi_new= scenario_rpi_dict(user_own_price, new_scenario=True)
-            df_new= build_curve_df(betas, raw_intercept, user_own_price, user_overrides_orig, rpi_new, 15)
-            Q_cur_new= compute_current_volume(betas, raw_intercept, user_own_price, user_overrides_orig, rpi_new)
-            elas_new= compute_elasticity_simple(b_own, user_own_price, Q_cur_new)
+            rpi_new = scenario_rpi_dict(user_own_price, new_scenario=True)
+            df_new = build_curve_df(betas, raw_intercept, user_own_price, user_overrides_orig, rpi_new, 15)
+            Q_cur_new = compute_current_volume(betas, raw_intercept, user_own_price, user_overrides_orig, rpi_new)
+            elas_new = compute_elasticity_full(betas, user_own_price, Q_cur_new, rpi_new)
 
         # Plotly figure
-        fig= go.Figure()
+        fig = go.Figure()
         fig.update_layout(
-            colorway=["#1F77B4","#D62728","#2CA02C","#FF7F0E"],
+            colorway=["#1F77B4", "#D62728", "#2CA02C", "#FF7F0E"],
             plot_bgcolor="rgba(245,245,250,0.9)",
             paper_bgcolor="rgba(245,245,250,0.9)"
         )
 
-        # original scenario line
+        # Original scenario line
         fig.add_trace(go.Scatter(
             x=df_old["Volume"], y=df_old["Price"],
             mode="lines+markers",
             name="Original RPI",
-            line=dict(color="blue",width=2),
+            line=dict(color="blue", width=2),
         ))
-        if (Q_cur_old>0) and (user_own_price>0):
+        if (Q_cur_old > 0) and (user_own_price > 0):
             fig.add_shape(
                 type="rect", xref="x", yref="y",
                 x0=0, y0=0, x1=Q_cur_old, y1=user_own_price,
                 fillcolor="blue", opacity=0.25,
-                line=dict(color="blue",width=2,dash="dash")
+                line=dict(color="blue", width=2, dash="dash")
             )
             fig.add_trace(go.Scatter(
                 x=[Q_cur_old], y=[user_own_price],
@@ -4945,12 +5824,12 @@ def section2_module2_page():
                 name="My Price (Orig)",
                 marker=dict(color="blue", size=8, symbol="x")
             ))
-        if (vol_oldmax>0) and (pri_oldmax>0):
+        if (vol_oldmax > 0) and (pri_oldmax > 0):
             fig.add_shape(
                 type="rect", xref="x", yref="y",
                 x0=0, y0=0, x1=vol_oldmax, y1=pri_oldmax,
                 fillcolor="blue", opacity=0.10,
-                line=dict(color="blue",width=1,dash="dot")
+                line=dict(color="blue", width=1, dash="dot")
             )
             fig.add_trace(go.Scatter(
                 x=[vol_oldmax], y=[pri_oldmax],
@@ -4959,7 +5838,7 @@ def section2_module2_page():
                 marker=dict(color="blue", size=6),
             ))
 
-        # competitor scenario line
+        # Competitor scenario line
         if competitor_impact and (df_new is not None) and not df_new.empty:
             fig.add_trace(go.Scatter(
                 x=df_new["Volume"], y=df_new["Price"],
@@ -4967,12 +5846,12 @@ def section2_module2_page():
                 name="New RPI",
                 line=dict(color="purple", width=2, dash="dot")
             ))
-            if (Q_cur_new is not None) and (Q_cur_new>0) and (user_own_price>0):
+            if (Q_cur_new is not None) and (Q_cur_new > 0) and (user_own_price > 0):
                 fig.add_shape(
                     type="rect", xref="x", yref="y",
                     x0=0, y0=0, x1=Q_cur_new, y1=user_own_price,
                     fillcolor="purple", opacity=0.25,
-                    line=dict(color="purple",width=2,dash="dash")
+                    line=dict(color="purple", width=2, dash="dash")
                 )
                 fig.add_trace(go.Scatter(
                     x=[Q_cur_new], y=[user_own_price],
@@ -4981,7 +5860,7 @@ def section2_module2_page():
                     marker=dict(color="purple", size=8, symbol="x")
                 ))
 
-        elas_old_str= f"Elas(Orig)= {format_elas(elas_old)}"
+        elas_old_str = f"Elas(Orig)= {format_elas(elas_old)}"
         fig.add_annotation(
             x=0.98, y=0.85, xref="paper", yref="paper",
             text=elas_old_str,
@@ -4990,7 +5869,7 @@ def section2_module2_page():
             bgcolor="white"
         )
         if competitor_impact and df_new is not None:
-            elas_new_str= f"Elas(New)= {format_elas(elas_new)}"
+            elas_new_str = f"Elas(New)= {format_elas(elas_new)}"
             fig.add_annotation(
                 x=0.98, y=0.75, xref="paper", yref="paper",
                 text=elas_new_str,
@@ -5000,316 +5879,390 @@ def section2_module2_page():
             )
 
         fig.update_layout(
-            title="Type 1 Demand – Own Price + (Optional) Competitor Impact",
+            title="Demand Curve – Own Price + Competitor Impact",
             xaxis_title="Volume (Q)",
             yaxis_title="Price (P)",
             template="plotly_white"
         )
-        st.plotly_chart(fig, use_container_width=True)
+        
+        
+        # ────────────────────────────────────────────────────────────────
+        #  BASELINE  (avg PPU, default predictors, default RPI)
+        # ────────────────────────────────────────────────────────────────
+        baseline_key = f"baseline_type1_{sel_idx}"
 
-        # Original scenario table
-        st.markdown("### Original Scenario Table (Price ascending)")
-        st.dataframe(df_old, use_container_width=True)
-        st.write("---")
+        if baseline_key not in st.session_state:
+            # --- 1.  Baseline inputs ------------------------------------
+            base_price = default_vals.get("PPU", 5.0)
 
-        if idx_oldmax is not None:
-            rev_old_max_= df_old.loc[idx_oldmax,"Revenue"]
-            pri_old_max_= df_old.loc[idx_oldmax,"Price"]
-            vol_old_max_= df_old.loc[idx_oldmax,"Volume"]
-        else:
-            rev_old_max_, pri_old_max_, vol_old_max_= 0,0,0
+            # Non‑price predictors at their stored averages
+            non_rpi_predictors = [p for p in betas if (p != "PPU") and (not p.endswith("_RPI"))]
+            base_overrides = {p: default_vals[p] for p in non_rpi_predictors}
 
-        st.markdown(
-            f"<b>Original scenario:</b> Max Revenue= <b>{rev_old_max_:.2f}</b> "
-            f"at Price=<b>{pri_old_max_:.2f}</b>, Volume=<b>{vol_old_max_:.2f}</b>",
-            unsafe_allow_html=True
-        )
-        Q_cur_old_val= max(0, Q_cur_old)
-        st.markdown(
-            f"<b>Your Current Price</b>={user_own_price:.2f}, "
-            f"Volume=<b>{Q_cur_old_val:.2f}</b>, "
-            f"Revenue=<b>{Q_cur_old_val * user_own_price:.2f}</b>",
-            unsafe_allow_html=True
-        )
-        if competitor_impact and df_new is not None and not df_new.empty:
-            idx_new_max_= df_new["Revenue"].idxmax()
-            rev_new_max_= df_new.loc[idx_new_max_,"Revenue"]
-            pri_new_max_= df_new.loc[idx_new_max_,"Price"]
-            vol_new_max_= df_new.loc[idx_new_max_,"Volume"]
-            st.write("---")
-            st.markdown(
-                f"<b>New scenario:</b> Max Revenue= <b>{rev_new_max_:.2f}</b> "
-                f"at Price=<b>{pri_new_max_:.2f}</b>, Volume=<b>{vol_new_max_:.2f}</b>",
-                unsafe_allow_html=True
+            # Competitor ratios at their stored averages
+            base_rpi = {rp: default_vals[rp] for rp in rpi_cols}
+
+            # --- 2.  Compute baseline volume, revenue, elasticity -------
+            base_vol  = compute_current_volume(betas, raw_intercept,
+                                            base_price, base_overrides, base_rpi)
+            base_rev  = base_price * base_vol
+            base_elas = compute_elasticity_full(betas, base_price, base_vol, base_rpi)
+
+            # --- 3.  Save so it never recalculates on rerun --------------
+            st.session_state[baseline_key] = {
+                "price":       base_price,
+                "volume":      base_vol,
+                "revenue":     base_rev,
+                "elasticity":  base_elas
+            }
+
+        # Retrieve stored metrics
+        baseline = st.session_state[baseline_key]
+
+        # --- 4.  Display strip of metrics right above the demand curve --
+        st.markdown("### Baseline (Avg PPU) Metrics")
+        b1, b2, b3, b4 = st.columns(4)
+        b1.metric("Avg PPU",     f"${baseline['price']:.2f}")
+        b2.metric("Volume",      f"{baseline['volume']:.0f}")
+        b3.metric("Revenue",     f"${baseline['revenue']:,.0f}")
+        b4.metric("Elasticity",  format_elas(baseline['elasticity']))
+        st.markdown("---")   # visual divider before the demand‑curve section
+
+        # IMPROVED DEMAND CURVE VISUALIZATION
+        st.markdown("### Demand Curve Analysis")
+        
+        curve_col1, curve_col2 = st.columns([3, 1])
+        
+        with curve_col1:
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with curve_col2:
+            # More compact metrics display
+            metric_col1, metric_col2 = st.columns(2)
+            
+            metric_col1.metric(
+                label="Current Price",
+                value=f"${user_own_price:.2f}"
             )
+            
+            Q_cur_old_val = max(0, Q_cur_old)
+            metric_col2.metric(
+                label="Volume", 
+                value=f"{Q_cur_old_val:.0f}"
+            )
+            
+            # Second row of metrics
+            metric_col3, metric_col4 = st.columns(2)
+            
+            metric_col3.metric(
+                label="Revenue",
+                value=f"${Q_cur_old_val * user_own_price:,.0f}"
+            )
+            
+            metric_col4.metric(
+                label="Elasticity",
+                value=format_elas(elas_old)
+            )
+            
+            # Optional divider for visual separation
+            st.markdown("---")
+            
+            # Revenue max info in more compact format
+            if idx_oldmax is not None:
+                st.markdown("#### Revenue Maximization")
+                max_col1, max_col2 = st.columns(2)
+                
+                rev_old_max_ = df_old.loc[idx_oldmax, "Revenue"]
+                pri_old_max_ = df_old.loc[idx_oldmax, "Price"]
+                vol_old_max_ = df_old.loc[idx_oldmax, "Volume"]
+                
+                max_col1.metric(
+                    label="Optimal Price",
+                    value=f"${pri_old_max_:.2f}"
+                )
+                
+                max_col2.metric(
+                    label="Max Revenue",
+                    value=f"${rev_old_max_:.0f}"
+                )
+                
+        # ---------------------------------------------------------------
+        #  PRICE‑vs‑REVENUE CURVE  (place at ROOT level, not in a column)
+        #  (paste just BEFORE the promo‑elasticity section)
+        # ---------------------------------------------------------------
+        st.markdown("### Price ⇢ Revenue Curve")
+
+        # ----------------------------------------------------------------
+        # 1) Ensure your current price appears in the data grid
+        # ----------------------------------------------------------------
+        if competitor_impact and (Q_cur_new is not None):
+            cur_Q = Q_cur_new       # scenario with new RPI
+            use_df = df_new.copy() if df_new is not None else df_old.copy()
+        else:
+            cur_Q = Q_cur_old
+            use_df = df_old.copy()
+
+        cur_rev = user_own_price * cur_Q if (cur_Q is not None) else np.nan
+
+        # If the point is outside the existing price range, append it
+        if user_own_price not in use_df["Price"].values:
+            use_df.loc[len(use_df)] = {
+                "Price": user_own_price,
+                "Revenue": cur_rev,
+                # columns you don’t care about can be NaN
+            }
+
+        # Re‑establish df_old / df_new for plotting (so they now include the point)
+        if use_df is df_old:
+            df_old = use_df.sort_values("Price")
+        else:
+            df_new = use_df.sort_values("Price")
+
+        # ----------------------------------------------------------------
+        # 2) Build the plot
+        # ----------------------------------------------------------------
+        fig_rev = go.Figure()
+        fig_rev.update_layout(
+            plot_bgcolor="rgba(245,245,250,0.9)",
+            paper_bgcolor="rgba(245,245,250,0.9)",
+            xaxis_title="Price (P)",
+            yaxis_title="Revenue (P × Q)",
+            template="plotly_white",
+            colorway=["#1F77B4", "#8E44AD"]
+        )
+
+        # ---------- original scenario ----------
+        fig_rev.add_trace(go.Scatter(
+            x=df_old["Price"],
+            y=df_old["Revenue"],
+            mode="lines+markers",
+            name="Orig RPI"
+        ))
+        if idx_oldmax is not None:
+            fig_rev.add_trace(go.Scatter(
+                x=[pri_oldmax],
+                y=[df_old.loc[idx_oldmax, "Revenue"]],
+                mode="markers+text",
+                text=["Max rev"],
+                textposition="bottom center",
+                marker=dict(size=9, symbol="diamond", color="#1F77B4"),
+                showlegend=False
+            ))
+
+        # ---------- competitor‑impact ----------
+        if competitor_impact and (df_new is not None) and not df_new.empty:
+            fig_rev.add_trace(go.Scatter(
+                x=df_new["Price"],
+                y=df_new["Revenue"],
+                mode="lines+markers",
+                name="New RPI",
+                line=dict(dash="dot")
+            ))
+            idx_newmax = df_new["Revenue"].idxmax()
+            fig_rev.add_trace(go.Scatter(
+                x=[df_new.loc[idx_newmax, "Price"]],
+                y=[df_new.loc[idx_newmax, "Revenue"]],
+                mode="markers+text",
+                text=["Max rev (new)"],
+                textposition="bottom center",
+                marker=dict(size=9, symbol="diamond", color="#8E44AD"),
+                showlegend=False
+            ))
+
+        # ---------- YOUR CURRENT POSITION ----------
+        fig_rev.add_trace(go.Scatter(
+            x=[user_own_price],
+            y=[cur_rev],
+            mode="markers+text",
+            text=[f"Current (${user_own_price:.2f}, {cur_rev:,.0f})"],
+            textposition="top center",
+            marker=dict(size=12, symbol="diamond", color="#27AE60"),
+            name="My current price",
+            showlegend=False
+        ))
+
+        st.plotly_chart(fig_rev, use_container_width=True)
+
+        # Data tables in expanders for less vertical space
+        with st.expander("View Detailed Data Tables", expanded=False):
+            st.markdown("#### Original Scenario Data")
+            st.dataframe(df_old, use_container_width=True)
+            
+            if competitor_impact and df_new is not None and not df_new.empty:
+                st.markdown("#### Competitor Impact Scenario Data")
+                st.dataframe(df_new, use_container_width=True)
+                
+                idx_new_max_ = df_new["Revenue"].idxmax()
+                rev_new_max_ = df_new.loc[idx_new_max_, "Revenue"]
+                pri_new_max_ = df_new.loc[idx_new_max_, "Price"]
+                vol_new_max_ = df_new.loc[idx_new_max_, "Volume"]
+                
+                st.markdown(
+                    f"**New scenario:** Max Revenue= **{rev_new_max_:.2f}** "
+                    f"at Price=**{pri_new_max_:.2f}**, Volume=**{vol_new_max_:.2f}**"
+                )
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # PROMO CLUSTERS (Type 1) – Additional Promo Elasticities
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        st.markdown("<div class='custom-subheader'>Promo Clusters (Type 1) – Additional Promo Elasticities</div>", unsafe_allow_html=True)
+        st.markdown("### Promotional Elasticity Analysis")
+        
         if "final_clusters_depth" in st.session_state and st.session_state["final_clusters_depth"]:
-            final_data= st.session_state["final_clusters_depth"]
-            key_tup= (channel_, brand_, variant_, ppg_)
+            final_data = st.session_state["final_clusters_depth"]
+            key_tup = (channel_, brand_, variant_, ppg_)
+            
             if key_tup in final_data:
-                st.markdown(f"**Found cluster definitions** for: `{key_tup}`")
-                cluster_defs= final_data[key_tup]
+                st.markdown(f"**Found cluster definitions** for: {key_tup}")
+                cluster_defs = final_data[key_tup]
+                
                 if not cluster_defs:
-                    st.info("No cluster bins for this combination.")
+                    st.info("No promotional cluster bins defined for this model.")
                 else:
-                    st.markdown("**Cluster Definitions:**")
-                    st.dataframe(pd.DataFrame(cluster_defs))
-
-                    cluster_names= [cd["ClusterName"] for cd in cluster_defs]
-                    chosen_cluster= st.selectbox("Select a cluster (promo bin):", cluster_names)
-                    cobj= next(cd for cd in cluster_defs if cd["ClusterName"]==chosen_cluster)
-                    discount_pct= float(cobj["Centroid"])
-                    st.write(f"Chosen cluster centroid discount: {discount_pct}%")
-
-                    # scenario
-                    promo_price= user_own_price*(1- discount_pct/100.0)
-                    def compute_current_volume(betas, raw_int, my_price, user_over, rpi_vals):
-                        sum_others= 0.0
-                        for c_ in betas:
-                            if (not c_.endswith("_RPI")) and (c_!="PPU"):
-                                sum_others += betas[c_]* user_over.get(c_,0.0)
-                        sum_rpi= 0.0
-                        for rp_ in rpi_cols:
-                            sum_rpi+= betas[rp_]* rpi_vals[rp_]
-                        return raw_int + sum_others + sum_rpi + betas["PPU"]* my_price
-
-                    Q_promo= compute_current_volume(betas, raw_intercept, promo_price, user_overrides_orig, rpi_old)
-                    def compute_elasticity_simple(b_own_, price_val, volume_val):
-                        if (volume_val>0) and (price_val>0):
-                            return b_own_*(price_val/ volume_val)
-                        return np.nan
-                    elas_promo= compute_elasticity_simple(b_own, promo_price, Q_promo)
-                    st.markdown(
-                        f"<b>Promo scenario</b>: Price={promo_price:.2f}, "
-                        f"Volume={Q_promo:.2f}, Elasticity={format_elas(elas_promo)}",
-                        unsafe_allow_html=True
-                    )
-
-                    st.markdown("---")
-                    st.markdown("<b>Summary Table: Base + All Promo Bins</b>", unsafe_allow_html=True)
-                    def build_all_bins(base_price, cluster_list):
-                        out_ = []
-                        out_.append({"BinName":"Promo1 (Base)","Discount":0.0})
-                        for cd_ in cluster_list:
-                            out_.append({
+                    promo_col1, promo_col2 = st.columns([1, 2])
+                    
+                    with promo_col1:
+                        st.markdown("**Cluster Definitions:**")
+                        st.dataframe(pd.DataFrame(cluster_defs))
+                        
+                        cluster_names = [cd["ClusterName"] for cd in cluster_defs]
+                        chosen_cluster = st.selectbox("Select a promotion bin:", cluster_names)
+                        cobj = next(cd for cd in cluster_defs if cd["ClusterName"] == chosen_cluster)
+                        discount_pct = float(cobj["Centroid"])
+                        
+                        st.markdown(f"**Selected discount**: {discount_pct}%")
+                        promo_price = user_own_price * (1 - discount_pct / 100.0)
+                        st.metric(label="Promotional Price", value=f"${promo_price:.2f}")
+                    
+                    with promo_col2:
+                        # Scenario calculation
+                        Q_promo = compute_current_volume(betas, raw_intercept, promo_price, user_overrides_orig, rpi_old)
+                        elas_promo = compute_elasticity_full(betas, promo_price, Q_promo, rpi_old)
+                        
+                        # Build summary table for all bins
+                        base_vol = Q_cur_old
+                        bins_info = []
+                        bins_info.append({"BinName":"Promo1 (Base)","Discount":0.0})
+                        for cd_ in cluster_defs:
+                            bins_info.append({
                                 "BinName": cd_["ClusterName"],
                                 "Discount": float(cd_["Centroid"])
                             })
-                        return out_
-                    base_vol= Q_cur_old
-                    bins_info= build_all_bins(user_own_price, cluster_defs)
-                    table_rows= []
-
-                    for binrow in bins_info:
-                        binname= binrow["BinName"]
-                        disc_  = binrow["Discount"]
-                        new_price= user_own_price*(1- disc_/100.0)
-                        Q_ = compute_current_volume(betas, raw_intercept, new_price, user_overrides_orig, rpi_old)
-                        e_ = compute_elasticity_simple(b_own, new_price, Q_)
-                        if binname=="Promo1 (Base)":
-                            vol_chg_str= "-"
-                        else:
-                            if base_vol>0:
-                                vol_chg_pct= (Q_ - base_vol)/ base_vol* 100.0
-                                vol_chg_str= f"{vol_chg_pct:.1f}%"
+                        
+                        table_rows = []
+                        for binrow in bins_info:
+                            binname = binrow["BinName"]
+                            disc_ = binrow["Discount"]
+                            new_price = user_own_price * (1 - disc_ / 100.0)
+                            Q_ = compute_current_volume(betas, raw_intercept, new_price, user_overrides_orig, rpi_old)
+                            e_ = compute_elasticity_full(betas, new_price, Q_, rpi_old)
+                            
+                            if binname == "Promo1 (Base)":
+                                vol_chg_str = "-"
                             else:
-                                vol_chg_str= "N/A"
-                        table_rows.append({
-                            "PromoBin": binname,
-                            "Discount%": round(disc_,2),
-                            "Price": round(new_price,2),
-                            "VolumeChange%": vol_chg_str,
-                            "Volume": round(Q_,2),
-                            "Elasticity": round(e_,2) if not np.isnan(e_) else None
-                        })
-
-                    df_summary= pd.DataFrame(table_rows)
-                    df_summary= df_summary[["PromoBin","Discount%","Price","VolumeChange%","Volume","Elasticity"]]
-                    st.dataframe(df_summary, use_container_width=True)
+                                if base_vol > 0:
+                                    vol_chg_pct = (Q_ - base_vol) / base_vol * 100.0
+                                    vol_chg_str = f"{vol_chg_pct:.1f}%"
+                                else:
+                                    vol_chg_str = "N/A"
+                                    
+                            table_rows.append({
+                                "PromoBin": binname,
+                                "Discount%": round(disc_, 2),
+                                "Price": round(new_price, 2),
+                                "VolumeChange%": vol_chg_str,
+                                "Volume": round(Q_, 2),
+                                "Elasticity": round(e_, 2) if not np.isnan(e_) else None
+                            })
+                        
+                        df_summary = pd.DataFrame(table_rows)
+                        df_summary = df_summary[["PromoBin", "Discount%", "Price", "VolumeChange%", "Volume", "Elasticity"]]
+                        
+                        st.markdown("**Promotional Bin Summary:**")
+                        st.dataframe(df_summary, use_container_width=True)
             else:
-                st.info(f"No entry in final_clusters_depth for key: {key_tup}")
+                st.info(f"No promotional clusters defined for {key_tup}")
         else:
-            st.info("No final_clusters_depth in session or it's empty.")
+            st.info("No promotional clusters data available in session.")
 
-
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # Method2 Covariance-based approach
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        st.markdown("<div class='custom-subheader'>Method2: Covariance-based Approach (modulus inside sqrt)</div>", unsafe_allow_html=True)
-        needed_cols= {"BasePrice","Price","Volume"}
-        if needed_cols.issubset(df_source.columns):
-            key_tup= (channel_, brand_, variant_, ppg_)
-            df_combo= df_source.copy()
-            if "Channel" in df_combo.columns and channel_:
-                df_combo= df_combo[df_combo["Channel"]==channel_]
-            if "Brand" in df_combo.columns and brand_:
-                df_combo= df_combo[df_combo["Brand"]==brand_]
-            if variant_ is not None and variant_!="ALL" and "Variant" in df_combo.columns:
-                df_combo= df_combo[df_combo["Variant"]==variant_]
-            if "PPG" in df_combo.columns and ppg_:
-                df_combo= df_combo[df_combo["PPG"]==ppg_]
-
-            if df_combo.empty:
-                st.warning("No rows found for aggregator => can't do Cov-based Method2.")
-            else:
-                if "final_clusters_depth" not in st.session_state:
-                    st.warning("No final_clusters_depth in session for covariance-based method.")
-                else:
-                    cluster_defs_map= st.session_state["final_clusters_depth"]
-                    if key_tup not in cluster_defs_map:
-                        st.warning(f"No cluster bins for aggregator {key_tup}.")
-                    else:
-                        cdefs= cluster_defs_map[key_tup]
-                        if not cdefs:
-                            st.warning(f"Empty cluster defs for aggregator {key_tup}.")
-                        else:
-                            df_combo= df_combo.dropna(subset=["BasePrice","Price","Volume"])
-                            df_combo["Discount"]= (df_combo["BasePrice"]- df_combo["Price"])/ df_combo["BasePrice"]
-                            def assign_bin(row):
-                                disc_pct= row["Discount"]*100
-                                if disc_pct<0:
-                                    return "Base"
-                                for c_ in cdefs:
-                                    mn_, mx_= float(c_["Min"]), float(c_["Max"])
-                                    if mn_<= disc_pct<= mx_:
-                                        return c_["ClusterName"]
-                                return "Base"
-                            df_combo["PromoBin"]= df_combo.apply(assign_bin, axis=1)
-
-                            all_vol= df_combo["Volume"].values
-                            all_pri= df_combo["Price"].values
-                            cov_all=0.0
-                            if len(all_vol)>1:
-                                mat_all= np.cov(all_vol,all_pri, ddof=1)
-                                cov_all= mat_all[0,1]
-                            st.write(f"Global Cov(Volume, Price) = {cov_all:.3f}")
-                            abs_cov_all= abs(cov_all)
-
-                            if abs_cov_all>0 and (elas_old is not None) and (not np.isnan(elas_old)):
-                                index_val= elas_old/ np.sqrt(abs_cov_all)
-                            else:
-                                index_val= None
-
-                            st.markdown(f"<b>Base aggregator elasticity</b>={format_elas(elas_old)}", unsafe_allow_html=True)
-                            if index_val is not None:
-                                st.markdown(
-                                    f"<b>Index</b> = elas_old / sqrt(|Cov(Y_all, X_all)|)= <b>{index_val:.3f}</b>",
-                                    unsafe_allow_html=True
-                                )
-                            else:
-                                st.write("Index cannot be computed (cov_all=0 or elas_old=NaN).")
-
-                            method2_rows= []
-                            bins_in_combo= df_combo["PromoBin"].dropna().unique()
-                            for b_ in bins_in_combo:
-                                sub_= df_combo[df_combo["PromoBin"]==b_]
-                                if len(sub_)<2:
-                                    method2_rows.append({
-                                        "Bin": b_,
-                                        "Count": len(sub_),
-                                        "Cov_bin": None,
-                                        "ScaledElas": None
-                                    })
-                                    continue
-                                mat_bin= np.cov(sub_["Volume"], sub_["Price"], ddof=1)
-                                cov_bin= mat_bin[0,1]
-                                abs_cov_bin= abs(cov_bin)
-                                scaled_elas= None
-                                if index_val and abs_cov_bin>0:
-                                    scaled_elas= index_val* np.sqrt(abs_cov_bin)
-                                method2_rows.append({
-                                    "Bin": b_,
-                                    "Count": len(sub_),
-                                    "Cov_bin": round(cov_bin,4),
-                                    "ScaledElas": round(scaled_elas,4) if scaled_elas else None
-                                })
-                            df_m2= pd.DataFrame(method2_rows)
-                            st.markdown("**Bin-level elasticity from covariance-based method (using modulus inside sqrt):**")
-                            st.dataframe(df_m2, use_container_width=True)
-        else:
-            st.warning("Method2: Need columns 'BasePrice','Price','Volume' to do Cov-based approach.")
-
-
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # CROSS ELASTICITY SECTION – BOX LAYOUT
-        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        st.markdown("""
-        <div style="
-        border: 1px solid #ccc;
-        padding: 1rem;
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-        border-radius: 0.5rem;
-        background-color: #f7f7f9;
-        ">
-        <h3 style="margin-top: 0;">Cross Elasticities – Competitor Price Overrides</h3>
-        """, unsafe_allow_html=True)
+        # ────────────────────────────────────────────────────────────────
+        #  CROSS‑ELASTICITY ANALYSIS  (drop‑in replacement)
+        # ────────────────────────────────────────────────────────────────
+        st.markdown("### Cross‑Elasticity Analysis")
 
         if len(rpi_cols) == 0:
-            st.info("No competitor RPI columns => no cross elasticities to display.")
+            st.info("No competitor RPI columns found. Cross‑elasticity analysis not applicable.")
         else:
-            # Decide scenario volume for cross elasticity
-            if competitor_impact and (Q_cur_new is not None):
-                Q_scenario = Q_cur_new
-                st.write(f"Using Q_cur_new = {Q_scenario:.2f} (Competitor Impact scenario).")
-            else:
-                Q_scenario = Q_cur_old if (Q_cur_old is not None) else 1.0
-                st.write(f"Using Q_cur_old = {Q_scenario:.2f} (Original scenario, or 1.0 if unknown).")
+            cross_col1, cross_col2 = st.columns([1, 1])
 
-            competitor_data = []
+            with cross_col1:
+                # Decide which volume (Q) to use in the elasticity denominator
+                if competitor_impact and (Q_cur_new is not None):
+                    Q_scenario = Q_cur_new
+                    st.info(f"Using competitor‑impact scenario volume: {Q_scenario:.2f}")
+                else:
+                    Q_scenario = Q_cur_old if (Q_cur_old is not None) else 1.0
+                    st.info(f"Using original scenario volume: {Q_scenario:.2f}")
 
-            def chunk_list(lst, n=2):
-                for i in range(0, len(lst), n):
-                    yield lst[i:i+n]
+                competitor_data = []
+                st.markdown("#### Competitor Price Overrides")
 
-            for pair in chunk_list(rpi_cols,2):
-                cols_ = st.columns(len(pair))
-                for i, rp_ in enumerate(pair):
-                    comp_name= rp_[:-4]
-                    beta_i   = betas[rp_]
-                    old_ratio= default_vals.get(rp_, 0.0)
-                    if old_ratio != 0.0:
-                        old_comp_price= user_own_price / old_ratio
-                    else:
-                        old_comp_price= 0.0
-                    with cols_[i]:
-                        st.markdown(f"**{comp_name}** (β=**{beta_i:.5f}**)")
-                        user_price= st.number_input(
-                            f"{comp_name} Price override:",
-                            value=float(f"{old_comp_price:.2f}"),
-                            step=1.0,
-                            key=f"{comp_name}_override_box"
+                # ── LOOP OVER EVERY *_RPI COLUMN ─────────────────────────
+                for rp_ in rpi_cols:
+                    comp_name  = rp_[:-4]          # strip "_RPI"
+                    beta_i     = betas[rp_]
+                    old_ratio  = default_vals.get(rp_, 0.0)
+
+                    # 1) KEY for this competitor price box (fixed → no resets)
+                    key_price = f"{comp_name}_price"
+
+                    # 2) Initialise once: average‑price / average‑ratio
+                    if key_price not in st.session_state:
+                        base_comp_price = default_vals["PPU"] / old_ratio if old_ratio else 0.0
+                        st.session_state[key_price] = round(base_comp_price, 2)
+
+                    col1, col2 = st.columns([3, 2])
+
+                    # 3) NUMBER INPUT always shows the stored value
+                    with col1:
+                        user_price = st.number_input(
+                            f"{comp_name} Price:",
+                            value=st.session_state[key_price],
+                            step=0.5,
+                            key=key_price
                         )
-                        import numpy as np
-                        if (user_price>0) and (Q_scenario>0):
-                            # cross elasticity => -beta_i*(myPrice/user_price)*(1/Q_scenario)
-                            cross_elas= -beta_i*(user_own_price/ user_price)*(1.0/ Q_scenario)
+
+                    # 4) Compute cross elasticity with live ratio
+                    with col2:
+                        if (user_price > 0) and (Q_scenario > 0):
+                            cross_elas = -beta_i * (user_own_price / user_price) / Q_scenario
                         else:
-                            cross_elas= np.nan
-                        st.write(f"CrossElas: **{cross_elas:.5f}**")
-                        competitor_data.append({
-                            "Competitor": comp_name,
-                            "Beta": float(f"{beta_i:.5f}"),
-                            "PriceOverride": round(user_price,2),
-                            "CrossElas": cross_elas
-                        })
+                            cross_elas = np.nan
+                        st.markdown(f"**Cross‑Elasticity**: {cross_elas:.4f}")
 
-        st.markdown("</div>", unsafe_allow_html=True)
+                    # 5) Store for summary table
+                    competitor_data.append({
+                        "Competitor": comp_name,
+                        "Beta": round(beta_i, 5),
+                        "Price": round(user_price, 2),
+                        "CrossElasticity": round(cross_elas, 4) if not np.isnan(cross_elas) else None
+                    })
 
-        if len(rpi_cols) > 0:
-            st.markdown("### Cross Elasticities (Descending)")
-            df_cross= pd.DataFrame(competitor_data)
-            df_cross["CrossElas"]= df_cross["CrossElas"].apply(
-                lambda x: float(f"{x:.5f}") if pd.notnull(x) else None
-            )
-            df_cross.sort_values("CrossElas", ascending=False, inplace=True, ignore_index=True)
-            st.dataframe(df_cross, use_container_width=True)
+            with cross_col2:
+                st.markdown("#### Cross‑Elasticity Summary")
+                df_cross = pd.DataFrame(competitor_data)
+                df_cross.sort_values("CrossElasticity", ascending=False, inplace=True, ignore_index=True)
+                st.dataframe(df_cross, use_container_width=True)
 
-        # FINISH TYPE 1
+                if not df_cross.empty:
+                    st.markdown("#### Interpretation")
+                    st.markdown("""
+                    * **Positive value** → competitor is a **substitute**  
+                    (they raise price, you gain volume)  
+                    * **Negative value** → competitor is a **complement**  
+                    (they raise price, you lose volume)  
+                    * **Higher magnitude** → stronger competitive link
+                    """)
+
         st.stop()
 
     # ============================= TYPE 2 =============================
@@ -5339,7 +6292,7 @@ def section2_module2_page():
             st.markdown("Below are the cluster definitions from the Promo Depth Estimator:")
             st.dataframe(df_clusters, use_container_width=True)
         else:
-            st.info("`final_clusters_depth` is present but empty.")
+            st.info("final_clusters_depth is present but empty.")
     else:
         st.info("No final clusters from the Promo Depth module found.")
 
@@ -5539,6 +6492,7 @@ def section2_module2_page():
             legend=dict(x=0.02, y=0.98, bgcolor="rgba(255,255,255,0.5)"),
         )
         st.plotly_chart(fig, use_container_width=True)
+
 
 
     # ------------------------------------------------------------------------
